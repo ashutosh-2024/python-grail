@@ -4,34 +4,20 @@
   var esc = window.esc;
   var hl = window.highlight;
 
-  /* Hand-drawn approximation of the LeetCode mark. Swap in the official
-     asset if you want it exact - this is here so the link is recognisable
-     without shipping a trademarked file. */
   var LC_MARK =
-    '<svg class="lc-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
-      '<path d="M14.6 1.9 7.1 9.4a3.7 3.7 0 0 0 0 5.2l7.5 7.5" ' +
-        'stroke="currentColor" stroke-width="2.6" stroke-linecap="round" ' +
-        'stroke-linejoin="round" opacity=".55"/>' +
-      '<path d="M10.4 12h11.2" stroke="#ffa116" stroke-width="2.6" ' +
-        'stroke-linecap="round"/>' +
-      '<path d="M4.4 12h2.9" stroke="currentColor" stroke-width="2.6" ' +
-        'stroke-linecap="round" opacity=".55"/>' +
-    "</svg>";
+    '<img class="lc-mark" src="assets/img/leetcode.png" alt="" aria-hidden="true">';
 
   function lcLink(p) {
+    if (!p.url) return "";
     return '<a class="lc-link" href="' + p.url + '" target="_blank" rel="noopener">' +
       LC_MARK + "<span>Solve " + p.lc + " on LeetCode</span>" +
       '<span aria-hidden="true">&#8599;</span></a>';
   }
-  window.LC_MARK = LC_MARK;
-  window.lcLink = lcLink;
 
   /* ---------- locate the problem ---------- */
   var flat = [];
   (window.GRAIL_DSA || []).forEach(function (t) {
-    t.sections.forEach(function (s) {
-      s.problems.forEach(function (p) { flat.push(p); });
-    });
+    (t.problems || []).forEach(function (p) { flat.push(p); });
   });
 
   var id = new URLSearchParams(location.search).get("id");
@@ -46,7 +32,7 @@
   }
 
   var p = flat[idx];
-  document.title = p.lc + ". " + p.name + " — python-grail";
+  document.title = (p.lc ? p.lc + ". " : "") + p.name + " — python-grail";
 
   var html = "";
 
@@ -55,20 +41,57 @@
     '<div class="prob-head">' +
       '<p class="crumb"><a href="dsa.html">DSA</a> / ' +
         '<a href="dsa.html?topic=' + encodeURIComponent(p.topic) + '">' +
-          esc(p.topicTitle) + "</a> / " + esc(p.sectionTitle) + "</p>" +
+          esc(p.topicTitle) + "</a></p>" +
       '<div class="meta">' +
-        '<span class="crumb">LeetCode ' + p.lc + "</span>" +
+        (p.lc ? '<span class="crumb">LeetCode ' + p.lc + "</span>" : "") +
         '<span class="badge ' + p.difficulty + '">' + p.difficulty + "</span>" +
+        (p.premium ? '<span class="badge premium">premium</span>' : "") +
       "</div>" +
       "<h1>" + esc(p.name) + "</h1>" +
-      '<div class="actions">' + lcLink(p) + "</div>" +
+      (p.tags.length
+        ? '<div class="tags">' + p.tags.map(function (t) {
+            return '<span class="tag">' + esc(t) + "</span>";
+          }).join("") + "</div>"
+        : "") +
+      (p.url ? '<div class="actions">' + lcLink(p) + "</div>" : "") +
     "</div>";
 
   html += '<div class="entry-body">';
 
-  /* ---------- framing ---------- */
-  html += '<div class="framing">' +
-    p.framing.map(function (t) { return "<p>" + t + "</p>"; }).join("") + "</div>";
+  /* ---------- problem statement ---------- */
+  html += "<h2>Problem</h2>";
+  html += '<div class="statement">' +
+    p.statement.map(function (t) { return "<p>" + t + "</p>"; }).join("") + "</div>";
+
+  if (p.note) {
+    html += '<div class="dsa-callout"><p>' + p.note + "</p></div>";
+  }
+
+  /* ---------- examples ---------- */
+  if (p.examples.length) {
+    html += "<h2>Examples</h2>";
+    html += p.examples.map(function (ex, i) {
+      var rows = "";
+      if (ex.input) {
+        rows += '<div class="io"><b>Input</b><code>' + esc(ex.input) + "</code></div>";
+      }
+      if (ex.output) {
+        rows += '<div class="io"><b>Output</b><code>' + esc(ex.output) + "</code></div>";
+      }
+      if (ex.explanation) {
+        rows += '<div class="io"><b>Why</b><span>' + esc(ex.explanation) + "</span></div>";
+      }
+      return '<div class="example"><span class="ex-n">Example ' + (i + 1) + "</span>" +
+             rows + "</div>";
+    }).join("");
+  }
+
+  /* ---------- constraints ---------- */
+  if (p.constraints.length) {
+    html += "<h2>Constraints</h2><ul class=\"constraints\">" +
+      p.constraints.map(function (c) { return "<li>" + c + "</li>"; }).join("") +
+      "</ul>";
+  }
 
   if (p.pitfall) {
     html += '<div class="pitfall"><strong>Common mistake.</strong> ' + p.pitfall + "</div>";
@@ -89,7 +112,7 @@
     "</tbody></table>";
 
   /* ---------- each approach ---------- */
-  html += "<h2>Approaches</h2>";
+  html += "<h2>Solutions</h2>";
   html += p.approaches.map(function (a) {
     return '<div class="approach' + (a.best ? " is-best" : "") + '">' +
       '<div class="approach-head"><h3>' + esc(a.name) + "</h3>" +
@@ -112,11 +135,7 @@
     '<details class="reveal" style="margin-top:22px">' +
       "<summary>What the build checked</summary>" +
       '<div class="reveal-inner">' +
-        '<p class="code-label">every approach above was run against these</p>' +
         '<pre class="code"><code>' + hl(p.tests) + "</code></pre>" +
-        '<p style="font-size:.9rem;color:var(--text-faint)">Shared helpers ' +
-        "(<code>TreeNode</code>, <code>build</code>, <code>level_order</code>) come from a " +
-        "prelude; see <code>content/dsa.py</code>.</p>" +
       "</div>" +
     "</details>";
 

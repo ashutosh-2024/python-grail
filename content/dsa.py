@@ -19,7 +19,7 @@ is what they allocate on top of it.
 
 Schema
 ------
-topic:    id, title, subtitle, blurb, convention?, sections[], status?, target?
+topic:    id, title, blurb, convention?, sections[], status?, target?
 section:  id, title, idea (list of paragraphs), problems[]
 problem:  id, lc, slug, name, difficulty, framing (paragraphs),
           approaches[], tests, pitfall?
@@ -81,8 +81,6 @@ def stub(id, title, plan, target=None):
     return dict(
         id=id,
         title=title,
-        subtitle=(f"{target} problem{'s' if target != 1 else ''} planned" if target
-                  else "planned") + " - not written up yet",
         status="stub",
         target=target,
         blurb=[
@@ -93,12 +91,13 @@ def stub(id, title, plan, target=None):
     )
 
 
+from heap import HEAP_TOPIC
+
 TOPICS = [
 
 dict(
     id="trees",
     title="Binary Trees",
-    subtitle="in the order they teach each other",
     target=20,
     blurb=[
         "Almost every binary-tree interview question is one of a small number of shapes wearing different clothes. This path works through those shapes in the order that each one makes the next one easier &mdash; not in difficulty order, and not in the order LeetCode numbers them.",
@@ -1434,7 +1433,9 @@ assert is_complete(build([1, None, 2])) is False''',
         ],
     ),
     ],
-)
+),
+
+HEAP_TOPIC,
 ] + [
 
 # Planned topics. None has any problems yet, so each is a placeholder page
@@ -1443,8 +1444,6 @@ assert is_complete(build([1, None, 2])) is False''',
 # problems the topic is planned to hold, where one has been decided.
 stub(id, title, plan, target)
 for id, title, target, plan in [
-    ("heap", "Heaps and Priority Queues", None,
-     "<code>heapq</code>'s min-heap-only API and the negation trick, sift-up and sift-down, why <code>heapify</code> is O(n) and not O(n log n), and the k-th-largest / merge-k-lists / running-median family of problems."),
     ("dp", "Dynamic Programming", None,
      "spotting overlapping subproblems, top-down memoisation with <code>functools.cache</code> versus bottom-up tables, shrinking a table to O(1) rolling state, and the 1-D, grid, knapsack, subsequence and interval families."),
     ("backtracking", "Backtracking", None,

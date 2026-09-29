@@ -1,0 +1,1161 @@
+{
+  "binary-tree-preorder-traversal": {
+    "lc": 144,
+    "title": "Binary Tree Preorder Traversal",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Stack",
+      "Tree",
+      "Depth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, return <em>the preorder traversal of its nodes&#39; values</em>."
+    ],
+    "examples": [
+      {
+        "input": "root = [1,null,2,3]",
+        "output": "[1,2,3]"
+      },
+      {
+        "input": "root = [1,2,3,4,5,null,8,null,null,6,7,9]",
+        "output": "[1,2,4,5,6,7,3,8,9]"
+      },
+      {
+        "input": "root = []",
+        "output": "[]"
+      },
+      {
+        "input": "root = [1]",
+        "output": "[1]"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 100]</code>.",
+      "<code>-100 &lt;= Node.val &lt;= 100</code>"
+    ]
+  },
+  "binary-tree-inorder-traversal": {
+    "lc": 94,
+    "title": "Binary Tree Inorder Traversal",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Stack",
+      "Tree",
+      "Depth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, return <em>the inorder traversal of its nodes&#39; values</em>."
+    ],
+    "examples": [
+      {
+        "input": "root = [1,null,2,3]",
+        "output": "[1,3,2]"
+      },
+      {
+        "input": "root = [1,2,3,4,5,null,8,null,null,6,7,9]",
+        "output": "[4,2,6,5,7,1,3,9,8]"
+      },
+      {
+        "input": "root = []",
+        "output": "[]"
+      },
+      {
+        "input": "root = [1]",
+        "output": "[1]"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 100]</code>.",
+      "<code>-100 &lt;= Node.val &lt;= 100</code>"
+    ]
+  },
+  "binary-tree-postorder-traversal": {
+    "lc": 145,
+    "title": "Binary Tree Postorder Traversal",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Stack",
+      "Tree",
+      "Depth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, return <em>the postorder traversal of its nodes&#39; values</em>."
+    ],
+    "examples": [
+      {
+        "input": "root = [1,null,2,3]",
+        "output": "[3,2,1]"
+      },
+      {
+        "input": "root = [1,2,3,4,5,null,8,null,null,6,7,9]",
+        "output": "[4,6,7,5,2,9,8,3,1]"
+      },
+      {
+        "input": "root = []",
+        "output": "[]"
+      },
+      {
+        "input": "root = [1]",
+        "output": "[1]"
+      }
+    ],
+    "constraints": [
+      "The number of the nodes in the tree is in the range <code>[0, 100]</code>.",
+      "<code>-100 &lt;= Node.val &lt;= 100</code>"
+    ]
+  },
+  "maximum-depth-of-binary-tree": {
+    "lc": 104,
+    "title": "Maximum Depth of Binary Tree",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, return <em>its maximum depth</em>.",
+      "A binary tree&#39;s <strong>maximum depth</strong> is the number of nodes along the longest path from the root node down to the farthest leaf node."
+    ],
+    "examples": [
+      {
+        "input": "root = [3,9,20,null,null,15,7] Output: 3",
+        "output": "3"
+      },
+      {
+        "input": "root = [1,null,2] Output: 2",
+        "output": "2"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 10<sup>4</sup>]</code>.",
+      "<code>-100 &lt;= Node.val &lt;= 100</code>"
+    ]
+  },
+  "minimum-depth-of-binary-tree": {
+    "lc": 111,
+    "title": "Minimum Depth of Binary Tree",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given a binary tree, find its minimum depth.",
+      "The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.",
+      "<strong>Note:</strong> A leaf is a node with no children."
+    ],
+    "examples": [
+      {
+        "input": "root = [3,9,20,null,null,15,7] Output: 2",
+        "output": "2"
+      },
+      {
+        "input": "root = [2,null,3,null,4,null,5,null,6] Output: 5",
+        "output": "5"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 10<sup>5</sup>]</code>.",
+      "<code>-1000 &lt;= Node.val &lt;= 1000</code>"
+    ]
+  },
+  "binary-tree-level-order-traversal": {
+    "lc": 102,
+    "title": "Binary Tree Level Order Traversal",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Breadth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, return <em>the level order traversal of its nodes&#39; values</em>. (i.e., from left to right, level by level)."
+    ],
+    "examples": [
+      {
+        "input": "root = [3,9,20,null,null,15,7] Output: [[3],[9,20],[15,7]]",
+        "output": "[[3],[9,20],[15,7]]"
+      },
+      {
+        "input": "root = [1] Output: [[1]]",
+        "output": "[[1]]"
+      },
+      {
+        "input": "root = [] Output: []",
+        "output": "[]"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 2000]</code>.",
+      "<code>-1000 &lt;= Node.val &lt;= 1000</code>"
+    ]
+  },
+  "binary-tree-level-order-traversal-ii": {
+    "lc": 107,
+    "title": "Binary Tree Level Order Traversal II",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Breadth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, return <em>the bottom-up level order traversal of its nodes&#39; values</em>. (i.e., from left to right, level by level from leaf to root)."
+    ],
+    "examples": [
+      {
+        "input": "root = [3,9,20,null,null,15,7] Output: [[15,7],[9,20],[3]]",
+        "output": "[[15,7],[9,20],[3]]"
+      },
+      {
+        "input": "root = [1] Output: [[1]]",
+        "output": "[[1]]"
+      },
+      {
+        "input": "root = [] Output: []",
+        "output": "[]"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 2000]</code>.",
+      "<code>-1000 &lt;= Node.val &lt;= 1000</code>"
+    ]
+  },
+  "binary-tree-zigzag-level-order-traversal": {
+    "lc": 103,
+    "title": "Binary Tree Zigzag Level Order Traversal",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Breadth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, return <em>the zigzag level order traversal of its nodes&#39; values</em>. (i.e., from left to right, then right to left for the next level and alternate between)."
+    ],
+    "examples": [
+      {
+        "input": "root = [3,9,20,null,null,15,7] Output: [[3],[20,9],[15,7]]",
+        "output": "[[3],[20,9],[15,7]]"
+      },
+      {
+        "input": "root = [1] Output: [[1]]",
+        "output": "[[1]]"
+      },
+      {
+        "input": "root = [] Output: []",
+        "output": "[]"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 2000]</code>.",
+      "<code>-100 &lt;= Node.val &lt;= 100</code>"
+    ]
+  },
+  "same-tree": {
+    "lc": 100,
+    "title": "Same Tree",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the roots of two binary trees <code>p</code> and <code>q</code>, write a function to check if they are the same or not.",
+      "Two binary trees are considered the same if they are structurally identical, and the nodes have the same value."
+    ],
+    "examples": [
+      {
+        "input": "p = [1,2,3], q = [1,2,3] Output: true",
+        "output": "true"
+      },
+      {
+        "input": "p = [1,2], q = [1,null,2] Output: false",
+        "output": "false"
+      },
+      {
+        "input": "p = [1,2,1], q = [1,1,2] Output: false",
+        "output": "false"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in both trees is in the range <code>[0, 100]</code>.",
+      "<code>-10<sup>4</sup> &lt;= Node.val &lt;= 10<sup>4</sup></code>"
+    ]
+  },
+  "symmetric-tree": {
+    "lc": 101,
+    "title": "Symmetric Tree",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, <em>check whether it is a mirror of itself</em> (i.e., symmetric around its center)."
+    ],
+    "examples": [
+      {
+        "input": "root = [1,2,2,3,4,4,3] Output: true",
+        "output": "true"
+      },
+      {
+        "input": "root = [1,2,2,null,3,null,3] Output: false",
+        "output": "false"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[1, 1000]</code>.",
+      "<code>-100 &lt;= Node.val &lt;= 100</code>"
+    ]
+  },
+  "invert-binary-tree": {
+    "lc": 226,
+    "title": "Invert Binary Tree",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, invert the tree, and return <em>its root</em>."
+    ],
+    "examples": [
+      {
+        "input": "root = [4,2,7,1,3,6,9] Output: [4,7,2,9,6,3,1]",
+        "output": "[4,7,2,9,6,3,1]"
+      },
+      {
+        "input": "root = [2,1,3] Output: [2,3,1]",
+        "output": "[2,3,1]"
+      },
+      {
+        "input": "root = [] Output: []",
+        "output": "[]"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 100]</code>.",
+      "<code>-100 &lt;= Node.val &lt;= 100</code>"
+    ]
+  },
+  "merge-two-binary-trees": {
+    "lc": 617,
+    "title": "Merge Two Binary Trees",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "You are given two binary trees <code>root1</code> and <code>root2</code>.",
+      "Imagine that when you put one of them to cover the other, some nodes of the two trees are overlapped while the others are not. You need to merge the two trees into a new binary tree. The merge rule is that if two nodes overlap, then sum node values up as the new value of the merged node. Otherwise, the NOT null node will be used as the node of the new tree.",
+      "Return <em>the merged tree</em>.",
+      "<strong>Note:</strong> The merging process must start from the root nodes of both trees."
+    ],
+    "examples": [
+      {
+        "input": "root1 = [1,3,2,5], root2 = [2,1,3,null,4,null,7] Output: [3,4,5,5,4,null,7]",
+        "output": "[3,4,5,5,4,null,7]"
+      },
+      {
+        "input": "root1 = [1], root2 = [1,2] Output: [2,2]",
+        "output": "[2,2]"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in both trees is in the range <code>[0, 2000]</code>.",
+      "<code>-10<sup>4</sup> &lt;= Node.val &lt;= 10<sup>4</sup></code>"
+    ]
+  },
+  "subtree-of-another-tree": {
+    "lc": 572,
+    "title": "Subtree of Another Tree",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Depth-First Search",
+      "String Matching",
+      "Binary Tree",
+      "Hash Function"
+    ],
+    "statement": [
+      "Given the roots of two binary trees <code>root</code> and <code>subRoot</code>, return <code>true</code> if there is a subtree of <code>root</code> with the same structure and node values of<code> subRoot</code> and <code>false</code> otherwise.",
+      "A subtree of a binary tree <code>tree</code> is a tree that consists of a node in <code>tree</code> and all of this node&#39;s descendants. The tree <code>tree</code> could also be considered as a subtree of itself."
+    ],
+    "examples": [
+      {
+        "input": "root = [3,4,5,1,2], subRoot = [4,1,2] Output: true",
+        "output": "true"
+      },
+      {
+        "input": "root = [3,4,5,1,2,null,null,null,null,0], subRoot = [4,1,2] Output: false",
+        "output": "false"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the <code>root</code> tree is in the range <code>[1, 2000]</code>.",
+      "The number of nodes in the <code>subRoot</code> tree is in the range <code>[1, 1000]</code>.",
+      "<code>-10<sup>4</sup> &lt;= root.val &lt;= 10<sup>4</sup></code>",
+      "<code>-10<sup>4</sup> &lt;= subRoot.val &lt;= 10<sup>4</sup></code>"
+    ]
+  },
+  "balanced-binary-tree": {
+    "lc": 110,
+    "title": "Balanced Binary Tree",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Depth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given a binary tree, determine if it is <strong>height-balanced</strong>."
+    ],
+    "examples": [
+      {
+        "input": "root = [3,9,20,null,null,15,7] Output: true",
+        "output": "true"
+      },
+      {
+        "input": "root = [1,2,2,3,3,null,null,4,4] Output: false",
+        "output": "false"
+      },
+      {
+        "input": "root = [] Output: true",
+        "output": "true"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 5000]</code>.",
+      "<code>-10<sup>4</sup> &lt;= Node.val &lt;= 10<sup>4</sup></code>"
+    ]
+  },
+  "diameter-of-binary-tree": {
+    "lc": 543,
+    "title": "Diameter of Binary Tree",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Depth-First Search",
+      "Binary Tree",
+      "DP on Trees"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, return <em>the length of the <strong>diameter</strong> of the tree</em>.",
+      "The <strong>diameter</strong> of a binary tree is the <strong>length</strong> of the longest path between any two nodes in a tree. This path may or may not pass through the <code>root</code>.",
+      "The <strong>length</strong> of a path between two nodes is represented by the number of edges between them."
+    ],
+    "examples": [
+      {
+        "input": "root = [1,2,3,4,5] Output: 3 Explanation: 3 is the length of the path [4,2,1,3] or [5,2,1,3].",
+        "output": "3 Explanation: 3 is the length of the path [4,2,1,3] or [5,2,1,3].",
+        "explanation": "3 is the length of the path [4,2,1,3] or [5,2,1,3]."
+      },
+      {
+        "input": "root = [1,2] Output: 1",
+        "output": "1"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[1, 10<sup>4</sup>]</code>.",
+      "<code>-100 &lt;= Node.val &lt;= 100</code>"
+    ]
+  },
+  "binary-tree-tilt": {
+    "lc": 563,
+    "title": "Binary Tree Tilt",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Depth-First Search",
+      "Binary Tree",
+      "DP on Trees"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, return <em>the sum of every tree node&#39;s <strong>tilt</strong>.</em>",
+      "The <strong>tilt</strong> of a tree node is the <strong>absolute difference</strong> between the sum of all left subtree node <strong>values</strong> and all right subtree node <strong>values</strong>. If a node does not have a left child, then the sum of the left subtree node <strong>values</strong> is treated as <code>0</code>. The rule is similar if the node does not have a right child."
+    ],
+    "examples": [
+      {
+        "input": "root = [1,2,3] Output: 1",
+        "output": "1",
+        "explanation": "Tilt of node 2 : |0-0| = 0 (no children) Tilt of node 3 : |0-0| = 0 (no children) Tilt of node 1 : |2-3| = 1 (left subtree is just left child, so sum is 2; right subtree is just right child, so sum is 3) Sum of every tilt : 0 + 0 + 1 = 1"
+      },
+      {
+        "input": "root = [4,2,9,3,5,null,7] Output: 15",
+        "output": "15",
+        "explanation": "Tilt of node 3 : |0-0| = 0 (no children) Tilt of node 5 : |0-0| = 0 (no children) Tilt of node 7 : |0-0| = 0 (no children) Tilt of node 2 : |3-5| = 2 (left subtree is just left child, so sum is 3; right subtree is just right child, so sum is 5) Tilt of node 9 : |0-7| = 7 (no left child, so sum is 0; right subtree is just right child, so sum is 7) Tilt of node 4 : |(3+5+2)-(9+7)| = |10-16| = 6 (left subtree values are 3, 5, and 2, which sums to 10; right subtree values are 9 and 7, which sums to 16) Sum of every tilt : 0 + 0 + 0 + 2 + 7 + 6 = 15"
+      },
+      {
+        "input": "root = [21,7,14,1,1,2,2,3,3] Output: 9",
+        "output": "9"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 10<sup>4</sup>]</code>.",
+      "<code>-1000 &lt;= Node.val &lt;= 1000</code>"
+    ]
+  },
+  "count-complete-tree-nodes": {
+    "lc": 222,
+    "title": "Count Complete Tree Nodes",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Binary Search",
+      "Bit Manipulation",
+      "Tree",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a <strong>complete</strong> binary tree, return the number of the nodes in the tree.",
+      "According to <strong><a href=\"http://en.wikipedia.org/wiki/Binary_tree#Types_of_binary_trees\" target=\"_blank\">Wikipedia</a></strong>, every level, except possibly the last, is completely filled in a complete binary tree, and all nodes in the last level are as far left as possible. It can have between <code>1</code> and <code>2<sup>h</sup></code> nodes inclusive at the last level <code>h</code>.",
+      "Design an algorithm that runs in less than <code data-stringify-type=\"code\">O(n)</code> time complexity."
+    ],
+    "examples": [
+      {
+        "input": "root = [1,2,3,4,5,6] Output: 6",
+        "output": "6"
+      },
+      {
+        "input": "root = [] Output: 0",
+        "output": "0"
+      },
+      {
+        "input": "root = [1] Output: 1",
+        "output": "1"
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[0, 5 * 10<sup>4</sup>]</code>.",
+      "<code>0 &lt;= Node.val &lt;= 5 * 10<sup>4</sup></code>",
+      "The tree is guaranteed to be <strong>complete</strong>."
+    ]
+  },
+  "check-completeness-of-a-binary-tree": {
+    "lc": 958,
+    "title": "Check Completeness of a Binary Tree",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Breadth-First Search",
+      "Binary Tree"
+    ],
+    "statement": [
+      "Given the <code>root</code> of a binary tree, determine if it is a <em>complete binary tree</em>.",
+      "In a <strong><a href=\"http://en.wikipedia.org/wiki/Binary_tree#Types_of_binary_trees\" target=\"_blank\">complete binary tree</a></strong>, every level, except possibly the last, is completely filled, and all nodes in the last level are as far left as possible. It can have between <code>1</code> and <code>2<sup>h</sup></code> nodes inclusive at the last level <code>h</code>."
+    ],
+    "examples": [
+      {
+        "input": "root = [1,2,3,4,5,6] Output: true Explanation: Every level before the last is full (ie. levels with node-values {1} and {2, 3}), and all nodes in the last level ({4, 5, 6}) are as far left as possible.",
+        "output": "true Explanation: Every level before the last is full (ie. levels with node-values {1} and {2, 3}), and all nodes in the last level ({4, 5, 6}) are as far left as possible.",
+        "explanation": "Every level before the last is full (ie. levels with node-values {1} and {2, 3}), and all nodes in the last level ({4, 5, 6}) are as far left as possible."
+      },
+      {
+        "input": "root = [1,2,3,4,5,null,7] Output: false Explanation: The node with value 7 isn't as far left as possible.",
+        "output": "false Explanation: The node with value 7 isn't as far left as possible.",
+        "explanation": "The node with value 7 isn't as far left as possible."
+      }
+    ],
+    "constraints": [
+      "The number of nodes in the tree is in the range <code>[1, 100]</code>.",
+      "<code>1 &lt;= Node.val &lt;= 1000</code>"
+    ]
+  },
+  "kth-largest-element-in-an-array": {
+    "lc": 215,
+    "title": "Kth Largest Element in an Array",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Divide and Conquer",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Quickselect"
+    ],
+    "statement": [
+      "Given an integer array <code>nums</code> and an integer <code>k</code>, return <em>the</em> <code>k<sup>th</sup></code> <em>largest element in the array</em>.",
+      "Note that it is the <code>k<sup>th</sup></code> largest element in the sorted order, not the <code>k<sup>th</sup></code> distinct element.",
+      "Can you solve it without sorting?"
+    ],
+    "examples": [
+      {
+        "input": "nums = [3,2,1,5,6,4], k = 2 Output: 5",
+        "output": "5"
+      },
+      {
+        "input": "nums = [3,2,3,1,2,4,5,5,6], k = 4 Output: 4",
+        "output": "4"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= k &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+      "<code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code>"
+    ]
+  },
+  "kth-largest-element-in-a-stream": {
+    "lc": 703,
+    "title": "Kth Largest Element in a Stream",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Tree",
+      "Design",
+      "Binary Search Tree",
+      "Heap (Priority Queue)",
+      "Binary Tree",
+      "Data Stream"
+    ],
+    "statement": [
+      "You are part of a university admissions office and need to keep track of the <code>kth</code> highest test score from applicants in real-time. This helps to determine cut-off marks for interviews and admissions dynamically as new applicants submit their scores.",
+      "You are tasked to implement a class which, for a given integer <code>k</code>, maintains a stream of test scores and continuously returns the <code>k</code>th highest test score <strong>after</strong> a new score has been submitted. More specifically, we are looking for the <code>k</code>th highest score in the sorted list of all scores.",
+      "Implement the <code>KthLargest</code> class:",
+      "<ul>\n <li><code>KthLargest(int k, int[] nums)</code> Initializes the object with the integer <code>k</code> and the stream of test scores <code>nums</code>.</li>\n <li><code>int add(int val)</code> Adds a new test score <code>val</code> to the stream and returns the element representing the <code>k<sup>th</sup></code> largest element in the pool of test scores so far.</li>\n</ul>"
+    ],
+    "examples": [
+      {
+        "input": "[\"KthLargest\", \"add\", \"add\", \"add\", \"add\", \"add\"] [[3, [4, 5, 8, 2]], [3], [5], [10], [9], [4]]",
+        "output": "[null, 4, 5, 5, 8, 8]",
+        "explanation": "KthLargest kthLargest = new KthLargest(3, [4, 5, 8, 2]); kthLargest.add(3); // return 4 kthLargest.add(5); // return 5 kthLargest.add(10); // return 5 kthLargest.add(9); // return 8 kthLargest.add(4); // return 8"
+      },
+      {
+        "input": "[\"KthLargest\", \"add\", \"add\", \"add\", \"add\"] [[4, [7, 7, 7, 7, 8, 3]], [2], [10], [9], [9]]",
+        "output": "[null, 7, 7, 7, 8]",
+        "explanation": "KthLargest kthLargest = new KthLargest(4, [7, 7, 7, 7, 8, 3]); kthLargest.add(2); // return 7 kthLargest.add(10); // return 7 kthLargest.add(9); // return 7 kthLargest.add(9); // return 8"
+      }
+    ],
+    "constraints": [
+      "<code>0 &lt;= nums.length &lt;= 10<sup>4</sup></code>",
+      "<code>1 &lt;= k &lt;= nums.length + 1</code>",
+      "<code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code>",
+      "<code>-10<sup>4</sup> &lt;= val &lt;= 10<sup>4</sup></code>",
+      "At most <code>10<sup>4</sup></code> calls will be made to <code>add</code>."
+    ]
+  },
+  "top-k-frequent-elements": {
+    "lc": 347,
+    "title": "Top K Frequent Elements",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Hash Table",
+      "Divide and Conquer",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Bucket Sort",
+      "Counting",
+      "Quickselect"
+    ],
+    "statement": [
+      "Given an integer array <code>nums</code> and an integer <code>k</code>, return <em>the</em> <code>k</code> <em>most frequent elements</em>. You may return the answer in <strong>any order</strong>."
+    ],
+    "examples": [
+      {
+        "input": "nums = [1,1,1,2,2,3], k = 2",
+        "output": "[1,2]"
+      },
+      {
+        "input": "nums = [1], k = 1",
+        "output": "[1]"
+      },
+      {
+        "input": "nums = [1,2,1,2,1,2,3,1,3,2], k = 2",
+        "output": "[1,2]"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+      "<code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code>",
+      "<code>k</code> is in the range <code>[1, the number of unique elements in the array]</code>.",
+      "It is <strong>guaranteed</strong> that the answer is <strong>unique</strong>."
+    ]
+  },
+  "sort-characters-by-frequency": {
+    "lc": 451,
+    "title": "Sort Characters By Frequency",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Hash Table",
+      "String",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Bucket Sort",
+      "Counting"
+    ],
+    "statement": [
+      "Given a string <code>s</code>, sort it in <strong>decreasing order</strong> based on the <strong>frequency</strong> of the characters. The <strong>frequency</strong> of a character is the number of times it appears in the string.",
+      "Return <em>the sorted string</em>. If there are multiple answers, return <em>any of them</em>."
+    ],
+    "examples": [
+      {
+        "input": "s = \"tree\" Output: \"eert\" Explanation: 'e' appears twice while 'r' and 't' both appear once. So 'e' must appear before both 'r' and 't'. Therefore \"eetr\" is also a valid answer.",
+        "output": "\"eert\" Explanation: 'e' appears twice while 'r' and 't' both appear once. So 'e' must appear before both 'r' and 't'. Therefore \"eetr\" is also a valid answer.",
+        "explanation": "'e' appears twice while 'r' and 't' both appear once. So 'e' must appear before both 'r' and 't'. Therefore \"eetr\" is also a valid answer."
+      },
+      {
+        "input": "s = \"cccaaa\" Output: \"aaaccc\" Explanation: Both 'c' and 'a' appear three times, so both \"cccaaa\" and \"aaaccc\" are valid answers. Note that \"cacaca\" is incorrect, as the same characters must be together.",
+        "output": "\"aaaccc\" Explanation: Both 'c' and 'a' appear three times, so both \"cccaaa\" and \"aaaccc\" are valid answers. Note that \"cacaca\" is incorrect, as the same characters must be together.",
+        "explanation": "Both 'c' and 'a' appear three times, so both \"cccaaa\" and \"aaaccc\" are valid answers. Note that \"cacaca\" is incorrect, as the same characters must be together."
+      },
+      {
+        "input": "s = \"Aabb\" Output: \"bbAa\" Explanation: \"bbaA\" is also a valid answer, but \"Aabb\" is incorrect. Note that 'A' and 'a' are treated as two different characters.",
+        "output": "\"bbAa\" Explanation: \"bbaA\" is also a valid answer, but \"Aabb\" is incorrect. Note that 'A' and 'a' are treated as two different characters.",
+        "explanation": "\"bbaA\" is also a valid answer, but \"Aabb\" is incorrect. Note that 'A' and 'a' are treated as two different characters."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= s.length &lt;= 5 * 10<sup>5</sup></code>",
+      "<code>s</code> consists of uppercase and lowercase English letters and digits."
+    ]
+  },
+  "merge-k-sorted-lists": {
+    "lc": 23,
+    "title": "Merge k Sorted Lists",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Linked List",
+      "Divide and Conquer",
+      "Heap (Priority Queue)",
+      "Merge Sort",
+      "Tournament Sort"
+    ],
+    "statement": [
+      "You are given an array of <code>k</code> linked-lists <code>lists</code>, each linked-list is sorted in ascending order.",
+      "<em>Merge all the linked-lists into one sorted linked-list and return it.</em>"
+    ],
+    "examples": [
+      {
+        "input": "lists = [[1,4,5],[1,3,4],[2,6]] Output: [1,1,2,3,4,4,5,6] Explanation: The linked-lists are: [ 1->4->5, 1->3->4, 2->6 ] merging them into one sorted linked list: 1->1->2->3->4->4->5->6",
+        "output": "[1,1,2,3,4,4,5,6] Explanation: The linked-lists are: [ 1->4->5, 1->3->4, 2->6 ] merging them into one sorted linked list: 1->1->2->3->4->4->5->6",
+        "explanation": "The linked-lists are: [ 1->4->5, 1->3->4, 2->6 ] merging them into one sorted linked list: 1->1->2->3->4->4->5->6"
+      },
+      {
+        "input": "lists = [] Output: []",
+        "output": "[]"
+      },
+      {
+        "input": "lists = [[]] Output: []",
+        "output": "[]"
+      }
+    ],
+    "constraints": [
+      "<code>k == lists.length</code>",
+      "<code>0 &lt;= k &lt;= 10<sup>4</sup></code>",
+      "<code>0 &lt;= lists[i].length &lt;= 500</code>",
+      "<code>-10<sup>4</sup> &lt;= lists[i][j] &lt;= 10<sup>4</sup></code>",
+      "<code>lists[i]</code> is sorted in <strong>ascending order</strong>.",
+      "The sum of <code>lists[i].length</code> will not exceed <code>10<sup>4</sup></code>."
+    ]
+  },
+  "smallest-range-covering-elements-from-k-lists": {
+    "lc": 632,
+    "title": "Smallest Range Covering Elements from K Lists",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Hash Table",
+      "Greedy",
+      "Sliding Window",
+      "Sorting",
+      "Heap (Priority Queue)"
+    ],
+    "statement": [
+      "You have <code>k</code> lists of sorted integers in <strong>non-decreasing order</strong>. Find the <b>smallest</b> range that includes at least one number from each of the <code>k</code> lists.",
+      "We define the range <code>[a, b]</code> is smaller than range <code>[c, d]</code> if <code>b - a &lt; d - c</code> <strong>or</strong> <code>a &lt; c</code> if <code>b - a == d - c</code>."
+    ],
+    "examples": [
+      {
+        "input": "nums = [[4,10,15,24,26],[0,9,12,20],[5,18,22,30]] Output: [20,24]",
+        "output": "[20,24]",
+        "explanation": "List 1: [4, 10, 15, 24,26], 24 is in range [20,24]. List 2: [0, 9, 12, 20], 20 is in range [20,24]. List 3: [5, 18, 22, 30], 22 is in range [20,24]."
+      },
+      {
+        "input": "nums = [[1,2,3],[1,2,3],[1,2,3]] Output: [1,1]",
+        "output": "[1,1]"
+      }
+    ],
+    "constraints": [
+      "<code>nums.length == k</code>",
+      "<code>1 &lt;= k &lt;= 3500</code>",
+      "<code>1 &lt;= nums[i].length &lt;= 50</code>",
+      "<code>-10<sup>5</sup> &lt;= nums[i][j] &lt;= 10<sup>5</sup></code>",
+      "<code>nums[i]</code> is sorted in <strong>non-decreasing</strong> order."
+    ]
+  },
+  "kth-smallest-element-in-a-sorted-matrix": {
+    "lc": 378,
+    "title": "Kth Smallest Element in a Sorted Matrix",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Binary Search",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Matrix"
+    ],
+    "statement": [
+      "Given an <code>n x n</code> <code>matrix</code> where each of the rows and columns is sorted in ascending order, return <em>the</em> <code>k<sup>th</sup></code> <em>smallest element in the matrix</em>.",
+      "Note that it is the <code>k<sup>th</sup></code> smallest element <strong>in the sorted order</strong>, not the <code>k<sup>th</sup></code> <strong>distinct</strong> element.",
+      "You must find a solution with a memory complexity better than <code>O(n<sup>2</sup>)</code>."
+    ],
+    "examples": [
+      {
+        "input": "matrix = [[1,5,9],[10,11,13],[12,13,15]], k = 8 Output: 13 Explanation: The elements in the matrix are [1,5,9,10,11,12,13,13,15], and the 8th smallest number is 13",
+        "output": "13 Explanation: The elements in the matrix are [1,5,9,10,11,12,13,13,15], and the 8th smallest number is 13",
+        "explanation": "The elements in the matrix are [1,5,9,10,11,12,13,13,15], and the 8th smallest number is 13"
+      },
+      {
+        "input": "matrix = [[-5]], k = 1 Output: -5",
+        "output": "-5"
+      }
+    ],
+    "constraints": [
+      "<code>n == matrix.length == matrix[i].length</code>",
+      "<code>1 &lt;= n &lt;= 300</code>",
+      "<code>-10<sup>9</sup> &lt;= matrix[i][j] &lt;= 10<sup>9</sup></code>",
+      "All the rows and columns of <code>matrix</code> are <strong>guaranteed</strong> to be sorted in <strong>non-decreasing order</strong>.",
+      "<code>1 &lt;= k &lt;= n<sup>2</sup></code>"
+    ]
+  },
+  "find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows": {
+    "lc": 1439,
+    "title": "Find the Kth Smallest Sum of a Matrix With Sorted Rows",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Binary Search",
+      "Heap (Priority Queue)",
+      "Matrix"
+    ],
+    "statement": [
+      "You are given an <code>m x n</code> matrix <code>mat</code> that has its rows sorted in non-decreasing order and an integer <code>k</code>.",
+      "You are allowed to choose <strong>exactly one element</strong> from each row to form an array.",
+      "Return <em>the </em><code>k<sup>th</sup></code><em> smallest array sum among all possible arrays</em>."
+    ],
+    "examples": [
+      {
+        "input": "mat = [[1,3,11],[2,4,6]], k = 5 Output: 7 Explanation: Choosing one element from each row, the first k smallest sum are: [1,2], [1,4], [3,2], [3,4], [1,6]. Where the 5th sum is 7.",
+        "output": "7 Explanation: Choosing one element from each row, the first k smallest sum are: [1,2], [1,4], [3,2], [3,4], [1,6]. Where the 5th sum is 7.",
+        "explanation": "Choosing one element from each row, the first k smallest sum are: [1,2], [1,4], [3,2], [3,4], [1,6]. Where the 5th sum is 7."
+      },
+      {
+        "input": "mat = [[1,3,11],[2,4,6]], k = 9 Output: 17",
+        "output": "17"
+      },
+      {
+        "input": "mat = [[1,10,10],[1,4,5],[2,3,6]], k = 7 Output: 9 Explanation: Choosing one element from each row, the first k smallest sum are: [1,1,2], [1,1,3], [1,4,2], [1,4,3], [1,1,6], [1,5,2], [1,5,3]. Where the 7th sum is 9.",
+        "output": "9 Explanation: Choosing one element from each row, the first k smallest sum are: [1,1,2], [1,1,3], [1,4,2], [1,4,3], [1,1,6], [1,5,2], [1,5,3]. Where the 7th sum is 9.",
+        "explanation": "Choosing one element from each row, the first k smallest sum are: [1,1,2], [1,1,3], [1,4,2], [1,4,3], [1,1,6], [1,5,2], [1,5,3]. Where the 7th sum is 9."
+      }
+    ],
+    "constraints": [
+      "<code>m == mat.length</code>",
+      "<code>n == mat.length[i]</code>",
+      "<code>1 &lt;= m, n &lt;= 40</code>",
+      "<code>1 &lt;= mat[i][j] &lt;= 5000</code>",
+      "<code>1 &lt;= k &lt;= min(200, n<sup>m</sup>)</code>",
+      "<code>mat[i]</code> is a non-decreasing array."
+    ]
+  },
+  "minimum-cost-to-connect-sticks": {
+    "lc": 1167,
+    "title": "Minimum Cost to Connect Sticks",
+    "difficulty": "medium",
+    "premium": true,
+    "tags": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "statement": [],
+    "examples": [],
+    "constraints": []
+  },
+  "task-scheduler": {
+    "lc": 621,
+    "title": "Task Scheduler",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Hash Table",
+      "Greedy",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Counting"
+    ],
+    "statement": [
+      "You are given an array of CPU <code>tasks</code>, each labeled with a letter from A to Z, and a number <code>n</code>. Each CPU interval can be idle or allow the completion of one task. Tasks can be completed in any order, but there&#39;s a constraint: there has to be a gap of <strong>at least</strong> <code>n</code> intervals between two tasks with the same label.",
+      "Return the <strong>minimum</strong> number of CPU intervals required to complete all tasks."
+    ],
+    "examples": [
+      {
+        "input": "tasks = [\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], n = 2",
+        "output": "8",
+        "explanation": "A possible sequence is: A -> B -> idle -> A -> B -> idle -> A -> B. After completing task A, you must wait two intervals before doing A again. The same applies to task B. In the 3rd interval, neither A nor B can be done, so you idle. By the 4th interval, you can do A again as 2 intervals have passed."
+      },
+      {
+        "input": "tasks = [\"A\",\"C\",\"A\",\"B\",\"D\",\"B\"], n = 1",
+        "output": "6",
+        "explanation": "A possible sequence is: A -> B -> C -> D -> A -> B. With a cooling interval of 1, you can repeat a task after just one other task."
+      },
+      {
+        "input": "tasks = [\"A\",\"A\",\"A\", \"B\",\"B\",\"B\"], n = 3",
+        "output": "10",
+        "explanation": "A possible sequence is: A -> B -> idle -> idle -> A -> B -> idle -> idle -> A -> B. There are only two types of tasks, A and B, which need to be separated by 3 intervals. This leads to idling twice between repetitions of these tasks."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= tasks.length &lt;= 10<sup>4</sup></code>",
+      "<code>tasks[i]</code> is an uppercase English letter.",
+      "<code>0 &lt;= n &lt;= 100</code>"
+    ]
+  },
+  "reorganize-string": {
+    "lc": 767,
+    "title": "Reorganize String",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Hash Table",
+      "String",
+      "Greedy",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Counting"
+    ],
+    "statement": [
+      "Given a string <code>s</code>, rearrange the characters of <code>s</code> so that any two adjacent characters are not the same.",
+      "Return <em>any possible rearrangement of</em> <code>s</code> <em>or return</em> <code>&quot;&quot;</code> <em>if not possible</em>."
+    ],
+    "examples": [
+      {
+        "input": "s = \"aab\" Output: \"aba\"",
+        "output": "\"aba\""
+      },
+      {
+        "input": "s = \"aaab\" Output: \"\"",
+        "output": "\"\""
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= s.length &lt;= 500</code>",
+      "<code>s</code> consists of lowercase English letters."
+    ]
+  },
+  "ipo": {
+    "lc": 502,
+    "title": "IPO",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Greedy",
+      "Sorting",
+      "Heap (Priority Queue)"
+    ],
+    "statement": [
+      "Suppose LeetCode will start its <strong>IPO</strong> soon. In order to sell a good price of its shares to Venture Capital, LeetCode would like to work on some projects to increase its capital before the <strong>IPO</strong>. Since it has limited resources, it can only finish at most <code>k</code> distinct projects before the <strong>IPO</strong>. Help LeetCode design the best way to maximize its total capital after finishing at most <code>k</code> distinct projects.",
+      "You are given <code>n</code> projects where the <code>i<sup>th</sup></code> project has a pure profit <code>profits[i]</code> and a minimum capital of <code>capital[i]</code> is needed to start it.",
+      "Initially, you have <code>w</code> capital. When you finish a project, you will obtain its pure profit and the profit will be added to your total capital.",
+      "Pick a list of <strong>at most</strong> <code>k</code> distinct projects from given projects to <strong>maximize your final capital</strong>, and return <em>the final maximized capital</em>.",
+      "The answer is guaranteed to fit in a 32-bit signed integer."
+    ],
+    "examples": [
+      {
+        "input": "k = 2, w = 0, profits = [1,2,3], capital = [0,1,1] Output: 4 Explanation: Since your initial capital is 0, you can only start the project indexed 0. After finishing it you will obtain profit 1 and your capital becomes 1. With capital 1, you can either start the project indexed 1 or the project indexed 2. Since you can choose at most 2 projects, you need to finish the project indexed 2 to get the maximum capital. Therefore, output the final maximized capital, which is 0 + 1 + 3 = 4.",
+        "output": "4 Explanation: Since your initial capital is 0, you can only start the project indexed 0. After finishing it you will obtain profit 1 and your capital becomes 1. With capital 1, you can either start the project indexed 1 or the project indexed 2. Since you can choose at most 2 projects, you need to finish the project indexed 2 to get the maximum capital. Therefore, output the final maximized capital, which is 0 + 1 + 3 = 4.",
+        "explanation": "Since your initial capital is 0, you can only start the project indexed 0. After finishing it you will obtain profit 1 and your capital becomes 1. With capital 1, you can either start the project indexed 1 or the project indexed 2. Since you can choose at most 2 projects, you need to finish the project indexed 2 to get the maximum capital. Therefore, output the final maximized capital, which is 0 + 1 + 3 = 4."
+      },
+      {
+        "input": "k = 3, w = 0, profits = [1,2,3], capital = [0,1,2] Output: 6",
+        "output": "6"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= k &lt;= 10<sup>5</sup></code>",
+      "<code>0 &lt;= w &lt;= 10<sup>9</sup></code>",
+      "<code>n == profits.length</code>",
+      "<code>n == capital.length</code>",
+      "<code>1 &lt;= n &lt;= 10<sup>5</sup></code>",
+      "<code>0 &lt;= profits[i] &lt;= 10<sup>4</sup></code>",
+      "<code>0 &lt;= capital[i] &lt;= 10<sup>9</sup></code>"
+    ]
+  },
+  "meeting-rooms": {
+    "lc": 252,
+    "title": "Meeting Rooms",
+    "difficulty": "easy",
+    "premium": true,
+    "tags": [
+      "Array",
+      "Sorting",
+      "Quicksort"
+    ],
+    "statement": [],
+    "examples": [],
+    "constraints": []
+  },
+  "meeting-rooms-ii": {
+    "lc": 253,
+    "title": "Meeting Rooms II",
+    "difficulty": "medium",
+    "premium": true,
+    "tags": [
+      "Array",
+      "Two Pointers",
+      "Greedy",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Prefix Sum"
+    ],
+    "statement": [],
+    "examples": [],
+    "constraints": []
+  },
+  "minimum-number-of-refueling-stops": {
+    "lc": 871,
+    "title": "Minimum Number of Refueling Stops",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "statement": [
+      "A car travels from a starting position to a destination which is <code>target</code> miles east of the starting position.",
+      "There are gas stations along the way. The gas stations are represented as an array <code>stations</code> where <code>stations[i] = [position<sub>i</sub>, fuel<sub>i</sub>]</code> indicates that the <code>i<sup>th</sup></code> gas station is <code>position<sub>i</sub></code> miles east of the starting position and has <code>fuel<sub>i</sub></code> liters of gas.",
+      "The car starts with an infinite tank of gas, which initially has <code>startFuel</code> liters of fuel in it. It uses one liter of gas per one mile that it drives. When the car reaches a gas station, it may stop and refuel, transferring all the gas from the station into the car.",
+      "Return <em>the minimum number of refueling stops the car must make in order to reach its destination</em>. If it cannot reach the destination, return <code>-1</code>.",
+      "Note that if the car reaches a gas station with <code>0</code> fuel left, the car can still refuel there. If the car reaches the destination with <code>0</code> fuel left, it is still considered to have arrived."
+    ],
+    "examples": [
+      {
+        "input": "target = 1, startFuel = 1, stations = [] Output: 0 Explanation: We can reach the target without refueling.",
+        "output": "0 Explanation: We can reach the target without refueling.",
+        "explanation": "We can reach the target without refueling."
+      },
+      {
+        "input": "target = 100, startFuel = 1, stations = [[10,100]] Output: -1 Explanation: We can not reach the target (or even the first gas station).",
+        "output": "-1 Explanation: We can not reach the target (or even the first gas station).",
+        "explanation": "We can not reach the target (or even the first gas station)."
+      },
+      {
+        "input": "target = 100, startFuel = 10, stations = [[10,60],[20,30],[30,30],[60,40]] Output: 2 Explanation: We start with 10 liters of fuel. We drive to position 10, expending 10 liters of fuel. We refuel from 0 liters to 60 liters of gas. Then, we drive from position 10 to position 60 (expending 50 liters of fuel), and refuel from 10 liters to 50 liters of gas. We then drive to and reach the target. We made 2 refueling stops along the way, so we return 2.",
+        "output": "2 Explanation: We start with 10 liters of fuel. We drive to position 10, expending 10 liters of fuel. We refuel from 0 liters to 60 liters of gas. Then, we drive from position 10 to position 60 (expending 50 liters of fuel), and refuel from 10 liters to 50 liters of gas. We then drive to and reach the target. We made 2 refueling stops along the way, so we return 2.",
+        "explanation": "We start with 10 liters of fuel. We drive to position 10, expending 10 liters of fuel. We refuel from 0 liters to 60 liters of gas. Then, we drive from position 10 to position 60 (expending 50 liters of fuel), and refuel from 10 liters to 50 liters of gas. We then drive to and reach the target. We made 2 refueling stops along the way, so we return 2."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= target, startFuel &lt;= 10<sup>9</sup></code>",
+      "<code>0 &lt;= stations.length &lt;= 500</code>",
+      "<code>1 &lt;= position<sub>i</sub> &lt; position<sub>i+1</sub> &lt; target</code>",
+      "<code>1 &lt;= fuel<sub>i</sub> &lt; 10<sup>9</sup></code>"
+    ]
+  },
+  "find-median-from-data-stream": {
+    "lc": 295,
+    "title": "Find Median from Data Stream",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Two Pointers",
+      "Design",
+      "Sorting",
+      "Heap (Priority Queue)",
+      "Data Stream"
+    ],
+    "statement": [
+      "The <strong>median</strong> is the middle value in an ordered integer list. If the size of the list is even, there is no middle value, and the median is the mean of the two middle values.",
+      "<ul>\n <li>For example, for <code>arr = [2,3,4]</code>, the median is <code>3</code>.</li>\n <li>For example, for <code>arr = [2,3]</code>, the median is <code>(2 + 3) / 2 = 2.5</code>.</li>\n</ul>\n\nImplement the MedianFinder class:",
+      "<ul>\n <li><code>MedianFinder()</code> initializes the <code>MedianFinder</code> object.</li>\n <li><code>void addNum(int num)</code> adds the integer <code>num</code> from the data stream to the data structure.</li>\n <li><code>double findMedian()</code> returns the median of all elements so far. Answers within <code>10<sup>-5</sup></code> of the actual answer will be accepted.</li>\n</ul>"
+    ],
+    "examples": [
+      {
+        "input": "[\"MedianFinder\", \"addNum\", \"addNum\", \"findMedian\", \"addNum\", \"findMedian\"] [[], [1], [2], [], [3], []]",
+        "output": "[null, null, null, 1.5, null, 2.0]",
+        "explanation": "MedianFinder medianFinder = new MedianFinder(); medianFinder.addNum(1); // arr = [1] medianFinder.addNum(2); // arr = [1, 2] medianFinder.findMedian(); // return 1.5 (i.e., (1 + 2) / 2) medianFinder.addNum(3); // arr[1, 2, 3] medianFinder.findMedian(); // return 2.0"
+      }
+    ],
+    "constraints": [
+      "<code>-10<sup>5</sup> &lt;= num &lt;= 10<sup>5</sup></code>",
+      "There will be at least one element in the data structure before calling <code>findMedian</code>.",
+      "At most <code>5 * 10<sup>4</sup></code> calls will be made to <code>addNum</code> and <code>findMedian</code>."
+    ]
+  },
+  "sliding-window-median": {
+    "lc": 480,
+    "title": "Sliding Window Median",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Hash Table",
+      "Sliding Window",
+      "Heap (Priority Queue)",
+      "Treap"
+    ],
+    "statement": [
+      "The <strong>median</strong> is the middle value in an ordered integer list. If the size of the list is even, there is no middle value. So the median is the mean of the two middle values.",
+      "<ul>\n <li>For examples, if <code>arr = [2,<u>3</u>,4]</code>, the median is <code>3</code>.</li>\n <li>For examples, if <code>arr = [1,<u>2,3</u>,4]</code>, the median is <code>(2 + 3) / 2 = 2.5</code>.</li>\n</ul>\n\nYou are given an integer array <code>nums</code> and an integer <code>k</code>. There is a sliding window of size <code>k</code> which is moving from the very left of the array to the very right. You can only see the <code>k</code> numbers in the window. Each time the sliding window moves right by one position.",
+      "Return <em>the median array for each window in the original array</em>. Answers within <code>10<sup>-5</sup></code> of the actual value will be accepted."
+    ],
+    "examples": [
+      {
+        "input": "nums = [1,3,-1,-3,5,3,6,7], k = 3 Output: [1.00000,-1.00000,-1.00000,3.00000,5.00000,6.00000]",
+        "output": "[1.00000,-1.00000,-1.00000,3.00000,5.00000,6.00000]",
+        "explanation": "Window position Median --------------- ----- [1 3 -1] -3 5 3 6 7 1 1 [3 -1 -3] 5 3 6 7 -1 1 3 [-1 -3 5] 3 6 7 -1 1 3 -1 [-3 5 3] 6 7 3 1 3 -1 -3 [5 3 6] 7 5 1 3 -1 -3 5 [3 6 7] 6"
+      },
+      {
+        "input": "nums = [1,2,3,4,2,3,1,4,2], k = 3 Output: [2.00000,3.00000,3.00000,3.00000,2.00000,3.00000,2.00000]",
+        "output": "[2.00000,3.00000,3.00000,3.00000,2.00000,3.00000,2.00000]"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= k &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+      "<code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code>"
+    ]
+  }
+}

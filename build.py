@@ -113,9 +113,12 @@ def build_dsa() -> int:
     """Execute every DSA solution against its tests and emit dsa-data.js."""
     import dsa as content
 
+    cache_path = ROOT / "content" / "leetcode.json"
+    cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {}
+
     topics, total, checked = [], 0, 0
     for topic in content.TOPICS:
-        sections = []
+        sections, flat = [], []
         for section in topic.get("sections", []):
             problems = []
             for prob in section["problems"]:
@@ -124,11 +127,31 @@ def build_dsa() -> int:
                 if not prob.get("tests"):
                     raise SystemExit(f"{prob['id']}: no tests, so nothing is verified")
 
+                # --- LeetCode metadata, fetched once by fetch_leetcode.py
+                meta, slug = {}, prob.get("slug")
+                if slug:
+                    if slug not in cache:
+                        raise SystemExit(
+                            f"{prob['id']}: {slug!r} missing from content/leetcode.json "
+                            f"- run: python3 fetch_leetcode.py")
+                    meta = cache[slug]
+                    if meta["lc"] != prob["lc"]:
+                        raise SystemExit(
+                            f"{prob['id']}: lc={prob['lc']} but LeetCode says "
+                            f"{meta['lc']} for {slug!r}")
+                    if meta["difficulty"] != prob["difficulty"]:
+                        raise SystemExit(
+                            f"{prob['id']}: difficulty={prob['difficulty']!r} but "
+                            f"LeetCode says {meta['difficulty']!r}")
+
                 approaches = []
+                head = content.PRELUDE + "\n\n" + topic.get("prelude", "")
                 for ap in prob["approaches"]:
-                    src = content.PRELUDE + "\n\n" + ap["code"] + "\n\n" + prob["tests"] + "\n"
-                    slug = f"{prob['id'].replace('-', '_')}__{ap['name'].split(',')[0].strip().lower().replace(' ', '_')}"
-                    out, raised = run_snippet(slug, src)
+                    src = head + "\n\n" + ap["code"] + "\n\n" + prob["tests"] + "\n"
+                    safe = re.sub(r"[^a-z0-9]+", "_",
+                                  ap["name"].lower()).strip("_")[:40]
+                    case = f"{prob['id'].replace('-', '_')}__{safe}"
+                    out, raised = run_snippet(case, src)
                     if raised:
                         raise SystemExit(
                             f"\nDSA check failed: {prob['name']} / {ap['name']}\n{out}")
@@ -144,39 +167,50 @@ def build_dsa() -> int:
                     })
 
                 total += 1
-                problems.append({
+                built = {
                     "id": prob["id"],
                     "num": total,
-                    "lc": prob["lc"],
-                    "slug": prob["slug"],
-                    "url": f"https://leetcode.com/problems/{prob['slug']}/",
+                    "lc": prob.get("lc"),
+                    "slug": slug or "",
+                    "url": f"https://leetcode.com/problems/{slug}/" if slug else "",
+                    "premium": bool(meta.get("premium")),
                     "name": prob["name"],
                     "difficulty": prob["difficulty"],
-                    "framing": prob["framing"],
+                    "tags": prob.get("tags") or meta.get("tags", []),
+                    "statement": prob.get("statement") or meta.get("statement", []),
+                    "examples": prob.get("examples") or meta.get("examples", []),
+                    "constraints": prob.get("constraints") or meta.get("constraints", []),
+                    "note": prob.get("note", ""),
                     "pitfall": prob.get("pitfall", ""),
                     "approaches": approaches,
                     "tests": prob["tests"].rstrip("\n"),
                     "topic": topic["id"],
                     "topicTitle": topic["title"],
-                    "section": section["id"],
-                    "sectionTitle": section["title"],
-                })
+                }
+                expect = f"https://leetcode.com/problems/{slug}/" if slug else ""
+                if built["url"] != expect:
+                    raise SystemExit(
+                        f"{prob['id']}: url {built['url']!r} does not match "
+                        f"slug {slug!r}")
+                if not built["statement"]:
+                    raise SystemExit(
+                        f"{prob['id']}: no statement. Premium or non-LeetCode "
+                        f"problems must supply their own `statement=[...]`.")
+                problems.append(built)
+                flat.append(built)
             sections.append({
                 "id": section["id"],
                 "title": section["title"],
-                "idea": section["idea"],
                 "problems": problems,
             })
         topics.append({
             "id": topic["id"],
             "title": topic["title"],
-            "subtitle": topic["subtitle"],
-            "blurb": topic.get("blurb", []),
-            "convention": topic.get("convention", []),
             "status": topic.get("status", "ready"),
             "target": topic.get("target"),
             "sections": sections,
-            "count": sum(len(s["problems"]) for s in sections),
+            "problems": flat,
+            "count": len(flat),
         })
 
     body = json.dumps(topics, indent=2, ensure_ascii=False)

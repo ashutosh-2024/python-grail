@@ -10,7 +10,7 @@
     return n + " " + word + (n === 1 ? "" : "s");
   }
 
-  /* ---------- topic index: same card as Browse ---------- */
+  /* ---------- topic index ---------- */
   function topicIndex() {
     document.title = "DSA — python-grail";
 
@@ -26,61 +26,44 @@
         '<span class="num">' + String(i + 1).padStart(2, "0") + "</span>" +
         '<span class="body">' +
           '<span class="title">' + esc(t.title) + "</span>" +
-          (ready ? "<br><span class=\"subtitle\">" + esc(t.subtitle) + "</span>" : "") +
         "</span>" +
         right +
       "</a>";
     }).join("") + "</div>";
   }
 
-  /* ---------- one topic ---------- */
+  /* ---------- one topic: straight to the problems ---------- */
   function topicPage(t) {
     document.title = t.title + " — DSA — python-grail";
 
     var head =
       '<p class="crumb-line"><a href="dsa.html">DSA</a> / ' + esc(t.title) + "</p>" +
-      '<h2 class="topic-title">' + esc(t.title) + "</h2>" +
-      '<p class="section-sub topic-sub">' + esc(t.subtitle) + "</p>";
+      '<h2 class="topic-title">' + esc(t.title) + "</h2>";
 
-    if (!t.sections.length) {
+    if (!t.problems.length) {
       root.innerHTML = head +
         '<div class="stub-note"><p>Not written up yet.</p>' +
         '<p><a href="dsa.html">&larr; Back to topics</a></p></div>';
       return;
     }
 
-    var convention = (t.convention || []).length
-      ? '<div class="dsa-callout">' +
-          t.convention.map(function (p) { return "<p>" + p + "</p>"; }).join("") +
-        "</div>"
-      : "";
-
-    var sections = t.sections.map(function (s, i) {
-      var rows = s.problems.map(function (p) {
-        return '<a class="entry-card" href="problem.html?id=' +
-          encodeURIComponent(p.id) + '">' +
-          '<span class="num">' + p.lc + "</span>" +
-          '<span class="body">' +
-            '<span class="title">' + esc(p.name) + "</span><br>" +
-            '<span class="subtitle">' + plural(p.approaches.length, "approach")
-              .replace("approachs", "approaches") + "</span>" +
+    var rows = t.problems.map(function (p) {
+      return '<a class="entry-card" href="problem.html?id=' +
+        encodeURIComponent(p.id) + '">' +
+        '<span class="num">' + (p.lc || "—") + "</span>" +
+        '<span class="body">' +
+          '<span class="title">' + esc(p.name) + "</span>" +
+          '<span class="tags">' +
+            p.tags.slice(0, 4).map(function (tag) {
+              return '<span class="tag">' + esc(tag) + "</span>";
+            }).join("") +
           "</span>" +
-          '<span class="badge ' + p.difficulty + '">' + p.difficulty + "</span>" +
-        "</a>";
-      }).join("");
-
-      return '<section class="dsa-section">' +
-        '<div class="dsa-section-head"><span class="idx">' +
-          String(i + 1).padStart(2, "0") + "</span>" +
-          "<h2>" + esc(s.title) + "</h2></div>" +
-        '<div class="dsa-idea">' +
-          s.idea.map(function (p) { return "<p>" + p + "</p>"; }).join("") +
-        "</div>" +
-        '<div class="entry-list">' + rows + "</div>" +
-      "</section>";
+        "</span>" +
+        '<span class="badge ' + p.difficulty + '">' + p.difficulty + "</span>" +
+      "</a>";
     }).join("");
 
-    root.innerHTML = head + convention + sections;
+    root.innerHTML = head + '<div class="entry-list">' + rows + "</div>";
   }
 
   var topic = wanted && topics.filter(function (t) { return t.id === wanted; })[0];
