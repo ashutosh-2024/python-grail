@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>python-grail &mdash; read the code, guess the output, get it wrong</title>
+<meta name="description" content="Short Python programs that do not do what you think they do. Read the code, guess the output, then find out why you were wrong.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <span class="snake">&#128013;</span>
+      <span>python<span class="accent">-grail</span></span>
+    </a>
+    <nav class="nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="browse.html">Browse</a>
+      <a class="gh" data-repo-link href="#" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <div class="hero">
+    <div class="wrap">
+      <h1>The Python <span class="accent">Grail</span></h1>
+      <p class="tagline">Read the code. Guess the output. Get it wrong.</p>
+      <p class="lede">
+        A growing collection of short Python programs that do not behave the way
+        the code reads. Each entry gives you a snippet, hides the answer behind a
+        click, then explains exactly which rule of the language you tripped over.
+        Every snippet here was actually run before it was written up.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="browse.html">Browse all entries</a>
+        <a class="btn" href="#start-here">Start here</a>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section-title">By the numbers</h2>
+      <p class="section-sub">Small on purpose. Entries get added as they earn their place.</p>
+      <div class="stats" id="stats"></div>
+    </div>
+  </section>
+
+  <section id="start-here">
+    <div class="wrap">
+      <h2 class="section-title">Start here</h2>
+      <p class="section-sub">Three snippets that catch most Python developers at least once.</p>
+      <div class="entry-list" id="featured"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2 class="section-title">How to use this</h2>
+      <p>
+        Open an entry and read the snippet <em>before</em> you expand the output.
+        Commit to an answer out loud &mdash; the whole value is in the gap between
+        what you predicted and what CPython actually did. If the two match, you
+        already own that rule and you can move on in ten seconds.
+      </p>
+      <p>
+        Each entry closes with a <strong>fix</strong> section showing the version
+        you would want in real code, and links into the language reference so you
+        can confirm the behaviour is specified rather than accidental.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="note">Every snippet was run before it was written up.</p>
+    <p>Outputs from CPython 3.12+ &middot; &copy; <span data-year></span> &middot;
+       <a data-repo-link href="#" target="_blank" rel="noopener">source on GitHub</a></p>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/home.js"></script>
+</body>
+</html>
