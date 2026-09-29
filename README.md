@@ -76,15 +76,49 @@ Push to `main`, then **Settings → Pages → Deploy from a branch → `main` / 
 `.nojekyll` stops GitHub running the files through Jekyll. Every later push
 redeploys.
 
+## The DSA section
+
+[`content/dsa.py`](content/dsa.py) holds a separate study path: interview
+problems grouped by topic, ordered so each one teaches the next, with every
+worthwhile approach's time and auxiliary space cost and the reason it holds.
+
+The same rule applies. Each approach's code is executed with a shared prelude
+(`TreeNode`, `build`, `level_order`) and the problem's `tests` appended; a
+failing assertion fails the build. Currently **18 problems, 40 solutions** under
+Binary Trees, with Heaps reserved as a stub.
+
+Structure is topic → section → problem → approaches:
+
+| field | notes |
+| --- | --- |
+| `topic` | `id`, `title`, `subtitle`, `blurb`, `convention`, `sections`, `status` |
+| `section` | `id`, `title`, `idea` (paragraphs teaching the pattern) |
+| `problem` | `id`, `lc`, `slug`, `name`, `difficulty`, `framing`, `pitfall`, `tests` |
+| `approach` | `name`, `time`, `space`, `why` (paragraphs), `code`, `best`, `tag` |
+
+`slug` is the LeetCode URL slug — the link is built from it, so it must be the
+real slug and not the problem number. Exactly one approach per problem should
+carry `best=True`; it renders as "pick this".
+
+Set `status="stub"` with `sections=[]` for a topic that is reserved but not
+written, rather than shipping half a lesson.
+
+The LeetCode mark in `assets/js/problem.js` is a hand-drawn approximation, not
+the official asset. Swap it if you want it exact.
+
 ## Layout
 
 ```
-index.html          home — stats and six featured entries
+index.html          home — stats, six featured entries, DSA teaser
 browse.html         search + difficulty chips + topic dropdown
 entry.html          single entry, rendered client-side from ?id=
-build.py            runs every snippet, generates data.js, fails loudly
-content/entries.py  all content, the only file you edit
+dsa.html            DSA topic index, or one topic via ?topic=
+problem.html        single DSA problem via ?id=
+build.py            runs every snippet AND every DSA solution; fails loudly
+content/entries.py  the 103 gotcha entries
+content/dsa.py      the DSA study path
 assets/js/app.js    shared helpers + a hand-rolled Python highlighter
-assets/js/data.js   GENERATED — do not edit
+assets/js/data.js       GENERATED — do not edit
+assets/js/dsa-data.js   GENERATED — do not edit
 assets/css/         one stylesheet
 ```

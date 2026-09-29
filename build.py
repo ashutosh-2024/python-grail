@@ -19,6 +19,7 @@ import tempfile
 
 ROOT = pathlib.Path(__file__).parent
 OUT = ROOT / "assets" / "js" / "data.js"
+OUT_DSA = ROOT / "assets" / "js" / "dsa-data.js"
 
 TIMEOUT = 15
 ENV = {
@@ -104,6 +105,92 @@ def validate(built: list) -> None:
         raise SystemExit("validation failed:\n  " + "\n  ".join(problems))
 
 
+DIFFS = {"easy", "medium", "hard"}
+
+
+def build_dsa() -> int:
+    """Execute every DSA solution against its tests and emit dsa-data.js."""
+    import dsa as content
+
+    topics, total, checked = [], 0, 0
+    for topic in content.TOPICS:
+        sections = []
+        for section in topic.get("sections", []):
+            problems = []
+            for prob in section["problems"]:
+                if prob["difficulty"] not in DIFFS:
+                    raise SystemExit(f"{prob['id']}: bad difficulty {prob['difficulty']!r}")
+                if not prob.get("tests"):
+                    raise SystemExit(f"{prob['id']}: no tests, so nothing is verified")
+
+                approaches = []
+                for ap in prob["approaches"]:
+                    src = content.PRELUDE + "\n\n" + ap["code"] + "\n\n" + prob["tests"] + "\n"
+                    slug = f"{prob['id'].replace('-', '_')}__{ap['name'].split(',')[0].strip().lower().replace(' ', '_')}"
+                    out, raised = run_snippet(slug, src)
+                    if raised:
+                        raise SystemExit(
+                            f"\nDSA check failed: {prob['name']} / {ap['name']}\n{out}")
+                    checked += 1
+                    approaches.append({
+                        "name": ap["name"],
+                        "time": ap["time"],
+                        "space": ap["space"],
+                        "why": ap["why"],
+                        "code": ap["code"].rstrip("\n"),
+                        "best": bool(ap.get("best")),
+                        "tag": ap.get("tag", ""),
+                    })
+
+                total += 1
+                problems.append({
+                    "id": prob["id"],
+                    "num": total,
+                    "lc": prob["lc"],
+                    "slug": prob["slug"],
+                    "url": f"https://leetcode.com/problems/{prob['slug']}/",
+                    "name": prob["name"],
+                    "difficulty": prob["difficulty"],
+                    "framing": prob["framing"],
+                    "pitfall": prob.get("pitfall", ""),
+                    "approaches": approaches,
+                    "tests": prob["tests"].rstrip("\n"),
+                    "topic": topic["id"],
+                    "topicTitle": topic["title"],
+                    "section": section["id"],
+                    "sectionTitle": section["title"],
+                })
+            sections.append({
+                "id": section["id"],
+                "title": section["title"],
+                "idea": section["idea"],
+                "problems": problems,
+            })
+        topics.append({
+            "id": topic["id"],
+            "title": topic["title"],
+            "subtitle": topic["subtitle"],
+            "blurb": topic.get("blurb", []),
+            "convention": topic.get("convention", []),
+            "status": topic.get("status", "ready"),
+            "target": topic.get("target"),
+            "sections": sections,
+            "count": sum(len(s["problems"]) for s in sections),
+        })
+
+    body = json.dumps(topics, indent=2, ensure_ascii=False)
+    OUT_DSA.write_text(
+        "/* GENERATED FILE - do not edit by hand.\n"
+        "   Source: content/dsa.py   Build: python3 build.py\n"
+        "   Every solution below was executed against the problem's tests. */\n\n"
+        f"window.GRAIL_PRELUDE = {json.dumps(content.PRELUDE.rstrip(), ensure_ascii=False)};\n"
+        f"window.GRAIL_DSA = {body};\n",
+        encoding="utf-8")
+    print(f"built {len(topics)} DSA topics, {total} problems, "
+          f"{checked} solutions executed -> {OUT_DSA.relative_to(ROOT)}")
+    return total
+
+
 def main() -> None:
     sys.path.insert(0, str(ROOT / "content"))
     import entries as content  # noqa
@@ -171,6 +258,8 @@ def main() -> None:
         by[e["difficulty"]] = by.get(e["difficulty"], 0) + 1
     print(f"built {len(built)} entries on CPython {ver} -> {OUT.relative_to(ROOT)}")
     print("  " + "  ".join(f"{k}={v}" for k, v in sorted(by.items())))
+
+    build_dsa()
 
 
 if __name__ == "__main__":

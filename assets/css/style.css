@@ -522,3 +522,273 @@ details.reveal[open] > summary { border-bottom: var(--bw) solid var(--line); }
   .filter-group select { min-width: 0; width: 100%; }
   .filters { gap: 12px; }
 }
+
+/* ================= DSA section ================= */
+:root {
+  --easy:   #4ade80;
+  --medium: #ffd43b;
+  --hard:   #f87171;
+  --lc:     #ffa116;
+}
+
+.dsa-intro {
+  color: var(--text-dim);
+  max-width: 68ch;
+  margin-bottom: 26px;
+}
+
+/* ---- topic cards ---- */
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.topic-card {
+  display: block;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  color: var(--text);
+  transition: border-color .12s ease, transform .12s ease;
+}
+.topic-card:hover {
+  text-decoration: none;
+  border-color: var(--py-blue);
+  transform: translateY(-2px);
+}
+.topic-card.stub { opacity: .62; }
+.topic-card.stub:hover { border-color: var(--border); transform: none; }
+.topic-card h3 { font-size: 1.15rem; letter-spacing: -0.02em; margin-bottom: 4px; }
+.topic-card .subtitle {
+  font-family: var(--mono);
+  font-size: 0.84rem;
+  color: var(--text-faint);
+  display: block;
+  margin-bottom: 14px;
+}
+.topic-card .meta {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 0.8rem; color: var(--text-faint);
+}
+.topic-card .big {
+  font-family: var(--mono);
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--py-yellow);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* ---- convention callout ---- */
+.dsa-callout {
+  border-left: 3px solid var(--py-blue);
+  background: var(--bg-raised);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 14px 18px;
+  margin: 0 0 30px;
+  color: var(--text-dim);
+  font-size: 0.93rem;
+}
+.dsa-callout p { margin: 0 0 8px; }
+.dsa-callout p:last-child { margin: 0; }
+
+/* ---- sections within a topic ---- */
+.dsa-section { margin-bottom: 40px; }
+.dsa-section-head {
+  display: flex; gap: 14px; align-items: baseline;
+  margin-bottom: 12px;
+}
+.dsa-section-head .idx {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--py-yellow);
+  font-weight: 700;
+  padding-top: 4px;
+}
+.dsa-section-head h2 {
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+.dsa-idea {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  max-width: 74ch;
+  margin-left: 32px;
+  margin-bottom: 18px;
+}
+.dsa-idea p { margin: 0 0 10px; }
+.dsa-idea p:last-child { margin: 0; }
+
+/* ---- problem rows ---- */
+.prob-list { display: flex; flex-direction: column; gap: 8px; margin-left: 32px; }
+.prob-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px 16px;
+  color: var(--text);
+  transition: border-color .12s ease, transform .12s ease;
+}
+.prob-card:hover {
+  text-decoration: none;
+  border-color: var(--py-blue);
+  transform: translateX(2px);
+}
+.prob-card .lc-num {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--text-faint);
+  min-width: 34px;
+  font-variant-numeric: tabular-nums;
+}
+.prob-card .name { flex: 1; font-weight: 550; font-size: 0.99rem; }
+.prob-card .n-approaches {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+.badge.easy   { color: var(--easy); }
+.badge.medium { color: var(--medium); }
+.badge.hard   { color: var(--hard); }
+
+/* ---- leetcode link ---- */
+.lc-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 13px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.lc-link:hover {
+  text-decoration: none;
+  border-color: var(--lc);
+  color: var(--lc);
+  background: rgba(255, 161, 22, 0.07);
+}
+.lc-link svg { flex-shrink: 0; display: block; }
+.lc-mark { width: 15px; height: 15px; }
+
+/* ---- problem page ---- */
+.prob-head { padding: 40px 0 6px; }
+.prob-head .meta {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.prob-head .crumb {
+  font-family: var(--mono); font-size: 0.82rem; color: var(--text-faint);
+}
+.prob-head .crumb a { color: var(--text-faint); }
+.prob-head .crumb a:hover { color: var(--py-blue-lt); }
+.prob-head h1 { font-size: clamp(1.5rem, 4vw, 2rem); letter-spacing: -0.025em; }
+.prob-head .actions { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+.framing { color: var(--text-dim); max-width: 72ch; }
+
+/* ---- complexity summary table ---- */
+.cx-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin: 8px 0 30px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.cx-table th, .cx-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.cx-table th {
+  background: var(--bg-raised);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  font-weight: 600;
+}
+.cx-table tr:last-child td { border-bottom: 0; }
+.cx-table td:first-child { font-weight: 550; }
+.cx-table .cx { font-family: var(--mono); font-size: 0.86rem; color: var(--py-blue-lt); }
+.cx-table tr.is-best td:first-child::after {
+  content: " ★";
+  color: var(--py-yellow);
+}
+
+/* ---- one approach ---- */
+.approach {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px 4px;
+  margin-bottom: 16px;
+  background: var(--bg-raised);
+}
+.approach.is-best { border-color: rgba(255, 212, 59, 0.42); }
+.approach-head {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.approach-head h3 { font-size: 1.04rem; letter-spacing: -0.015em; }
+.approach-head .pill {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 9px;
+  color: var(--text-faint);
+}
+.approach-head .pill.star { color: var(--py-yellow); border-color: var(--py-yellow); }
+.cx-inline {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 0.85rem;
+  margin-bottom: 14px;
+}
+.cx-inline b {
+  color: var(--text-faint);
+  font-weight: 500;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-right: 6px;
+}
+.cx-inline span { color: var(--py-yellow); }
+.approach .why { color: var(--text-dim); font-size: 0.94rem; }
+.approach .why p { margin: 0 0 10px; }
+.approach pre.code { margin-bottom: 18px; }
+
+.pitfall {
+  border-left: 3px solid var(--hard);
+  background: var(--bg-raised);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 13px 17px;
+  margin: 0 0 26px;
+  color: var(--text-dim);
+  font-size: 0.93rem;
+}
+.pitfall strong { color: var(--hard); }
+
+.stub-note {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  color: var(--text-dim);
+  background: var(--bg-raised);
+}
+.stub-note p:last-child { margin: 0; }
+
+@media (max-width: 620px) {
+  .dsa-idea, .prob-list { margin-left: 0; }
+  .prob-card { flex-wrap: wrap; gap: 8px; }
+  .prob-card .name { flex-basis: 100%; order: 2; }
+  .cx-table { display: block; overflow-x: auto; }
+}

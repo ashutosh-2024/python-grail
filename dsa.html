@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Entry &mdash; python-grail</title>
+<title>DSA &mdash; python-grail</title>
+<meta name="description" content="A guided data structures and algorithms path. Every solution is executed against assertions by the build.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,8 +20,8 @@
     </a>
     <nav class="nav">
       <a href="index.html">Home</a>
-      <a href="browse.html" class="active">Browse</a>
-      <a href="dsa.html">DSA</a>
+      <a href="browse.html">Browse</a>
+      <a href="dsa.html" class="active">DSA</a>
       <a class="gh" data-repo-link href="#" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </div>
@@ -28,13 +29,20 @@
 
 <main>
   <div class="wrap">
-    <div id="entry"></div>
+    <div class="entry-head">
+      <h1>DSA</h1>
+      <p class="subtitle">learn the pattern, then solve the problem</p>
+    </div>
+
+    <div class="entry-body">
+      <div id="dsa"></div>
+    </div>
   </div>
 </main>
 
 <footer class="site-footer">
   <div class="wrap">
-    <p class="note">Every snippet was executed before it was written up. The outputs are captured from those runs.</p>
+    <p class="note">Every solution was executed against its assertions before it was written up.</p>
     <p>Built and verified on CPython <span data-python></span> &middot;
        <span data-count></span> entries &middot;
        &copy; <span data-year></span> &middot;
@@ -43,7 +51,8 @@
 </footer>
 
 <script src="assets/js/data.js"></script>
+<script src="assets/js/dsa-data.js"></script>
 <script src="assets/js/app.js"></script>
-<script src="assets/js/entry.js"></script>
+<script src="assets/js/dsa.js"></script>
 </body>
 </html>
