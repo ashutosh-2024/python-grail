@@ -531,55 +531,22 @@ details.reveal[open] > summary { border-bottom: var(--bw) solid var(--line); }
   --lc:     #ffa116;
 }
 
-.dsa-intro {
-  color: var(--text-dim);
-  max-width: 68ch;
-  margin-bottom: 26px;
-}
+/* Topic and problem rows reuse .entry-card from Browse. Only the two
+   extra badge variants are new. */
+.badge.count   { color: var(--py-blue-lt); }
+.badge.planned { color: var(--text-faint); }
 
-/* ---- topic cards ---- */
-.topic-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 12px;
-  margin-bottom: 8px;
-}
-.topic-card {
-  display: block;
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px 22px;
-  color: var(--text);
-  transition: border-color .12s ease, transform .12s ease;
-}
-.topic-card:hover {
-  text-decoration: none;
-  border-color: var(--py-blue);
-  transform: translateY(-2px);
-}
-.topic-card.stub { opacity: .62; }
-.topic-card.stub:hover { border-color: var(--border); transform: none; }
-.topic-card h3 { font-size: 1.15rem; letter-spacing: -0.02em; margin-bottom: 4px; }
-.topic-card .subtitle {
+/* ---- topic page heading ---- */
+.crumb-line {
   font-family: var(--mono);
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   color: var(--text-faint);
-  display: block;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
-.topic-card .meta {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  font-family: var(--mono); font-size: 0.8rem; color: var(--text-faint);
-}
-.topic-card .big {
-  font-family: var(--mono);
-  font-size: 1.7rem;
-  font-weight: 700;
-  color: var(--py-yellow);
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
+.crumb-line a { color: var(--text-faint); }
+.crumb-line a:hover { color: var(--py-blue-lt); }
+.topic-title { font-size: 1.5rem; letter-spacing: -0.025em; margin-bottom: 6px; }
+.topic-sub { margin-bottom: 22px; }
 
 /* ---- convention callout ---- */
 .dsa-callout {
@@ -622,35 +589,7 @@ details.reveal[open] > summary { border-bottom: var(--bw) solid var(--line); }
 .dsa-idea p:last-child { margin: 0; }
 
 /* ---- problem rows ---- */
-.prob-list { display: flex; flex-direction: column; gap: 8px; margin-left: 32px; }
-.prob-card {
-  display: flex; align-items: center; gap: 14px;
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 13px 16px;
-  color: var(--text);
-  transition: border-color .12s ease, transform .12s ease;
-}
-.prob-card:hover {
-  text-decoration: none;
-  border-color: var(--py-blue);
-  transform: translateX(2px);
-}
-.prob-card .lc-num {
-  font-family: var(--mono);
-  font-size: 0.82rem;
-  color: var(--text-faint);
-  min-width: 34px;
-  font-variant-numeric: tabular-nums;
-}
-.prob-card .name { flex: 1; font-weight: 550; font-size: 0.99rem; }
-.prob-card .n-approaches {
-  font-family: var(--mono);
-  font-size: 0.76rem;
-  color: var(--text-faint);
-  white-space: nowrap;
-}
+.dsa-section .entry-list { margin-left: 32px; }
 
 .badge.easy   { color: var(--easy); }
 .badge.medium { color: var(--medium); }
@@ -787,8 +726,6 @@ details.reveal[open] > summary { border-bottom: var(--bw) solid var(--line); }
 .stub-note p:last-child { margin: 0; }
 
 @media (max-width: 620px) {
-  .dsa-idea, .prob-list { margin-left: 0; }
-  .prob-card { flex-wrap: wrap; gap: 8px; }
-  .prob-card .name { flex-basis: 100%; order: 2; }
+  .dsa-idea, .dsa-section .entry-list { margin-left: 0; }
   .cx-table { display: block; overflow-x: auto; }
 }

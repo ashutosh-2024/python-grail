@@ -9,6 +9,7 @@ promises that what it shows you actually happened.
 from __future__ import annotations
 
 import doctest
+import hashlib
 import json
 import re
 import os
@@ -191,6 +192,23 @@ def build_dsa() -> int:
     return total
 
 
+def stamp_assets() -> str:
+    """Append a content hash to the stylesheet link so browsers cannot serve
+    a stale style.css after a rebuild."""
+    css = ROOT / "assets" / "css" / "style.css"
+    digest = hashlib.sha256(css.read_bytes()).hexdigest()[:8]
+    pattern = re.compile(r'(href="assets/css/style\.css)(\?v=[0-9a-f]+)?(")')
+    touched = 0
+    for page in sorted(ROOT.glob("*.html")):
+        text = page.read_text(encoding="utf-8")
+        new = pattern.sub(rf'\1?v={digest}\3', text)
+        if new != text:
+            page.write_text(new, encoding="utf-8")
+            touched += 1
+    print(f"stamped style.css?v={digest} into {touched} page(s)")
+    return digest
+
+
 def main() -> None:
     sys.path.insert(0, str(ROOT / "content"))
     import entries as content  # noqa
@@ -260,6 +278,7 @@ def main() -> None:
     print("  " + "  ".join(f"{k}={v}" for k, v in sorted(by.items())))
 
     build_dsa()
+    stamp_assets()
 
 
 if __name__ == "__main__":

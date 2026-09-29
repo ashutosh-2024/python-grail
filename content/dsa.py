@@ -98,7 +98,7 @@ TOPICS = [
 dict(
     id="trees",
     title="Binary Trees",
-    subtitle="eighteen problems, in the order they teach each other",
+    subtitle="in the order they teach each other",
     target=20,
     blurb=[
         "Almost every binary-tree interview question is one of a small number of shapes wearing different clothes. This path works through those shapes in the order that each one makes the next one easier &mdash; not in difficulty order, and not in the order LeetCode numbers them.",

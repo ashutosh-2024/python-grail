@@ -10,49 +10,27 @@
     return n + " " + word + (n === 1 ? "" : "s");
   }
 
-  /* ---------- topic index ---------- */
+  /* ---------- topic index: same card as Browse ---------- */
   function topicIndex() {
     document.title = "DSA — python-grail";
 
-    var cards = topics.map(function (t) {
-      var stub = t.status === "stub" || t.count === 0;
-      var href = stub ? "dsa.html?topic=" + encodeURIComponent(t.id)
-                      : "dsa.html?topic=" + encodeURIComponent(t.id);
-      var sections = t.sections.length;
-      return '<a class="topic-card' + (stub ? " stub" : "") + '" href="' + href + '">' +
-        "<h3>" + esc(t.title) + "</h3>" +
-        '<span class="subtitle">' + esc(t.subtitle) + "</span>" +
-        '<div class="meta">' +
-          (stub
-            ? '<span class="badge medium">not yet written</span>'
-            : '<span class="big">' + t.count + "</span>" +
-              "<span>" + (t.target ? t.count + " of " + plural(t.target, "problem")
-                                   : plural(t.count, "problem")) + " &middot; " +
-              plural(sections, "section") + "</span>") +
-        "</div></a>";
-    }).join("");
+    root.innerHTML = '<div class="entry-list">' + topics.map(function (t, i) {
+      var ready = t.count > 0;
+      var right = ready
+        ? '<span class="badge count">' + plural(t.count, "problem") + "</span>"
+        : '<span class="badge planned">' +
+            (t.target ? t.target + " planned" : "planned") + "</span>";
 
-    var ready = topics.filter(function (t) { return t.count > 0; });
-    var problems = ready.reduce(function (a, t) { return a + t.count; }, 0);
-    var solutions = ready.reduce(function (a, t) {
-      return a + t.sections.reduce(function (b, s) {
-        return b + s.problems.reduce(function (c, p) {
-          return c + p.approaches.length;
-        }, 0);
-      }, 0);
-    }, 0);
-
-    root.innerHTML =
-      '<p class="dsa-intro">A topic-by-topic path through the problems that teach each other, ' +
-      'in that order rather than in difficulty order. Every problem lists each worthwhile ' +
-      'approach with its time and auxiliary space cost and the reason that bound holds.</p>' +
-
-      '<div class="dsa-callout"><p>All ' + solutions + ' solutions across ' + problems +
-      ' problems are <strong>executed against assertions by the build</strong>, the same as ' +
-      'every snippet in <a href="browse.html">Browse</a>. A solution that stops passing ' +
-      'fails the build rather than sitting here quietly wrong.</p></div>' +
-
-      '<div class="topic-grid">' + cards + "</div>";
+      return '<a class="entry-card" href="dsa.html?topic=' +
+        encodeURIComponent(t.id) + '">' +
+        '<span class="num">' + String(i + 1).padStart(2, "0") + "</span>" +
+        '<span class="body">' +
+          '<span class="title">' + esc(t.title) + "</span>" +
+          (ready ? "<br><span class=\"subtitle\">" + esc(t.subtitle) + "</span>" : "") +
+        "</span>" +
+        right +
+      "</a>";
+    }).join("") + "</div>";
   }
 
   /* ---------- one topic ---------- */
@@ -60,18 +38,13 @@
     document.title = t.title + " — DSA — python-grail";
 
     var head =
-      '<p class="prob-head crumb" style="padding:0 0 18px">' +
-      '<a href="dsa.html">DSA</a> / ' + esc(t.title) + "</p>" +
-      "<h2 style=\"font-size:1.5rem;letter-spacing:-.025em;margin-bottom:6px\">" +
-      esc(t.title) + "</h2>" +
-      '<p class="section-sub" style="margin-bottom:20px">' + esc(t.subtitle) + "</p>" +
-      (t.blurb || []).map(function (p) {
-        return '<p class="dsa-intro">' + p + "</p>";
-      }).join("");
+      '<p class="crumb-line"><a href="dsa.html">DSA</a> / ' + esc(t.title) + "</p>" +
+      '<h2 class="topic-title">' + esc(t.title) + "</h2>" +
+      '<p class="section-sub topic-sub">' + esc(t.subtitle) + "</p>";
 
     if (!t.sections.length) {
       root.innerHTML = head +
-        '<div class="stub-note"><p><strong>Nothing here yet.</strong></p>' +
+        '<div class="stub-note"><p>Not written up yet.</p>' +
         '<p><a href="dsa.html">&larr; Back to topics</a></p></div>';
       return;
     }
@@ -84,11 +57,14 @@
 
     var sections = t.sections.map(function (s, i) {
       var rows = s.problems.map(function (p) {
-        return '<a class="prob-card" href="problem.html?id=' +
+        return '<a class="entry-card" href="problem.html?id=' +
           encodeURIComponent(p.id) + '">' +
-          '<span class="lc-num">' + p.lc + "</span>" +
-          '<span class="name">' + esc(p.name) + "</span>" +
-          '<span class="n-approaches">' + p.approaches.length + " approaches</span>" +
+          '<span class="num">' + p.lc + "</span>" +
+          '<span class="body">' +
+            '<span class="title">' + esc(p.name) + "</span><br>" +
+            '<span class="subtitle">' + plural(p.approaches.length, "approach")
+              .replace("approachs", "approaches") + "</span>" +
+          "</span>" +
           '<span class="badge ' + p.difficulty + '">' + p.difficulty + "</span>" +
         "</a>";
       }).join("");
@@ -100,7 +76,7 @@
         '<div class="dsa-idea">' +
           s.idea.map(function (p) { return "<p>" + p + "</p>"; }).join("") +
         "</div>" +
-        '<div class="prob-list">' + rows + "</div>" +
+        '<div class="entry-list">' + rows + "</div>" +
       "</section>";
     }).join("");
 
