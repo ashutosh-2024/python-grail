@@ -25,9 +25,10 @@
            '<pre class="code"><code>' + hl(src) + "</code></pre>";
   }
 
-  function outputBlock(src) {
-    var isErr = /^Traceback/m.test(src);
-    return '<p class="code-label">' + (isErr ? "stderr" : "stdout") + "</p>" +
+  function outputBlock(src, isErr) {
+    return '<p class="code-label">' +
+             (isErr ? "output (ends in a traceback)" : "output") +
+           "</p>" +
            '<pre class="code output' + (isErr ? " error" : "") + '"><code>' +
            esc(src) + "</code></pre>";
   }
@@ -52,12 +53,13 @@
 
   /* ---- the snippet ---- */
   html += '<p class="question-line">' + esc(e.question) + "</p>";
+
   html += codeBlock(e.code);
 
   /* ---- hidden answer ---- */
   html +=
     '<details class="reveal"><summary>Reveal the output</summary>' +
-      '<div class="reveal-inner">' + outputBlock(e.output) + "</div>" +
+      '<div class="reveal-inner">' + outputBlock(e.output, e.isError) + "</div>" +
     "</details>";
 
   if (e.guesses && e.guesses.length) {
@@ -75,6 +77,11 @@
     html += "<h2>The fix</h2>";
     if (e.fixNote) html += "<p>" + e.fixNote + "</p>";
     html += codeBlock(e.fixCode);
+  }
+
+  /* ---- caveat ---- */
+  if (e.caveat) {
+    html += '<div class="caveat"><strong>Not a guarantee.</strong> ' + e.caveat + "</div>";
   }
 
   /* ---- takeaway ---- */

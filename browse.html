@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Browse &mdash; python-grail</title>
 <meta name="description" content="Browse every python-grail entry by difficulty, topic or keyword.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -37,14 +40,20 @@
           <input type="search" id="q" placeholder="title, topic, or anything in the code&hellip;" autocomplete="off">
         </div>
         <div class="filter-group">
-          <label>Difficulty</label>
-          <div class="chips" id="difficulty-chips"></div>
+          <label for="tag-select">Topic</label>
+          <select id="tag-select"></select>
         </div>
       </div>
 
-      <div class="filter-group" style="margin-bottom:22px">
-        <label>Topic</label>
-        <div class="chips" id="tag-chips"></div>
+      <div class="filters">
+        <div class="filter-group">
+          <label>Difficulty</label>
+          <div class="chips" id="difficulty-chips"></div>
+        </div>
+        <div class="filter-group">
+          <label>&nbsp;</label>
+          <button class="chip" type="button" id="reset">Reset</button>
+        </div>
       </div>
 
       <p class="result-count" id="count"></p>
@@ -55,8 +64,10 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    <p class="note">Every snippet was run before it was written up.</p>
-    <p>Outputs from CPython 3.12+ &middot; &copy; <span data-year></span> &middot;
+    <p class="note">Every snippet was executed before it was written up. The outputs are captured from those runs.</p>
+    <p>Built and verified on CPython <span data-python></span> &middot;
+       <span data-count></span> entries &middot;
+       &copy; <span data-year></span> &middot;
        <a data-repo-link href="#" target="_blank" rel="noopener">source on GitHub</a></p>
   </div>
 </footer>
