@@ -128,22 +128,54 @@
     "</tbody></table>";
 
   /* ---------- each approach ---------- */
-  html += "<h2>Solutions</h2>";
-  html += p.approaches.map(function (a) {
-    return '<div class="approach' + (a.best ? " is-best" : "") + '">' +
-      '<div class="approach-head"><h3>' + esc(a.name) + "</h3>" +
+  // A DP problem carries a recurrence and is written as a ladder: plain
+  // recursion first, then the recurrence it encodes, then each step that
+  // makes it faster or smaller. Its explanations are short points.
+  var ladder = !!p.recurrence;
+
+  function points(list) {
+    return ladder
+      ? "<ul>" + list.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul>"
+      : list.map(function (t) { return "<p>" + t + "</p>"; }).join("");
+  }
+
+  function recurrenceBlock(r) {
+    return '<div class="recurrence">' +
+      "<h3>The recurrence</h3>" +
+      '<p class="rec-label">State</p>' +
+      '<p class="rec-state">' + r.state + "</p>" +
+      ((r.derive || []).length
+        ? '<p class="rec-label">How to derive it</p><ul>' +
+            r.derive.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul>"
+        : "") +
+      '<p class="rec-label">Recurrence relation</p>' +
+      '<pre class="code rec-formula"><code>' + esc(r.formula) + "</code></pre>" +
+      ((r.notes || []).length
+        ? "<ul>" + r.notes.map(function (t) { return "<li>" + t + "</li>"; }).join("") + "</ul>"
+        : "") +
+    "</div>";
+  }
+
+  html += "<h2>" + (ladder ? "From recursion to optimal" : "Solutions") + "</h2>";
+  html += p.approaches.map(function (a, i) {
+    var card = '<div class="approach' + (a.best ? " is-best" : "") + '">' +
+      '<div class="approach-head">' +
+        (ladder ? '<span class="step-no">Step ' + (i + 1) + "</span>" : "") +
+        "<h3>" + esc(a.name) + "</h3>" +
         (a.best ? '<span class="pill star">pick this</span>' : "") +
         (a.tag ? '<span class="pill">' + esc(a.tag) + "</span>" : "") +
       "</div>" +
+      (a.change
+        ? '<div class="step-change"><b>What changed</b><span>' + a.change + "</span></div>"
+        : "") +
       '<div class="cx-inline">' +
         "<div><b>time</b><span>" + a.time + "</span></div>" +
         "<div><b>aux space</b><span>" + a.space + "</span></div>" +
       "</div>" +
       '<pre class="code"><code>' + hl(a.code) + "</code></pre>" +
-      '<div class="why">' +
-        a.why.map(function (t) { return "<p>" + t + "</p>"; }).join("") +
-      "</div>" +
+      '<div class="why">' + points(a.why) + "</div>" +
     "</div>";
+    return card + (ladder && i === 0 ? recurrenceBlock(p.recurrence) : "");
   }).join("");
 
   /* ---------- the assertions the build ran ---------- */
@@ -152,6 +184,10 @@
       "<summary>What the build checked</summary>" +
       '<div class="reveal-inner">' +
         '<pre class="code"><code>' + hl(p.tests) + "</code></pre>" +
+        (p.smallTests
+          ? "<p>Plain recursion is exponential, so it is checked against this smaller set:</p>" +
+            '<pre class="code"><code>' + hl(p.smallTests) + "</code></pre>"
+          : "") +
       "</div>" +
     "</details>";
 

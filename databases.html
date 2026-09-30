@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Entry &mdash; python-grail</title>
+<title>Databases &mdash; python-grail</title>
+<meta name="description" content="How databases actually work: B+ tree indexes, transactions and MVCC, locking, query execution, WAL, replication, sharding, Redis, columnar storage and caching - with executed examples and interview questions.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,10 +20,10 @@
     </a>
     <nav class="nav">
       <a href="index.html">Home</a>
-      <a href="browse.html" class="active">Browse</a>
+      <a href="browse.html">Browse</a>
       <a href="dsa.html">DSA</a>
       <a href="deepdive.html">Deep Dive</a>
-      <a href="databases.html">Databases</a>
+      <a href="databases.html" class="active">Databases</a>
       <a class="gh" data-repo-link href="#" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </div>
@@ -30,13 +31,19 @@
 
 <main>
   <div class="wrap">
-    <div id="entry"></div>
+    <div class="entry-head">
+      <h1>Databases</h1>
+    </div>
+
+    <div class="entry-body">
+      <div id="deepdive" data-var="GRAIL_DB" data-page="databases.html" data-name="Databases"
+           data-title="Databases" data-caveat="Engine detail"></div>
+    </div>
   </div>
 </main>
 
 <footer class="site-footer">
   <div class="wrap">
-    <p class="note">Every snippet was executed before it was written up. The outputs are captured from those runs.</p>
     <p>Built and verified on CPython <span data-python></span> &middot;
        <span data-count></span> entries &middot;
        &copy; <span data-year></span> &middot;
@@ -45,7 +52,8 @@
 </footer>
 
 <script src="assets/js/data.js?v=7a298b1e"></script>
+<script src="assets/js/databases-data.js?v=aec8fb7a"></script>
 <script src="assets/js/app.js?v=da821523"></script>
-<script src="assets/js/entry.js?v=778639cb"></script>
+<script src="assets/js/deepdive.js?v=4bd93933"></script>
 </body>
 </html>

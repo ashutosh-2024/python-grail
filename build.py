@@ -22,6 +22,7 @@ ROOT = pathlib.Path(__file__).parent
 OUT = ROOT / "assets" / "js" / "data.js"
 OUT_DSA = ROOT / "assets" / "js" / "dsa-data.js"
 OUT_DEEP = ROOT / "assets" / "js" / "deepdive-data.js"
+OUT_DB = ROOT / "assets" / "js" / "databases-data.js"
 
 TIMEOUT = 15
 ENV = {
@@ -148,7 +149,15 @@ def build_dsa() -> int:
                 approaches = []
                 head = content.PRELUDE + "\n\n" + topic.get("prelude", "")
                 for ap in prob["approaches"]:
-                    src = head + "\n\n" + ap["code"] + "\n\n" + prob["tests"] + "\n"
+                    # Exponential brute force can't run the full tests in time,
+                    # so it is checked against the problem's smaller set.
+                    tests = prob["tests"]
+                    if ap.get("small"):
+                        tests = prob.get("small_tests")
+                        if not tests:
+                            raise SystemExit(
+                                f"{prob['id']} / {ap['name']}: small=True but no small_tests")
+                    src = head + "\n\n" + ap["code"] + "\n\n" + tests + "\n"
                     safe = re.sub(r"[^a-z0-9]+", "_",
                                   ap["name"].lower()).strip("_")[:40]
                     case = f"{prob['id'].replace('-', '_')}__{safe}"
@@ -165,6 +174,7 @@ def build_dsa() -> int:
                         "code": ap["code"].rstrip("\n"),
                         "best": bool(ap.get("best")),
                         "tag": ap.get("tag", ""),
+                        "change": ap.get("change", ""),
                     })
 
                 total += 1
@@ -184,7 +194,9 @@ def build_dsa() -> int:
                     "note": prob.get("note", ""),
                     "pitfall": prob.get("pitfall", ""),
                     "approaches": approaches,
+                    "recurrence": prob.get("recurrence"),
                     "tests": prob["tests"].rstrip("\n"),
+                    "smallTests": prob.get("small_tests", "").rstrip("\n"),
                     "topic": topic["id"],
                     "topicTitle": topic["title"],
                     "section": section["id"],
@@ -197,6 +209,9 @@ def build_dsa() -> int:
                     raise SystemExit(
                         f"{prob['id']}: url {built['url']!r} does not match "
                         f"slug {slug!r}")
+                rec = built["recurrence"]
+                if rec and not (rec.get("state") and rec.get("formula")):
+                    raise SystemExit(f"{prob['id']}: recurrence needs state and formula")
                 if not built["statement"]:
                     raise SystemExit(
                         f"{prob['id']}: no statement. Premium or non-LeetCode "
@@ -239,9 +254,11 @@ DEEP_LEVELS = {"medium", "hard"}
 DEEP_MAX_LINES = 45
 
 
-def build_deepdive() -> int:
-    """Execute every Deep Dive code block and emit deepdive-data.js."""
-    import deepdive as content
+def build_longform(package: str, out: pathlib.Path, var: str, name: str) -> int:
+    """Execute every code block of a long-form section (Deep Dive, Databases)
+    and emit its data file. Both share the schema in content/deepdive/_blocks.py."""
+    import importlib
+    content = importlib.import_module(package)
 
     topics, seen, runs = [], set(), 0
     problems = []
@@ -274,7 +291,7 @@ def build_deepdive() -> int:
 
     for t in content.TOPICS:
         if t["id"] in seen:
-            raise SystemExit(f"duplicate deep-dive id: {t['id']}")
+            raise SystemExit(f"duplicate {name} id: {t['id']}")
         seen.add(t["id"])
         base = t["id"].replace("-", "_")
         sections = []
@@ -295,6 +312,7 @@ def build_deepdive() -> int:
         topics.append({
             "id": t["id"],
             "title": t["title"],
+            "summary": t.get("summary", ""),
             "intro": t["intro"],
             "sections": sections,
             "questions": questions,
@@ -302,18 +320,26 @@ def build_deepdive() -> int:
         })
 
     if problems:
-        raise SystemExit("deep-dive validation failed:\n  " + "\n  ".join(problems))
+        raise SystemExit(f"{name} validation failed:\n  " + "\n  ".join(problems))
 
     body = json.dumps(topics, indent=2, ensure_ascii=False)
-    OUT_DEEP.write_text(
+    out.write_text(
         "/* GENERATED FILE - do not edit by hand.\n"
-        "   Source: content/deepdive/   Build: python3 build.py\n"
+        f"   Source: content/{package}/   Build: python3 build.py\n"
         "   Every code block below was executed and its output captured. */\n\n"
-        f"window.GRAIL_DEEP = {body};\n",
+        f"window.{var} = {body};\n",
         encoding="utf-8")
-    print(f"built {len(topics)} deep-dive topics, {runs} code blocks executed "
-          f"-> {OUT_DEEP.relative_to(ROOT)}")
+    print(f"built {len(topics)} {name} topics, {runs} code blocks executed "
+          f"-> {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}")
     return len(topics)
+
+
+def build_deepdive() -> int:
+    return build_longform("deepdive", OUT_DEEP, "GRAIL_DEEP", "deep-dive")
+
+
+def build_databases() -> int:
+    return build_longform("databases", OUT_DB, "GRAIL_DB", "databases")
 
 
 def stamp_assets() -> str:
@@ -410,6 +436,7 @@ def main() -> None:
 
     build_dsa()
     build_deepdive()
+    build_databases()
     stamp_assets()
 
 

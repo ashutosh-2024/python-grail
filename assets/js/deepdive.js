@@ -3,8 +3,13 @@
 
   var esc = window.esc;
   var hl = window.highlight;
-  var topics = window.GRAIL_DEEP || [];
   var root = document.getElementById("deepdive");
+  /* one renderer, two sections: the page says which data and names to use */
+  var topics = window[root.dataset.var || "GRAIL_DEEP"] || [];
+  var page = root.dataset.page || "deepdive.html";
+  var name = root.dataset.name || "Deep Dive";
+  var docTitle = root.dataset.title || "Python Deep Dive";
+  var caveatLabel = root.dataset.caveat || "CPython detail";
   var wanted = new URLSearchParams(location.search).get("topic");
 
   function plural(n, word) {
@@ -47,7 +52,7 @@
     }
 
     if (b.type === "caveat") {
-      return '<div class="dd-caveat"><strong>CPython detail.</strong> ' + b.text + "</div>";
+      return '<div class="dd-caveat"><strong>' + esc(caveatLabel) + '.</strong> ' + b.text + "</div>";
     }
     return "";
   }
@@ -57,28 +62,30 @@
   }
 
   /* ---------- topic index: one row per topic, same card as Browse ---------- */
-  function topicIndex() {
-    document.title = "Python Deep Dive — python-grail";
-
-    root.innerHTML = '<div class="entry-list">' + topics.map(function (t) {
-      return '<a class="entry-card" href="deepdive.html?topic=' + encodeURIComponent(t.id) + '">' +
+  function topicCard(t) {
+    return '<a class="entry-card" href="' + page + '?topic=' + encodeURIComponent(t.id) + '">' +
         '<span class="body">' +
           '<span class="title">' + esc(t.title) + "</span>" +
+          (t.summary ? '<br><span class="subtitle">' + t.summary + "</span>" : "") +
           '<span class="tags">' +
             '<span class="tag">' + plural(t.sections.length, "section") + "</span>" +
             '<span class="tag">' + plural(t.questions.length, "interview question") + "</span>" +
           "</span>" +
         "</span>" +
       "</a>";
-    }).join("") + "</div>";
+  }
+
+  function topicIndex() {
+    document.title = docTitle + " — python-grail";
+    root.innerHTML = '<div class="entry-list">' + topics.map(topicCard).join("") + "</div>";
   }
 
   /* ---------- one topic: theory, then interview questions ---------- */
   function topicPage(t, idx) {
-    document.title = t.title + " — Python Deep Dive — python-grail";
+    document.title = t.title + " — " + docTitle + " — python-grail";
 
     var html =
-      '<p class="crumb-line"><a href="deepdive.html">Deep Dive</a> / ' + esc(t.title) + "</p>" +
+      '<p class="crumb-line"><a href="' + page + '">' + esc(name) + "</a> / " + esc(t.title) + "</p>" +
       '<h2 class="dd-topic-title">' + esc(t.title) + "</h2>" +
       '<div class="dd-intro">' + t.intro.map(function (p) { return "<p>" + p + "</p>"; }).join("") + "</div>";
 
@@ -124,10 +131,10 @@
     /* prev / next topic */
     var prev = topics[idx - 1], next = topics[idx + 1];
     html += '<div class="entry-nav">' +
-      (prev ? '<a href="deepdive.html?topic=' + encodeURIComponent(prev.id) + '">&larr; ' + esc(prev.title) + "</a>"
-            : '<a href="deepdive.html">&larr; All topics</a>') +
-      (next ? '<a href="deepdive.html?topic=' + encodeURIComponent(next.id) + '">' + esc(next.title) + " &rarr;</a>"
-            : '<a href="deepdive.html">All topics &rarr;</a>') +
+      (prev ? '<a href="' + page + '?topic=' + encodeURIComponent(prev.id) + '">&larr; ' + esc(prev.title) + "</a>"
+            : '<a href="' + page + '">&larr; All topics</a>') +
+      (next ? '<a href="' + page + '?topic=' + encodeURIComponent(next.id) + '">' + esc(next.title) + " &rarr;</a>"
+            : '<a href="' + page + '">All topics &rarr;</a>') +
       "</div>";
 
     root.innerHTML = html;
@@ -142,7 +149,7 @@
   var idx = wanted ? topics.findIndex(function (t) { return t.id === wanted; }) : -1;
   if (wanted && idx === -1) {
     root.innerHTML = '<h2 class="dd-topic-title">Unknown topic</h2>' +
-      '<p><a href="deepdive.html">&larr; Back to topics</a></p>';
+      '<p><a href="' + page + '">&larr; Back to topics</a></p>';
   } else if (idx !== -1) {
     topicPage(topics[idx], idx);
   } else {

@@ -96,6 +96,18 @@ from trees_prelude import TREE_PRELUDE
 import trees_paths, trees_build, trees_lca, trees_dp, bst_core, bst_more, trees_advanced
 from dp import DP_TOPIC
 from backtracking import BACKTRACKING_TOPIC
+from graphs import GRAPHS_TOPIC
+from math_geometry import MATH_TOPIC
+from greedy import GREEDY_TOPIC
+from bits import BITS_TOPIC
+from union_find import UNION_FIND_TOPIC
+from tries import TRIES_TOPIC
+from linked_lists import LINKED_LISTS_TOPIC
+from binary_search import BINARY_SEARCH_TOPIC
+from stacks import STACKS_TOPIC
+from sliding_window import SLIDING_WINDOW_TOPIC
+from two_pointers import TWO_POINTERS_TOPIC
+from hashing import HASHING_TOPIC
 
 TOPICS = [
 
@@ -1442,6 +1454,18 @@ assert is_complete(build([1, None, 2])) is False''',
 HEAP_TOPIC,
 DP_TOPIC,
 BACKTRACKING_TOPIC,
+HASHING_TOPIC,
+TWO_POINTERS_TOPIC,
+SLIDING_WINDOW_TOPIC,
+STACKS_TOPIC,
+BINARY_SEARCH_TOPIC,
+LINKED_LISTS_TOPIC,
+TRIES_TOPIC,
+UNION_FIND_TOPIC,
+BITS_TOPIC,
+GREEDY_TOPIC,
+MATH_TOPIC,
+GRAPHS_TOPIC,
 ] + [
 
 # Planned topics. None has any problems yet, so each is a placeholder page
@@ -1450,30 +1474,6 @@ BACKTRACKING_TOPIC,
 # problems the topic is planned to hold, where one has been decided.
 stub(id, title, plan, target)
 for id, title, target, plan in [
-    ("graphs", "Graphs", 20,
-     "adjacency lists from edge lists, BFS and DFS on grids and general graphs, visited-set discipline, topological sort (Kahn's and DFS), cycle detection, multi-source BFS, and Dijkstra with <code>heapq</code>."),
-    ("greedy", "Greedy", 3,
-     "when a locally best choice is provably globally best, the exchange argument that proves it, and the interval and jump-game problems where greedy wins."),
-    ("linked-lists", "Linked Lists", 3,
-     "the dummy head, fast and slow pointers, and in-place reversal &mdash; the three moves nearly every linked-list problem is built from."),
-    ("bits", "Bit Manipulation", 3,
-     "masks, <code>x &amp; (x - 1)</code>, XOR cancellation, and Python's unbounded integers, which make negative numbers behave differently from C or Java."),
-    ("sliding-window", "Sliding Window", 2,
-     "fixed and variable windows, the expand-right / shrink-left loop, and the counter that tells you when a window is valid."),
-    ("hashing", "Grouping and Lookup", 2,
-     "hash maps and sets as O(1) lookups, choosing a canonical key to group by, and <code>defaultdict</code> / <code>Counter</code> for the bookkeeping."),
-    ("binary-search", "Binary Search", 4,
-     "one loop invariant that never goes off by one, <code>bisect</code>, searching rotated arrays, and binary search on the answer rather than on an array."),
-    ("monotonic-stack", "Monotonic Stack", 2,
-     "keeping a stack sorted so each element is pushed and popped once, and the next-greater-element problems that fall out of it in O(n)."),
-    ("union-find", "Union Find (DSU)", 2,
-     "parent arrays, path compression and union by rank, and why together they make each operation effectively O(1)."),
-    ("trie", "Tries", 3,
-     "a dict-of-dicts prefix tree, insert and prefix search, and using a trie to prune a word search."),
-    ("sorting", "Sorting with Greedy and Two Pointers", 1,
-     "sorting first so that a greedy scan or a pair of converging pointers becomes correct, and what the O(n log n) sort buys you."),
-    ("math", "Math and Number Theory", 2,
-     "gcd, modular arithmetic and <code>pow(a, b, m)</code>, primes with a sieve, and the overflow traps Python lets you ignore."),
 ]]
 
 

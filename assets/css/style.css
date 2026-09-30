@@ -714,6 +714,62 @@ details.reveal[open] > summary { border-bottom: var(--bw) solid var(--line); }
 .approach .why { color: var(--text-dim); font-size: 0.94rem; }
 .approach .why p { margin: 0 0 10px; }
 .approach pre.code { margin-bottom: 18px; }
+.approach .why ul { margin: 0 0 14px; padding-left: 20px; }
+.approach .why li { margin: 0 0 7px; }
+.approach .why code, .recurrence code:not(pre code), .step-change code {
+  font-size: 0.87em;
+  color: var(--py-blue-lt);
+}
+.step-no {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--py-blue-lt);
+}
+.step-change {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  border-left: 3px solid var(--py-yellow);
+  background: var(--bg-code);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 0.92rem;
+  color: var(--text-dim);
+}
+.step-change b {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--py-yellow);
+  padding-top: 3px;
+}
+.step-change span { flex: 1 1 30ch; }
+
+/* ---- the recurrence, between plain recursion and the memo ---- */
+.recurrence {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--py-blue);
+  border-radius: var(--radius);
+  padding: 18px 20px 6px;
+  margin-bottom: 16px;
+  color: var(--text-dim);
+  font-size: 0.94rem;
+}
+.recurrence h3 { font-size: 1.04rem; letter-spacing: -0.015em; margin-bottom: 12px; color: var(--text); }
+.recurrence .rec-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin: 0 0 6px;
+}
+.recurrence .rec-state { margin: 0 0 14px; }
+.recurrence ul { margin: 0 0 14px; padding-left: 20px; }
+.recurrence li { margin: 0 0 7px; }
+.recurrence pre.rec-formula { margin: 0 0 14px; white-space: pre; overflow-x: auto; }
 
 .pitfall {
   border-left: 3px solid var(--hard);

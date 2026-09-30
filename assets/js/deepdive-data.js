@@ -6,6 +6,7 @@ window.GRAIL_DEEP = [
   {
     "id": "gil",
     "title": "The Global Interpreter Lock",
+    "summary": "",
     "intro": [
       "The GIL is the single most-cited reason Python &ldquo;can&rsquo;t do threads&rdquo;, and most of what people say about it is half right. It does not stop you using threads, it does not make your code thread-safe, and it does not slow down I/O-bound programs. What it does is stop two threads from executing Python bytecode <em>at the same instant</em> inside one interpreter &mdash; which is exactly the thing a CPU-bound program needs.",
       "This page builds the model from the bottom up: what the lock protects, when it is released, why that makes I/O-bound threading fine and CPU-bound threading useless, why you still need your own locks, and what the alternatives are &mdash; including the free-threaded build that ships alongside CPython 3.14."
@@ -251,7 +252,7 @@ window.GRAIL_DEEP = [
             "type": "code",
             "src": "import threading, time\n\nstock = {\"widget\": 1}\nsold = []\n\ndef buy(who):\n    if stock[\"widget\"] > 0:      # both threads see 1 ...\n        time.sleep(0.01)         # ... pretend to charge the card\n        stock[\"widget\"] -= 1\n        sold.append(who)\n\nts = [threading.Thread(target=buy, args=(n,)) for n in (\"ann\", \"bob\")]\nfor t in ts: t.start()\nfor t in ts: t.join()\nprint(sold, stock)",
             "label": null,
-            "output": "['ann', 'bob'] {'widget': -1}",
+            "output": "['bob', 'ann'] {'widget': -1}",
             "isError": false
           },
           {
@@ -382,6 +383,7 @@ window.GRAIL_DEEP = [
   {
     "id": "memory",
     "title": "Memory Management",
+    "summary": "",
     "intro": [
       "Python frees you from <code>malloc</code> and <code>free</code>, but not from memory. CPython uses two mechanisms together: <strong>reference counting</strong>, which frees almost everything the instant it becomes unreachable, and a <strong>cycle collector</strong>, which cleans up the objects reference counting cannot. Underneath both sits a specialised allocator for small objects.",
       "Knowing how these fit together explains why <code>__del__</code> runs when it does, why a program can hold on to memory after you delete a huge list, why <code>lru_cache</code> on a method leaks, and what <code>__slots__</code> actually saves."
@@ -820,6 +822,7 @@ window.GRAIL_DEEP = [
   {
     "id": "bytecode",
     "title": "CPython Bytecode",
+    "summary": "",
     "intro": [
       "Python is compiled. Not to machine code, but to <strong>bytecode</strong>: a compact instruction set for a stack-based virtual machine. Every function you write becomes a code object holding those instructions, and a big loop in C &mdash; the evaluation loop &mdash; executes them one at a time.",
       "Reading bytecode answers questions that are otherwise folklore: why locals are faster than globals, why <code>UnboundLocalError</code> exists, what <code>a, b = b, a</code> really does, and what the 3.11+ &ldquo;faster CPython&rdquo; work actually changed."
@@ -1231,6 +1234,7 @@ window.GRAIL_DEEP = [
   {
     "id": "object-model",
     "title": "The Python Object Model",
+    "summary": "",
     "intro": [
       "&ldquo;Everything is an object&rdquo; is usually said and not explained. It means something precise: integers, strings, functions, classes, modules, even <code>type</code> itself are all values of the same basic C structure, each with an identity, a type, and a value. They can all be assigned to names, stored in containers, passed around and inspected.",
       "Once that is internalised, a lot of Python stops being magic. Decorators are just functions receiving functions. Classes are just objects created at run time. <code>len(x)</code> is just a call to a method found on <code>x</code>&rsquo;s type."
@@ -1575,8 +1579,677 @@ window.GRAIL_DEEP = [
     ]
   },
   {
+    "id": "dunder-methods",
+    "title": "Magic (Dunder) Methods",
+    "summary": "",
+    "intro": [
+      "Methods whose names start and end with a double underscore &mdash; <code>__init__</code>, <code>__len__</code>, <code>__add__</code> &mdash; are called <em>special</em>, <em>magic</em> or <em>dunder</em> methods. You rarely call them yourself. Python calls them for you when you use syntax or a built-in: <code>a + b</code>, <code>len(x)</code>, <code>x[i]</code>, <code>for v in x</code>, <code>with x:</code>, <code>f\"{x}\"</code>.",
+      "Together they are Python&rsquo;s <em>data model</em>: the protocol a class implements to plug into the language. A class that defines the right handful of dunders behaves like a built-in type, works with the standard library, and needs no special API of its own. This topic walks through the families of dunders, what each one is for, and the rules that are easy to get wrong."
+    ],
+    "sections": [
+      {
+        "title": "The mapping from syntax to dunder",
+        "body": [
+          {
+            "type": "p",
+            "html": "Every operator and many built-ins translate to a method call on the <em>type</em> of the object. Knowing the translation is most of the topic:"
+          },
+          {
+            "type": "table",
+            "head": [
+              "You write",
+              "Python calls",
+              "Family"
+            ],
+            "rows": [
+              [
+                "<code>C(a)</code>",
+                "<code>C.__new__(C, a)</code>, then <code>obj.__init__(a)</code>",
+                "Lifecycle"
+              ],
+              [
+                "<code>repr(x)</code>, <code>str(x)</code>, <code>f\"{x:spec}\"</code>",
+                "<code>__repr__</code>, <code>__str__</code>, <code>__format__</code>",
+                "Representation"
+              ],
+              [
+                "<code>a == b</code>, <code>a &lt; b</code>",
+                "<code>__eq__</code>, <code>__lt__</code> (and friends)",
+                "Comparison"
+              ],
+              [
+                "<code>hash(x)</code>, <code>bool(x)</code>",
+                "<code>__hash__</code>, <code>__bool__</code> (fallback <code>__len__</code>)",
+                "Hashing / truth"
+              ],
+              [
+                "<code>a + b</code>, <code>a += b</code>, <code>-a</code>",
+                "<code>__add__</code>/<code>__radd__</code>, <code>__iadd__</code>, <code>__neg__</code>",
+                "Arithmetic"
+              ],
+              [
+                "<code>len(x)</code>, <code>x[k]</code>, <code>k in x</code>",
+                "<code>__len__</code>, <code>__getitem__</code>, <code>__contains__</code>",
+                "Containers"
+              ],
+              [
+                "<code>for v in x</code>, <code>next(it)</code>",
+                "<code>__iter__</code>, <code>__next__</code>",
+                "Iteration"
+              ],
+              [
+                "<code>x.attr</code>, <code>x.attr = v</code>",
+                "<code>__getattribute__</code>/<code>__getattr__</code>, <code>__setattr__</code>",
+                "Attribute access"
+              ],
+              [
+                "<code>x(...)</code>",
+                "<code>__call__</code>",
+                "Callables"
+              ],
+              [
+                "<code>with x:</code>",
+                "<code>__enter__</code>, <code>__exit__</code>",
+                "Context managers"
+              ],
+              [
+                "<code>int(x)</code>, <code>round(x)</code>, <code>seq[x]</code>",
+                "<code>__int__</code>, <code>__round__</code>, <code>__index__</code>",
+                "Conversion"
+              ]
+            ]
+          },
+          {
+            "type": "p",
+            "html": "The lookup happens on the type, not the instance: <code>len(x)</code> is effectively <code>type(x).__len__(x)</code>. The object model topic shows why assigning <code>x.__len__ = ...</code> on an instance has no effect on <code>len(x)</code>."
+          },
+          {
+            "type": "note",
+            "text": "Only implement dunders Python already defines. Inventing your own <code>__names__</code> is reserved for the language and may collide with a future version."
+          }
+        ]
+      },
+      {
+        "title": "Lifecycle: __new__, __init__, __del__",
+        "body": [
+          {
+            "type": "p",
+            "html": "Calling a class runs two steps. <code>__new__</code> is a static method that <em>creates</em> and returns the object; <code>__init__</code> then <em>initialises</em> the object it was given and must return <code>None</code>. Almost every class only needs <code>__init__</code>. You need <code>__new__</code> when the object must be decided before it exists &mdash; subclassing an immutable type, caching instances, or returning a different object altogether."
+          },
+          {
+            "type": "code",
+            "src": "class Trace:\n    def __new__(cls, *args):\n        print(f\"__new__  cls={cls.__name__} args={args}\")\n        return super().__new__(cls)\n    def __init__(self, value):\n        print(f\"__init__ value={value}\")\n        self.value = value\n\nt = Trace(7)\nprint(t.value)",
+            "label": null,
+            "output": "__new__  cls=Trace args=(7,)\n__init__ value=7\n7",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Immutable built-ins like <code>int</code>, <code>str</code> and <code>tuple</code> have their value fixed by the time <code>__init__</code> runs, so a subclass that wants to change the value must do it in <code>__new__</code>:"
+          },
+          {
+            "type": "code",
+            "src": "class Celsius(float):\n    def __new__(cls, value):\n        if value < -273.15:\n            raise ValueError(\"below absolute zero\")\n        return super().__new__(cls, round(value, 1))\n\n    def __repr__(self):\n        return f\"{float(self)}°C\"\n\nprint(Celsius(21.456), Celsius(21.456) + 1)\ntry:\n    Celsius(-300)\nexcept ValueError as e:\n    print(\"ValueError:\", e)",
+            "label": null,
+            "output": "21.5°C 22.5\nValueError: below absolute zero",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "If <code>__new__</code> returns something that is not an instance of the class, <code>__init__</code> is skipped. That is how an instance cache works:"
+          },
+          {
+            "type": "code",
+            "src": "class Color:\n    _cache = {}\n    def __new__(cls, name):\n        if name not in cls._cache:\n            obj = super().__new__(cls)\n            obj.name = name\n            cls._cache[name] = obj\n        return cls._cache[name]\n\nprint(Color(\"red\") is Color(\"red\"), Color(\"red\") is Color(\"blue\"))",
+            "label": null,
+            "output": "True False",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<code>__del__</code> runs when the object is about to be destroyed. In CPython that is usually when the reference count hits zero, but it is not guaranteed to run promptly (reference cycles) or at all (interpreter shutdown), and exceptions raised inside it are only printed as warnings."
+          },
+          {
+            "type": "code",
+            "src": "class Resource:\n    def __init__(self, name):\n        self.name = name\n    def __del__(self):\n        print(f\"__del__ {self.name}\")\n\nr = Resource(\"a\")\ndel r                     # refcount hits zero: runs now in CPython\nprint(\"after del\")",
+            "label": null,
+            "output": "__del__ a\nafter del",
+            "isError": false
+          },
+          {
+            "type": "caveat",
+            "text": "Do not use <code>__del__</code> for cleanup that must happen. Use a context manager (<code>__enter__</code>/<code>__exit__</code>) or <code>weakref.finalize</code>."
+          }
+        ]
+      },
+      {
+        "title": "Representation: __repr__, __str__, __format__",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>__repr__</code> is for developers: unambiguous, ideally valid Python that recreates the object. It is what the REPL, debuggers, logs and containers show. <code>__str__</code> is for end users; if a class does not define it, <code>str()</code> falls back to <code>__repr__</code>. <code>__format__</code> handles the part after the colon in an f-string."
+          },
+          {
+            "type": "code",
+            "src": "class Money:\n    def __init__(self, amount, currency=\"USD\"):\n        self.amount, self.currency = amount, currency\n\n    def __repr__(self):\n        return f\"Money({self.amount!r}, {self.currency!r})\"\n\n    def __str__(self):\n        return f\"{self.amount:,.2f} {self.currency}\"\n\n    def __format__(self, spec):\n        if spec == \"short\":\n            return f\"{self.amount:.0f}{self.currency[0]}\"\n        return format(str(self), spec)\n\nm = Money(1234.5)\nprint(repr(m))\nprint(str(m))\nprint([m])                    # containers use repr of their items\nprint(f\"{m}|{m!r}|{m:short}|{m:>16}|\")",
+            "label": null,
+            "output": "Money(1234.5, 'USD')\n1,234.50 USD\n[Money(1234.5, 'USD')]\n1,234.50 USD|Money(1234.5, 'USD')|1234U|    1,234.50 USD|",
+            "isError": false
+          },
+          {
+            "type": "table",
+            "head": [
+              "Method",
+              "Called by",
+              "Audience",
+              "Default"
+            ],
+            "rows": [
+              [
+                "<code>__repr__</code>",
+                "<code>repr()</code>, REPL, containers, <code>!r</code>",
+                "Developers",
+                "<code>&lt;Money object at 0x...&gt;</code>"
+              ],
+              [
+                "<code>__str__</code>",
+                "<code>str()</code>, <code>print()</code>, <code>f\"{x}\"</code>",
+                "Users",
+                "Falls back to <code>__repr__</code>"
+              ],
+              [
+                "<code>__format__</code>",
+                "<code>format()</code>, <code>f\"{x:spec}\"</code>",
+                "Users",
+                "<code>str(self)</code>, only an empty spec allowed"
+              ],
+              [
+                "<code>__bytes__</code>",
+                "<code>bytes(x)</code>",
+                "Wire formats",
+                "<code>TypeError</code>"
+              ]
+            ]
+          },
+          {
+            "type": "note",
+            "text": "If you define only one, define <code>__repr__</code>. You get a useful <code>str()</code> for free."
+          }
+        ]
+      },
+      {
+        "title": "Comparison and NotImplemented",
+        "body": [
+          {
+            "type": "p",
+            "html": "The six rich comparison methods are <code>__eq__</code>, <code>__ne__</code>, <code>__lt__</code>, <code>__le__</code>, <code>__gt__</code>, <code>__ge__</code>. When a method does not know how to compare with the other operand it should <em>return</em> <code>NotImplemented</code> (not raise). Python then tries the reflected method on the other object: <code>a &lt; b</code> falls back to <code>b &gt; a</code>, and <code>a == b</code> to <code>b == a</code>. If both give up, <code>==</code> falls back to identity and ordering raises <code>TypeError</code>."
+          },
+          {
+            "type": "code",
+            "src": "class Version:\n    def __init__(self, text):\n        self.parts = tuple(int(p) for p in text.split(\".\"))\n    def __repr__(self):\n        return \"Version(%r)\" % \".\".join(map(str, self.parts))\n    def __eq__(self, other):\n        if not isinstance(other, Version):\n            return NotImplemented\n        return self.parts == other.parts\n    def __lt__(self, other):\n        if not isinstance(other, Version):\n            return NotImplemented\n        return self.parts < other.parts\n\na, b = Version(\"1.10.0\"), Version(\"1.9.3\")\nprint(a == Version(\"1.10.0\"), a != b)   # __ne__ is derived from __eq__\nprint(a < b, a > b)                     # a > b becomes b < a\nprint(sorted([a, b, Version(\"0.1\")]))\nprint(a == \"1.10.0\")                    # both sides give up -> identity\ntry:\n    a <= b                              # no __le__ or __ge__ anywhere\nexcept TypeError as e:\n    print(\"TypeError:\", e)",
+            "label": null,
+            "output": "True True\nFalse True\n[Version('0.1'), Version('1.9.3'), Version('1.10.0')]\nFalse\nTypeError: '<=' not supported between instances of 'Version' and 'Version'",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Writing all six is tedious. <code>functools.total_ordering</code> fills in the missing ones from <code>__eq__</code> plus one ordering method. <code>@dataclass(order=True)</code> generates all of them by comparing fields as a tuple."
+          },
+          {
+            "type": "code",
+            "src": "from functools import total_ordering\n\n@total_ordering\nclass Grade:\n    order = \"FDCBA\"\n    def __init__(self, letter):\n        self.letter = letter\n    def __eq__(self, other):\n        return self.letter == other.letter\n    def __lt__(self, other):\n        return self.order.index(self.letter) < self.order.index(other.letter)\n\na, c = Grade(\"A\"), Grade(\"C\")\nprint(a > c, a >= c, c <= a, max([c, a, Grade(\"B\")]).letter)",
+            "label": null,
+            "output": "True True True A",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Hashing and truthiness: __hash__, __bool__",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>__hash__</code> must return an int, and objects that compare equal must hash equal. Defining <code>__eq__</code> without <code>__hash__</code> sets <code>__hash__</code> to <code>None</code>, making instances unhashable. Hash the same fields you compare, and only if those fields never change."
+          },
+          {
+            "type": "code",
+            "src": "class Point:\n    __slots__ = (\"x\", \"y\")\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n    def __eq__(self, other):\n        return isinstance(other, Point) and (self.x, self.y) == (other.x, other.y)\n    def __hash__(self):\n        return hash((self.x, self.y))      # delegate to a tuple\n\nseen = {Point(1, 2), Point(1, 2), Point(3, 4)}\nprint(len(seen), Point(1, 2) in seen)",
+            "label": null,
+            "output": "2 True",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<code>bool(x)</code> (and every <code>if x:</code>) calls <code>__bool__</code>. If that is missing it uses <code>__len__</code> and treats zero as false. If both are missing, every instance is truthy."
+          },
+          {
+            "type": "code",
+            "src": "class Plain: pass\n\nclass Basket:\n    def __init__(self, *items): self.items = list(items)\n    def __len__(self): return len(self.items)\n\nclass Account:\n    def __init__(self, balance): self.balance = balance\n    def __bool__(self): return self.balance > 0\n\nprint(bool(Plain()), bool(Basket()), bool(Basket(\"egg\")))\nprint(bool(Account(0)), bool(Account(5)))\nprint(\"empty\" if not Basket() else \"has items\")",
+            "label": null,
+            "output": "True False True\nFalse True\nempty",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Arithmetic: forward, reflected and in-place",
+        "body": [
+          {
+            "type": "p",
+            "html": "Each binary operator has three dunders. For <code>+</code>: <code>__add__</code> for <code>a + b</code>, <code>__radd__</code> (reflected) when the left operand gives up, and <code>__iadd__</code> for <code>a += b</code>. The rule for <code>a + b</code> is:"
+          },
+          {
+            "type": "p",
+            "html": "1. Call <code>a.__add__(b)</code>. If it returns <code>NotImplemented</code>&hellip;<br>2. call <code>b.__radd__(a)</code>. If that also returns <code>NotImplemented</code>, raise <code>TypeError</code>.<br>Exception: if <code>b</code>&rsquo;s type is a <em>subclass</em> of <code>a</code>&rsquo;s type and overrides the reflected method, <code>b.__radd__</code> is tried first."
+          },
+          {
+            "type": "code",
+            "src": "class Vector:\n    def __init__(self, *xs):\n        self.xs = tuple(xs)\n    def __repr__(self):\n        return f\"Vector{self.xs}\"\n\n    def __add__(self, other):\n        if isinstance(other, Vector):\n            return Vector(*(a + b for a, b in zip(self.xs, other.xs)))\n        return NotImplemented\n\n    def __mul__(self, k):\n        if isinstance(k, (int, float)):\n            return Vector(*(a * k for a in self.xs))\n        return NotImplemented\n    __rmul__ = __mul__                    # k * v is the same as v * k\n\n    def __matmul__(self, other):          # the @ operator: dot product\n        return sum(a * b for a, b in zip(self.xs, other.xs))\n\n    def __neg__(self):\n        return self * -1\n    def __abs__(self):\n        return sum(a * a for a in self.xs) ** 0.5\n\nv, w = Vector(3, 4), Vector(1, 1)\nprint(v + w, v * 2, 2 * v, -v)\nprint(v @ w, abs(v))\ntry:\n    v + 1\nexcept TypeError as e:\n    print(\"TypeError:\", e)",
+            "label": null,
+            "output": "Vector(4, 5) Vector(6, 8) Vector(6, 8) Vector(-3, -4)\n7 5.0\nTypeError: unsupported operand type(s) for +: 'Vector' and 'int'",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Reflected methods are what let your type sit on the <em>right</em> of a built-in. <code>sum()</code> starts from <code>0</code>, so <code>0 + first_item</code> needs <code>__radd__</code>:"
+          },
+          {
+            "type": "code",
+            "src": "class Cents:\n    def __init__(self, n): self.n = n\n    def __repr__(self): return f\"Cents({self.n})\"\n    def __add__(self, other):\n        if isinstance(other, Cents):\n            return Cents(self.n + other.n)\n        if isinstance(other, int):\n            return Cents(self.n + other)\n        return NotImplemented\n    __radd__ = __add__\n\nprint(sum([Cents(5), Cents(10), Cents(20)]))",
+            "label": null,
+            "output": "Cents(35)",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "In-place operators mutate when they can. If <code>__iadd__</code> is missing, <code>a += b</code> becomes <code>a = a + b</code> and rebinds the name to a new object. That is why <code>+=</code> changes a list in place but builds a new tuple:"
+          },
+          {
+            "type": "code",
+            "src": "class Bag:\n    def __init__(self): self.items = []\n    def __iadd__(self, item):\n        self.items.append(item)\n        return self                      # must return the result\n\nb = Bag(); before = id(b)\nb += \"apple\"; b += \"pear\"\nprint(b.items, id(b) == before)\n\nnums, tup = [1], (1,)\nn_id, t_id = id(nums), id(tup)\nnums += [2]; tup += (2,)\nprint(id(nums) == n_id, id(tup) == t_id)",
+            "label": null,
+            "output": "['apple', 'pear'] True\nTrue False",
+            "isError": false
+          },
+          {
+            "type": "table",
+            "head": [
+              "Operator",
+              "Forward",
+              "Reflected",
+              "In-place"
+            ],
+            "rows": [
+              [
+                "<code>+</code> <code>-</code> <code>*</code> <code>@</code>",
+                "<code>__add__ __sub__ __mul__ __matmul__</code>",
+                "<code>__radd__</code> &hellip;",
+                "<code>__iadd__</code> &hellip;"
+              ],
+              [
+                "<code>/</code> <code>//</code> <code>%</code> <code>**</code>",
+                "<code>__truediv__ __floordiv__ __mod__ __pow__</code>",
+                "<code>__rtruediv__</code> &hellip;",
+                "<code>__itruediv__</code> &hellip;"
+              ],
+              [
+                "<code>&lt;&lt;</code> <code>&gt;&gt;</code> <code>&amp;</code> <code>|</code> <code>^</code>",
+                "<code>__lshift__ __rshift__ __and__ __or__ __xor__</code>",
+                "<code>__rlshift__</code> &hellip;",
+                "<code>__ilshift__</code> &hellip;"
+              ],
+              [
+                "<code>divmod(a, b)</code>",
+                "<code>__divmod__</code>",
+                "<code>__rdivmod__</code>",
+                "&mdash;"
+              ],
+              [
+                "unary <code>-</code> <code>+</code> <code>~</code> <code>abs()</code>",
+                "<code>__neg__ __pos__ __invert__ __abs__</code>",
+                "&mdash;",
+                "&mdash;"
+              ]
+            ]
+          },
+          {
+            "type": "note",
+            "text": "Return <code>NotImplemented</code> for types you do not handle, never raise <code>TypeError</code> yourself &mdash; raising stops Python from giving the other operand its turn."
+          }
+        ]
+      },
+      {
+        "title": "Containers: __len__, __getitem__, __setitem__, __contains__",
+        "body": [
+          {
+            "type": "p",
+            "html": "A container protocol is a few dunders. <code>__getitem__</code> receives whatever is inside the brackets: an int, a key, or a <code>slice</code> object for <code>x[a:b:c]</code>. <code>__contains__</code> powers <code>in</code>; without it Python falls back to iterating."
+          },
+          {
+            "type": "code",
+            "src": "class Playlist:\n    def __init__(self, *songs):\n        self._songs = list(songs)\n    def __len__(self):\n        return len(self._songs)\n    def __getitem__(self, index):\n        if isinstance(index, slice):\n            return Playlist(*self._songs[index])\n        return self._songs[index]\n    def __setitem__(self, index, song):\n        self._songs[index] = song\n    def __delitem__(self, index):\n        del self._songs[index]\n    def __contains__(self, song):\n        return song.lower() in (s.lower() for s in self._songs)\n    def __repr__(self):\n        return f\"Playlist{tuple(self._songs)}\"\n\np = Playlist(\"Intro\", \"Verse\", \"Chorus\", \"Outro\")\nprint(len(p), p[0], p[-1], p[1:3])\np[0] = \"Overture\"; del p[-1]\nprint(p, \"chorus\" in p)\nprint(list(reversed(p)))       # works via __len__ + __getitem__",
+            "label": null,
+            "output": "4 Intro Outro Playlist('Verse', 'Chorus')\nPlaylist('Overture', 'Verse', 'Chorus') True\n['Chorus', 'Verse', 'Overture']",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Notice that <code>reversed()</code> and even <code>for</code> loops work without <code>__iter__</code> or <code>__reversed__</code>: Python falls back to calling <code>__getitem__</code> with 0, 1, 2&hellip; until <code>IndexError</code>. That is the <em>old sequence protocol</em>; define <code>__iter__</code> for anything new."
+          },
+          {
+            "type": "p",
+            "html": "Mappings get one extra hook. A <code>dict</code> subclass can define <code>__missing__</code>, which <code>d[key]</code> calls for absent keys. This is how <code>collections.defaultdict</code> and <code>Counter</code> work:"
+          },
+          {
+            "type": "code",
+            "src": "class Inventory(dict):\n    def __missing__(self, key):\n        return 0                  # no KeyError, and nothing is stored\n\nstock = Inventory(apple=3)\nprint(stock[\"apple\"], stock[\"kiwi\"], \"kiwi\" in stock)\nprint(stock.get(\"kiwi\"))          # .get() does not call __missing__",
+            "label": null,
+            "output": "3 0 False\nNone",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Iteration: __iter__ and __next__",
+        "body": [
+          {
+            "type": "p",
+            "html": "An <strong>iterable</strong> has <code>__iter__</code>, which returns an <strong>iterator</strong>. An iterator has <code>__next__</code>, which returns the next value or raises <code>StopIteration</code>, and an <code>__iter__</code> that returns itself. A <code>for</code> loop is <code>it = iter(x)</code> followed by <code>next(it)</code> until <code>StopIteration</code>."
+          },
+          {
+            "type": "code",
+            "src": "class Countdown:                    # an iterator: single use\n    def __init__(self, start):\n        self.current = start\n    def __iter__(self):\n        return self\n    def __next__(self):\n        if self.current <= 0:\n            raise StopIteration\n        self.current -= 1\n        return self.current + 1\n\nc = Countdown(3)\nprint(list(c), list(c))             # exhausted after one pass",
+            "label": null,
+            "output": "[3, 2, 1] []",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Keep the iterable and the iterator separate so the object can be looped over more than once. Writing <code>__iter__</code> as a generator does exactly that with no <code>__next__</code> to maintain:"
+          },
+          {
+            "type": "code",
+            "src": "class Range2D:                      # an iterable: reusable\n    def __init__(self, rows, cols):\n        self.rows, self.cols = rows, cols\n    def __iter__(self):\n        for r in range(self.rows):\n            for c in range(self.cols):\n                yield (r, c)\n    def __reversed__(self):\n        return reversed(list(self))\n\ngrid = Range2D(2, 2)\nprint(list(grid))\nprint(list(grid))                   # a fresh generator each time\nprint(list(reversed(grid))[:2])",
+            "label": null,
+            "output": "[(0, 0), (0, 1), (1, 0), (1, 1)]\n[(0, 0), (0, 1), (1, 0), (1, 1)]\n[(1, 1), (1, 0)]",
+            "isError": false
+          },
+          {
+            "type": "note",
+            "text": "Iterables return a <em>new</em> iterator from <code>__iter__</code>. Iterators return <code>self</code>. Mixing the two up is how you get a loop that silently runs zero times the second time."
+          }
+        ]
+      },
+      {
+        "title": "Attribute access: __getattr__, __getattribute__, __setattr__",
+        "body": [
+          {
+            "type": "p",
+            "html": "Four hooks sit around <code>.</code> lookups. <code>__getattribute__</code> is called for <em>every</em> read. <code>__getattr__</code> is called only when normal lookup failed, which makes it the safe one to override. <code>__setattr__</code> and <code>__delattr__</code> intercept every write and delete."
+          },
+          {
+            "type": "code",
+            "src": "class Settings:\n    def __init__(self, **values):\n        # bypass our own __setattr__ while building\n        object.__setattr__(self, \"_values\", values)\n\n    def __getattr__(self, name):         # only for missing names\n        try:\n            return self._values[name]\n        except KeyError:\n            raise AttributeError(name) from None\n\n    def __setattr__(self, name, value):\n        raise AttributeError(f\"Settings are read-only: {name}\")\n\n    def __dir__(self):\n        return list(self._values)\n\ns = Settings(debug=True, workers=4)\nprint(s.debug, s.workers, dir(s))\nprint(getattr(s, \"timeout\", 30))         # default works: AttributeError\ntry:\n    s.debug = False\nexcept AttributeError as e:\n    print(\"AttributeError:\", e)",
+            "label": null,
+            "output": "True 4 ['debug', 'workers']\n30\nAttributeError: Settings are read-only: debug",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<code>__getattr__</code> must raise <code>AttributeError</code> for unknown names. Raising anything else breaks <code>getattr(obj, name, default)</code>, <code>hasattr</code> and copy/pickle, which all rely on that exception."
+          },
+          {
+            "type": "p",
+            "html": "A common real use is delegation: wrap an object and forward everything you do not override."
+          },
+          {
+            "type": "code",
+            "src": "class LoggingList:\n    def __init__(self):\n        self._inner = []\n    def append(self, item):\n        print(f\"append({item!r})\")\n        self._inner.append(item)\n    def __getattr__(self, name):         # everything else goes through\n        return getattr(self._inner, name)\n    def __len__(self):                   # dunders are NOT forwarded\n        return len(self._inner)\n\nlog = LoggingList()\nlog.append(3); log.append(1)\nlog.sort()\nprint(log._inner, log.index(3), len(log))",
+            "label": null,
+            "output": "append(3)\nappend(1)\n[1, 3] 1 2",
+            "isError": false
+          },
+          {
+            "type": "caveat",
+            "text": "<code>__getattr__</code> does not catch implicit dunder lookups: <code>len(log)</code> goes straight to <code>type(log).__len__</code>. A proxy must define every dunder it wants to forward."
+          },
+          {
+            "type": "p",
+            "html": "Overriding <code>__getattribute__</code> is rarely needed and easy to break: any <code>self.x</code> inside it calls itself again. Always reach the real value through <code>super().__getattribute__</code>."
+          },
+          {
+            "type": "code",
+            "src": "class Audited:\n    def __init__(self):\n        self.a, self.b = 1, 2\n    def __getattribute__(self, name):\n        if not name.startswith(\"_\"):\n            print(f\"read {name}\")\n        return super().__getattribute__(name)\n\nx = Audited()\nprint(x.a + x.b)",
+            "label": null,
+            "output": "read a\nread b\n3",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Callables and context managers",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>__call__</code> makes instances callable, which is useful for objects that behave like functions but carry configuration or state. <code>__enter__</code> and <code>__exit__</code> make an object usable in a <code>with</code> block; the context managers topic covers them in full."
+          },
+          {
+            "type": "code",
+            "src": "import time\n\nclass Retry:\n    def __init__(self, times):\n        self.times = times\n    def __call__(self, fn, *args):\n        for attempt in range(1, self.times + 1):\n            try:\n                return fn(*args)\n            except ValueError as e:\n                print(f\"attempt {attempt} failed: {e}\")\n        raise RuntimeError(\"gave up\")\n\nclass Timer:\n    def __enter__(self):\n        self.start = time.perf_counter()\n        return self\n    def __exit__(self, exc_type, exc, tb):\n        self.elapsed = time.perf_counter() - self.start\n        print(f\"exit: exc_type={exc_type.__name__ if exc_type else None}\")\n        return False                   # do not swallow exceptions\n\ncalls = iter([ValueError(\"flaky\"), ValueError(\"flaky\"), \"ok\"])\ndef flaky():\n    r = next(calls)\n    if isinstance(r, Exception):\n        raise r\n    return r\n\nwith Timer() as t:\n    print(Retry(3)(flaky))\nprint(t.elapsed < 1)",
+            "label": null,
+            "output": "attempt 1 failed: flaky\nattempt 2 failed: flaky\nok\nexit: exc_type=None\nTrue",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Conversion: __int__, __float__, __index__, __round__",
+        "body": [
+          {
+            "type": "p",
+            "html": "Conversion built-ins each have a dunder. The subtle one is <code>__index__</code>: it says &ldquo;this object <em>is</em> an integer&rdquo;, not merely &ldquo;can be turned into one&rdquo;. Only <code>__index__</code> lets an object be used as a list index, a slice bound, or passed to <code>bin()</code>/<code>hex()</code>. <code>float</code> has <code>__int__</code> but no <code>__index__</code>, which is why <code>[1, 2][1.0]</code> is an error."
+          },
+          {
+            "type": "code",
+            "src": "import math\n\nclass Fraction:\n    def __init__(self, num, den):\n        self.num, self.den = num, den\n    def __float__(self):\n        return self.num / self.den\n    def __int__(self):\n        return self.num // self.den\n    def __round__(self, ndigits=None):\n        return round(float(self), ndigits)\n    def __floor__(self):\n        return math.floor(self.num / self.den)\n    def __ceil__(self):\n        return math.ceil(self.num / self.den)\n\nclass Slot:\n    def __init__(self, n): self.n = n\n    def __index__(self): return self.n\n\nf = Fraction(22, 7)\nprint(float(f), int(f), round(f), round(f, 3), math.floor(f), math.ceil(f))\nprint([\"a\", \"b\", \"c\"][Slot(2)], bin(Slot(5)), \"xyz\"[:Slot(2)])\ntry:\n    [\"a\", \"b\"][f]\nexcept TypeError as e:\n    print(\"TypeError:\", e)",
+            "label": null,
+            "output": "3.142857142857143 3 3 3.143 3 4\nc 0b101 xy\nTypeError: list indices must be integers or slices, not Fraction",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Class-level hooks: __init_subclass__, __class_getitem__, __set_name__",
+        "body": [
+          {
+            "type": "p",
+            "html": "Some dunders are called on classes rather than instances. <code>__init_subclass__</code> runs on the parent whenever a subclass is created &mdash; a lightweight alternative to a metaclass for registries and validation. <code>__class_getitem__</code> handles <code>Cls[...]</code>, which is how <code>list[int]</code> works. <code>__set_name__</code> tells a descriptor the attribute name it was assigned to."
+          },
+          {
+            "type": "code",
+            "src": "class Plugin:\n    registry = {}\n    def __init_subclass__(cls, name=None, **kwargs):\n        super().__init_subclass__(**kwargs)\n        Plugin.registry[name or cls.__name__.lower()] = cls\n\nclass CSVExporter(Plugin, name=\"csv\"): pass\nclass JSONExporter(Plugin): pass\nprint(Plugin.registry)\n\nclass Box:\n    def __class_getitem__(cls, item):\n        return f\"{cls.__name__} of {item.__name__}\"\nprint(Box[int], list[int])\n\nclass Positive:\n    def __set_name__(self, owner, name):\n        self.name = \"_\" + name\n    def __get__(self, obj, owner):\n        return getattr(obj, self.name)\n    def __set__(self, obj, value):\n        if value <= 0:\n            raise ValueError(f\"{self.name[1:]} must be positive\")\n        setattr(obj, self.name, value)\n\nclass Order:\n    qty = Positive()\n    def __init__(self, qty): self.qty = qty\n\nprint(Order(3).qty)\ntry:\n    Order(0)\nexcept ValueError as e:\n    print(\"ValueError:\", e)",
+            "label": null,
+            "output": "{'csv': <class '__main__.CSVExporter'>, 'jsonexporter': <class '__main__.JSONExporter'>}\nBox of int list[int]\n3\nValueError: qty must be positive",
+            "isError": false
+          },
+          {
+            "type": "note",
+            "text": "<code>__get__</code>, <code>__set__</code> and <code>__delete__</code> are the descriptor protocol &mdash; the next topic explains how they drive methods and <code>property</code>."
+          }
+        ]
+      },
+      {
+        "title": "Copying and pickling: __copy__, __deepcopy__, __reduce__",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>copy.copy</code> and <code>copy.deepcopy</code> work on most objects without help. Define <code>__copy__</code>/<code>__deepcopy__</code> when some state must not be duplicated &mdash; a cache, a lock, a connection &mdash; and <code>__getstate__</code>/<code>__setstate__</code> (or <code>__reduce__</code>) to control what pickle stores."
+          },
+          {
+            "type": "code",
+            "src": "import copy, pickle\n\nclass Model:\n    def __init__(self, weights):\n        self.weights = weights\n        self._cache = {}\n\n    def __deepcopy__(self, memo):\n        clone = Model(copy.deepcopy(self.weights, memo))\n        return clone                          # fresh, empty cache\n\n    def __getstate__(self):\n        state = self.__dict__.copy()\n        del state[\"_cache\"]                   # do not pickle the cache\n        return state\n    def __setstate__(self, state):\n        self.__dict__.update(state, _cache={})\n\nm = Model([1, 2])\nm._cache[\"warm\"] = True\nd = copy.deepcopy(m)\nd.weights.append(3)\nprint(m.weights, d.weights, d._cache)\n\np = pickle.loads(pickle.dumps(m))\nprint(p.weights, p._cache)",
+            "label": null,
+            "output": "[1, 2] [1, 2, 3] {}\n[1, 2] {}",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Putting it together",
+        "body": [
+          {
+            "type": "p",
+            "html": "A small class that implements a dozen dunders feels completely native: it prints well, compares, hashes, sorts, iterates, supports arithmetic and <code>in</code>, and works with <code>sum</code>, <code>sorted</code>, <code>set</code>, <code>dict</code> and f-strings without a single custom method name."
+          },
+          {
+            "type": "code",
+            "src": "from functools import total_ordering\n\n@total_ordering\nclass Money:\n    __slots__ = (\"cents\",)\n    def __init__(self, cents): self.cents = cents\n    def __repr__(self): return f\"Money({self.cents})\"\n    def __str__(self): return f\"${self.cents / 100:,.2f}\"\n    def __eq__(self, o):\n        return isinstance(o, Money) and self.cents == o.cents\n    def __lt__(self, o):\n        if not isinstance(o, Money): return NotImplemented\n        return self.cents < o.cents\n    def __hash__(self): return hash(self.cents)\n    def __bool__(self): return self.cents != 0\n    def __add__(self, o):\n        if isinstance(o, Money): return Money(self.cents + o.cents)\n        if o == 0: return self\n        return NotImplemented\n    __radd__ = __add__\n    def __mul__(self, k):\n        if isinstance(k, int): return Money(self.cents * k)\n        return NotImplemented\n    __rmul__ = __mul__\n\nprices = [Money(1999), Money(500), Money(1999), Money(0)]\nprint(sum(prices), max(prices), sorted(set(prices)))\nprint(3 * Money(250), Money(100) >= Money(99), [p for p in prices if p])\nprint(f\"total: {sum(prices)}\")",
+            "label": null,
+            "output": "$44.98 $19.99 [Money(0), Money(500), Money(1999)]\n$7.50 True [Money(1999), Money(500), Money(1999)]\ntotal: $44.98",
+            "isError": false
+          }
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "q": "What is the difference between <code>__new__</code> and <code>__init__</code>? When do you need <code>__new__</code>?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "<code>__new__</code> is an implicit static method that receives the class and <em>returns the new object</em>. <code>__init__</code> receives that object and fills it in; it must return <code>None</code>. <code>C(args)</code> is roughly <code>obj = C.__new__(C, args)</code>, then <code>obj.__init__(args)</code> if <code>obj</code> is an instance of <code>C</code>."
+          },
+          {
+            "type": "p",
+            "html": "You need <code>__new__</code> when the decision has to happen before the object exists: subclassing an immutable type (<code>int</code>, <code>str</code>, <code>tuple</code>) whose value is fixed at creation, returning a cached or singleton instance, or returning an object of a different class. Metaclasses also use <code>__new__</code> to build classes."
+          },
+          {
+            "type": "code",
+            "src": "class UpperStr(str):\n    def __new__(cls, value):\n        return super().__new__(cls, value.upper())\n    def __init__(self, value):\n        print(\"init sees\", repr(value), \"but self is\", repr(str(self)))\n\nprint(UpperStr(\"hello\"))",
+            "label": null,
+            "output": "init sees 'hello' but self is 'HELLO'\nHELLO",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "q": "Why should <code>__add__</code> return <code>NotImplemented</code> instead of raising <code>TypeError</code>?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "Returning <code>NotImplemented</code> tells Python &ldquo;I do not handle this operand, ask the other side&rdquo;, so it goes on to try <code>other.__radd__(self)</code>. Raising <code>TypeError</code> ends the operation immediately, so another type that <em>does</em> know how to add itself to yours never gets asked. Python raises the <code>TypeError</code> for you once both sides have returned <code>NotImplemented</code>."
+          },
+          {
+            "type": "code",
+            "src": "class Strict:\n    def __add__(self, other):\n        raise TypeError(\"no\")\n\nclass Polite:\n    def __add__(self, other):\n        return NotImplemented\n\nclass Meters:\n    def __radd__(self, other):\n        return f\"Meters added to {type(other).__name__}\"\n\nprint(Polite() + Meters())\ntry:\n    Strict() + Meters()\nexcept TypeError as e:\n    print(\"TypeError:\", e)",
+            "label": null,
+            "output": "Meters added to Polite\nTypeError: no",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Note that <code>NotImplemented</code> (a singleton value) and <code>NotImplementedError</code> (an exception for abstract methods) are different things."
+          }
+        ]
+      },
+      {
+        "q": "What is the difference between <code>__getattr__</code> and <code>__getattribute__</code>?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "<code>__getattribute__</code> runs for every attribute read, before anything else, and is what implements normal lookup (instance dict, class, descriptors). <code>__getattr__</code> is only a fallback: Python calls it after normal lookup has raised <code>AttributeError</code>. Overriding <code>__getattr__</code> is safe and common (proxies, dynamic attributes). Overriding <code>__getattribute__</code> is rare, slows every access, and recurses infinitely if you read <code>self.anything</code> inside it without going through <code>super().__getattribute__</code>."
+          },
+          {
+            "type": "code",
+            "src": "class Demo:\n    x = 1\n    def __getattr__(self, name):\n        return f\"fallback for {name}\"\n\nd = Demo()\nprint(d.x, \"|\", d.y)",
+            "label": null,
+            "output": "1 | fallback for y",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "q": "Explain the output: the class defines only <code>__getitem__</code>, yet <code>for</code>, <code>in</code> and <code>list()</code> all work.",
+        "level": "hard",
+        "answer": [
+          {
+            "type": "code",
+            "src": "class Squares:\n    def __getitem__(self, i):\n        if i >= 5:\n            raise IndexError\n        print(f\"getitem({i})\", end=\" \")\n        return i * i\n\ns = Squares()\nprint(list(s))\nprint(9 in s)\nprint(hasattr(s, \"__iter__\"))",
+            "label": null,
+            "output": "getitem(0) getitem(1) getitem(2) getitem(3) getitem(4) [0, 1, 4, 9, 16]\ngetitem(0) getitem(1) getitem(2) getitem(3) True\nFalse",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "When a type has no <code>__iter__</code>, <code>iter()</code> falls back to the legacy sequence protocol: it builds an iterator that calls <code>__getitem__(0)</code>, <code>__getitem__(1)</code>, &hellip; until <code>IndexError</code>. <code>in</code> without <code>__contains__</code> iterates and compares, stopping at the first match (so <code>getitem(4)</code> is never called for <code>9 in s</code>). This is why <code>collections.abc.Iterable</code> does not detect such classes &mdash; they have no <code>__iter__</code> &mdash; and why the reliable test for iterability is calling <code>iter(x)</code> and catching <code>TypeError</code>."
+          }
+        ]
+      },
+      {
+        "q": "A proxy class forwards everything with <code>__getattr__</code>, but <code>len(proxy)</code> and <code>proxy[0]</code> fail. Why, and how do you fix it?",
+        "level": "hard",
+        "answer": [
+          {
+            "type": "p",
+            "html": "Implicit special method lookup (from operators and built-ins) goes directly to the type&rsquo;s slots and never touches <code>__getattr__</code> or <code>__getattribute__</code>. <code>proxy.__len__()</code> written explicitly would be forwarded; <code>len(proxy)</code> is not. The fix is to define the dunders on the proxy class &mdash; by hand, or generated in a loop:"
+          },
+          {
+            "type": "code",
+            "src": "class Proxy:\n    def __init__(self, target):\n        self._target = target\n    def __getattr__(self, name):\n        return getattr(self._target, name)\n\nfor name in (\"__len__\", \"__getitem__\", \"__iter__\", \"__contains__\"):\n    def forward(self, *args, _name=name):\n        return getattr(self._target, _name)(*args)\n    setattr(Proxy, name, forward)\n\np = Proxy([10, 20, 30])\nprint(len(p), p[0], 20 in p, list(p), p.count(10))",
+            "label": null,
+            "output": "3 10 True [10, 20, 30] 1",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Libraries such as <code>wrapt</code> and <code>unittest.mock.MagicMock</code> do the same: <code>MagicMock</code> exists precisely because a plain <code>Mock</code> cannot intercept dunder calls."
+          }
+        ]
+      },
+      {
+        "q": "Why does <code>+=</code> behave differently on a list stored in a tuple? Explain <code>t = ([1],); t[0] += [2]</code>.",
+        "level": "hard",
+        "answer": [
+          {
+            "type": "code",
+            "src": "t = ([1],)\ntry:\n    t[0] += [2]\nexcept TypeError as e:\n    print(\"TypeError:\", e)\nprint(t)",
+            "label": null,
+            "output": "TypeError: 'tuple' object does not support item assignment\n([1, 2],)",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<code>t[0] += [2]</code> expands to three steps: read <code>x = t[0]</code>; compute <code>x = x.__iadd__([2])</code>; store <code>t[0] = x</code>. <code>list.__iadd__</code> mutates the list in place and returns it, so the append has already happened. Then the store calls <code>tuple.__setitem__</code>, which does not exist, and raises. You get both an exception <em>and</em> a changed value. Using <code>t[0].extend([2])</code> avoids the store step entirely."
+          }
+        ]
+      }
+    ],
+    "refs": [
+      {
+        "label": "Python docs: Special method names",
+        "url": "https://docs.python.org/3/reference/datamodel.html#special-method-names"
+      },
+      {
+        "label": "Python docs: Emulating numeric types",
+        "url": "https://docs.python.org/3/reference/datamodel.html#emulating-numeric-types"
+      },
+      {
+        "label": "Python docs: functools.total_ordering",
+        "url": "https://docs.python.org/3/library/functools.html#functools.total_ordering"
+      },
+      {
+        "label": "Python docs: The NotImplemented constant",
+        "url": "https://docs.python.org/3/library/constants.html#NotImplemented"
+      }
+    ]
+  },
+  {
     "id": "descriptors",
     "title": "Descriptors",
+    "summary": "",
     "intro": [
       "A descriptor is any object whose class defines <code>__get__</code>, <code>__set__</code> or <code>__delete__</code>, stored as a <em>class</em> attribute. When you access that attribute through an instance, Python calls those methods instead of returning the object itself.",
       "It sounds niche, but it is the machinery behind methods, <code>self</code>, <code>property</code>, <code>classmethod</code>, <code>staticmethod</code>, <code>__slots__</code>, <code>functools.cached_property</code>, and every ORM field you have used. Understanding descriptors is understanding how attribute access actually works."
@@ -1965,6 +2638,7 @@ window.GRAIL_DEEP = [
   {
     "id": "metaclasses",
     "title": "Metaclasses",
+    "summary": "",
     "intro": [
       "An object is created by calling its class. A class is also an object, so it too is created by calling <em>its</em> class &mdash; and the class of a class is called a <strong>metaclass</strong>. By default that is <code>type</code>. Write your own and you control what happens when a class statement runs: you can inspect, change, register or reject the class before anyone uses it.",
       "Metaclasses are powerful and almost always the wrong first tool. Since Python 3.6, <code>__init_subclass__</code>, <code>__set_name__</code> and class decorators cover most of what they were used for. This page explains how they work so you can read framework code, and when you genuinely need one."
@@ -2338,6 +3012,7 @@ window.GRAIL_DEEP = [
   {
     "id": "mro",
     "title": "Method Resolution Order",
+    "summary": "",
     "intro": [
       "When you call <code>obj.method()</code> and several classes in the hierarchy define <code>method</code>, Python needs one unambiguous answer to &ldquo;which one?&rdquo;. It gets it by flattening the inheritance graph into a single ordered list &mdash; the <strong>method resolution order</strong> &mdash; and taking the first class in that list that defines the name.",
       "With single inheritance the list is obvious. With multiple inheritance it is computed by the <strong>C3 linearization</strong> algorithm, and it is also what <code>super()</code> walks. Most confusion about <code>super()</code> disappears once you see that it means &ldquo;the next class in the MRO&rdquo;, not &ldquo;my parent&rdquo;."
@@ -2658,6 +3333,7 @@ window.GRAIL_DEEP = [
   {
     "id": "decorators",
     "title": "Decorators",
+    "summary": "",
     "intro": [
       "<code>@decorator</code> above a <code>def</code> is one line of syntax sugar: <code>func = decorator(func)</code>. That is all the language does. What makes decorators powerful is everything that single call can do &mdash; wrap the function, replace it, register it, attach data to it, or turn it into a completely different kind of object such as a <code>property</code>.",
       "This page goes from the rebinding rule to closures, <code>functools.wraps</code>, decorators with arguments, stacking order, class-based decorators and the descriptor bug they hit on methods, class decorators, and the standard-library decorators worth knowing cold."
@@ -3032,6 +3708,7 @@ window.GRAIL_DEEP = [
   {
     "id": "context-managers",
     "title": "Context Managers",
+    "summary": "",
     "intro": [
       "A <code>with</code> block guarantees that setup is paired with teardown, whether the block finishes normally, returns early, or raises. Files get closed, locks get released, transactions get committed or rolled back. The object that provides the setup and teardown is a <strong>context manager</strong>, and the protocol behind it is two methods: <code>__enter__</code> and <code>__exit__</code>.",
       "This page covers exactly what <code>with</code> expands to, how exceptions flow through <code>__exit__</code> and how to suppress them, writing managers as classes and as generators, managing a dynamic number of them with <code>ExitStack</code>, and the async version."
@@ -3462,6 +4139,7 @@ window.GRAIL_DEEP = [
   {
     "id": "async",
     "title": "Async Internals",
+    "summary": "",
     "intro": [
       "<code>asyncio</code> runs thousands of concurrent tasks on one thread, with no locks around your data and no thread switches. There is no magic in how: a coroutine is a function that can pause, <code>await</code> is the pause point, and the event loop is an ordinary loop that resumes whichever coroutine has something to do next.",
       "This page builds the machinery up from generators, writes a toy event loop, then maps it onto the real one: tasks, futures, <code>gather</code> and <code>TaskGroup</code>, cancellation and timeouts, why one blocking call freezes everything, and how to bridge sync and async code."
