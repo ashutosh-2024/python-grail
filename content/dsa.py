@@ -92,13 +92,17 @@ def stub(id, title, plan, target=None):
 
 
 from heap import HEAP_TOPIC
+from trees_prelude import TREE_PRELUDE
+import trees_paths, trees_build, trees_lca, trees_dp, bst_core, bst_more, trees_advanced
+from dp import DP_TOPIC
+from backtracking import BACKTRACKING_TOPIC
 
 TOPICS = [
 
 dict(
     id="trees",
     title="Binary Trees",
-    target=20,
+    prelude=TREE_PRELUDE,
     blurb=[
         "Almost every binary-tree interview question is one of a small number of shapes wearing different clothes. This path works through those shapes in the order that each one makes the next one easier &mdash; not in difficulty order, and not in the order LeetCode numbers them.",
         "Traversals come first because they give you the vocabulary. Once you know what <em>preorder</em>, <em>postorder</em> and <em>level order</em> mean, every later explanation is one sentence instead of three.",
@@ -1436,6 +1440,8 @@ assert is_complete(build([1, None, 2])) is False''',
 ),
 
 HEAP_TOPIC,
+DP_TOPIC,
+BACKTRACKING_TOPIC,
 ] + [
 
 # Planned topics. None has any problems yet, so each is a placeholder page
@@ -1444,10 +1450,6 @@ HEAP_TOPIC,
 # problems the topic is planned to hold, where one has been decided.
 stub(id, title, plan, target)
 for id, title, target, plan in [
-    ("dp", "Dynamic Programming", None,
-     "spotting overlapping subproblems, top-down memoisation with <code>functools.cache</code> versus bottom-up tables, shrinking a table to O(1) rolling state, and the 1-D, grid, knapsack, subsequence and interval families."),
-    ("backtracking", "Backtracking", None,
-     "the choose / explore / un-choose template, subsets, permutations and combinations with and without duplicates, pruning, and why the output size &mdash; not the recursion &mdash; is what sets the time bound."),
     ("graphs", "Graphs", 20,
      "adjacency lists from edge lists, BFS and DFS on grids and general graphs, visited-set discipline, topological sort (Kahn's and DFS), cycle detection, multi-source BFS, and Dijkstra with <code>heapq</code>."),
     ("greedy", "Greedy", 3,
@@ -1473,3 +1475,32 @@ for id, title, target, plan in [
     ("math", "Math and Number Theory", 2,
      "gcd, modular arithmetic and <code>pow(a, b, m)</code>, primes with a sieve, and the overflow traps Python lets you ignore."),
 ]]
+
+
+def _extend_trees(topic):
+    """Slot the problem modules into the Binary Trees path, in study order.
+
+    Sections defined above stay where they are; each module's SECTIONS are
+    inserted as a block, and a module's EXTRA problems are appended to an
+    existing section by id."""
+    by_id = {sec["id"]: sec for sec in topic["sections"]}
+    modules = (trees_paths, trees_build, trees_lca, trees_dp,
+               bst_core, bst_more, trees_advanced)
+    for mod in modules:
+        for sid, problems in getattr(mod, "EXTRA", {}).items():
+            by_id[sid]["problems"].extend(problems)
+        for sec in mod.SECTIONS:
+            by_id[sec["id"]] = sec
+
+    def ids(mod):
+        return [sec["id"] for sec in mod.SECTIONS]
+
+    order = (["dfs-orders", "depth", "level-order", "compare-transform", "aggregates"]
+             + ids(trees_paths) + ids(trees_build) + ids(trees_lca)
+             + ["shape"]
+             + ids(trees_dp) + ids(bst_core) + ids(bst_more) + ids(trees_advanced))
+    assert sorted(order) == sorted(by_id), "a tree section is missing from the order"
+    topic["sections"] = [by_id[i] for i in order]
+
+
+_extend_trees(next(t for t in TOPICS if t["id"] == "trees"))

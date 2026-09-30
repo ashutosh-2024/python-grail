@@ -21,6 +21,7 @@ import tempfile
 ROOT = pathlib.Path(__file__).parent
 OUT = ROOT / "assets" / "js" / "data.js"
 OUT_DSA = ROOT / "assets" / "js" / "dsa-data.js"
+OUT_DEEP = ROOT / "assets" / "js" / "deepdive-data.js"
 
 TIMEOUT = 15
 ENV = {
@@ -186,6 +187,10 @@ def build_dsa() -> int:
                     "tests": prob["tests"].rstrip("\n"),
                     "topic": topic["id"],
                     "topicTitle": topic["title"],
+                    "section": section["id"],
+                    "sectionTitle": section["title"],
+                    "ref": ({"label": prob["ref"][0], "url": prob["ref"][1]}
+                            if prob.get("ref") else None),
                 }
                 expect = f"https://leetcode.com/problems/{slug}/" if slug else ""
                 if built["url"] != expect:
@@ -201,6 +206,8 @@ def build_dsa() -> int:
             sections.append({
                 "id": section["id"],
                 "title": section["title"],
+                "summary": section.get("summary", ""),
+                "idea": section.get("idea", []),
                 "problems": problems,
             })
         topics.append({
@@ -208,6 +215,7 @@ def build_dsa() -> int:
             "title": topic["title"],
             "status": topic.get("status", "ready"),
             "target": topic.get("target"),
+            "layout": topic.get("layout", "flat"),
             "sections": sections,
             "problems": flat,
             "count": len(flat),
@@ -226,20 +234,109 @@ def build_dsa() -> int:
     return total
 
 
+DEEP_TAGS = ALLOWED_TAGS | {"br"}
+DEEP_LEVELS = {"medium", "hard"}
+DEEP_MAX_LINES = 45
+
+
+def build_deepdive() -> int:
+    """Execute every Deep Dive code block and emit deepdive-data.js."""
+    import deepdive as content
+
+    topics, seen, runs = [], set(), 0
+    problems = []
+
+    def render(blocks, where, slug):
+        nonlocal runs
+        out = []
+        for i, b in enumerate(blocks):
+            if isinstance(b, str):
+                for tag in re.findall(r"</?(\w+)", b):
+                    if tag not in DEEP_TAGS:
+                        problems.append(f"{where}: unexpected <{tag}>")
+                out.append({"type": "p", "html": b})
+                continue
+            b = dict(b)
+            if b["type"] == "code":
+                if b.pop("run"):
+                    output, raised = run_snippet(f"{slug}_{i}", b["src"])
+                    runs += 1
+                    if raised != b["raises"]:
+                        what = "unexpected traceback" if raised else "expected a traceback"
+                        raise SystemExit(f"{where} block {i}: {what}\n{b['src']}\n---\n{output}")
+                    n = len(output.splitlines())
+                    if n > DEEP_MAX_LINES:
+                        problems.append(f"{where} block {i}: output is {n} lines")
+                    b["output"] = output
+                b["isError"] = b.pop("raises")
+            out.append(b)
+        return out
+
+    for t in content.TOPICS:
+        if t["id"] in seen:
+            raise SystemExit(f"duplicate deep-dive id: {t['id']}")
+        seen.add(t["id"])
+        base = t["id"].replace("-", "_")
+        sections = []
+        for si, s in enumerate(t["sections"]):
+            sections.append({
+                "title": s["title"],
+                "body": render(s["body"], f"{t['id']} / {s['title']}", f"{base}_s{si}"),
+            })
+        questions = []
+        for qi, q in enumerate(t["questions"]):
+            if q["level"] not in DEEP_LEVELS:
+                problems.append(f"{t['id']} Q{qi + 1}: bad level {q['level']!r}")
+            questions.append({
+                "q": q["q"],
+                "level": q["level"],
+                "answer": render(q["answer"], f"{t['id']} / Q{qi + 1}", f"{base}_q{qi}"),
+            })
+        topics.append({
+            "id": t["id"],
+            "title": t["title"],
+            "intro": t["intro"],
+            "sections": sections,
+            "questions": questions,
+            "refs": [{"label": l, "url": u} for l, u in t.get("refs", [])],
+        })
+
+    if problems:
+        raise SystemExit("deep-dive validation failed:\n  " + "\n  ".join(problems))
+
+    body = json.dumps(topics, indent=2, ensure_ascii=False)
+    OUT_DEEP.write_text(
+        "/* GENERATED FILE - do not edit by hand.\n"
+        "   Source: content/deepdive/   Build: python3 build.py\n"
+        "   Every code block below was executed and its output captured. */\n\n"
+        f"window.GRAIL_DEEP = {body};\n",
+        encoding="utf-8")
+    print(f"built {len(topics)} deep-dive topics, {runs} code blocks executed "
+          f"-> {OUT_DEEP.relative_to(ROOT)}")
+    return len(topics)
+
+
 def stamp_assets() -> str:
-    """Append a content hash to the stylesheet link so browsers cannot serve
-    a stale style.css after a rebuild."""
-    css = ROOT / "assets" / "css" / "style.css"
-    digest = hashlib.sha256(css.read_bytes()).hexdigest()[:8]
-    pattern = re.compile(r'(href="assets/css/style\.css)(\?v=[0-9a-f]+)?(")')
+    """Append a content hash to every local stylesheet and script reference, so
+    browsers cannot serve a stale style.css or data file after a rebuild."""
+    pattern = re.compile(r'((?:href|src)="(assets/(?:css|js)/[\w.-]+\.(?:css|js)))(\?v=[0-9a-f]+)?(")')
+    digests = {}
+
+    def stamp(m):
+        path = m.group(2)
+        if path not in digests:
+            digests[path] = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()[:8]
+        return f"{m.group(1)}?v={digests[path]}{m.group(4)}"
+
     touched = 0
     for page in sorted(ROOT.glob("*.html")):
         text = page.read_text(encoding="utf-8")
-        new = pattern.sub(rf'\1?v={digest}\3', text)
+        new = pattern.sub(stamp, text)
         if new != text:
             page.write_text(new, encoding="utf-8")
             touched += 1
-    print(f"stamped style.css?v={digest} into {touched} page(s)")
+    digest = digests.get("assets/css/style.css", "")
+    print(f"stamped {len(digests)} asset(s) into {touched} page(s)")
     return digest
 
 
@@ -312,6 +409,7 @@ def main() -> None:
     print("  " + "  ".join(f"{k}={v}" for k, v in sorted(by.items())))
 
     build_dsa()
+    build_deepdive()
     stamp_assets()
 
 

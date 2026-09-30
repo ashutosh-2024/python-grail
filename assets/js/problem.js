@@ -14,6 +14,13 @@
       '<span aria-hidden="true">&#8599;</span></a>';
   }
 
+  function refLink(p) {
+    if (!p.ref) return "";
+    return '<a class="ref-link" href="' + p.ref.url + '" target="_blank" rel="noopener">' +
+      "<span>" + esc(p.ref.label) + "</span>" +
+      '<span aria-hidden="true">&#8599;</span></a>';
+  }
+
   /* ---------- locate the problem ---------- */
   var flat = [];
   (window.GRAIL_DSA || []).forEach(function (t) {
@@ -32,6 +39,13 @@
   }
 
   var p = flat[idx];
+  var topicObj = (window.GRAIL_DSA || []).filter(function (t) {
+    return t.id === p.topic;
+  })[0] || {};
+  var patternCrumb = topicObj.layout === "patterns"
+    ? ' / <a href="dsa.html?topic=' + encodeURIComponent(p.topic) + "&amp;pattern=" +
+        encodeURIComponent(p.section) + '">' + esc(p.sectionTitle) + "</a>"
+    : "";
   document.title = (p.lc ? p.lc + ". " : "") + p.name + " — python-grail";
 
   var html = "";
@@ -41,7 +55,7 @@
     '<div class="prob-head">' +
       '<p class="crumb"><a href="dsa.html">DSA</a> / ' +
         '<a href="dsa.html?topic=' + encodeURIComponent(p.topic) + '">' +
-          esc(p.topicTitle) + "</a></p>" +
+          esc(p.topicTitle) + "</a>" + patternCrumb + "</p>" +
       '<div class="meta">' +
         (p.lc ? '<span class="crumb">LeetCode ' + p.lc + "</span>" : "") +
         '<span class="badge ' + p.difficulty + '">' + p.difficulty + "</span>" +
@@ -53,7 +67,9 @@
             return '<span class="tag">' + esc(t) + "</span>";
           }).join("") + "</div>"
         : "") +
-      (p.url ? '<div class="actions">' + lcLink(p) + "</div>" : "") +
+      (p.url || p.ref
+        ? '<div class="actions">' + lcLink(p) + refLink(p) + "</div>"
+        : "") +
     "</div>";
 
   html += '<div class="entry-body">';
