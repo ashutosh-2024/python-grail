@@ -112,5 +112,91 @@ window.GRAIL_FEATURED = [
     document.querySelectorAll("[data-count]").forEach(function (el) {
       el.textContent = window.entries.length;
     });
+    addThemeToggle();
+    addCopyButtons(document);
+    new MutationObserver(function (records) {
+      records.forEach(function (r) {
+        r.addedNodes.forEach(function (n) { if (n.nodeType === 1) addCopyButtons(n); });
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+    document.addEventListener("keydown", function (e) {
+      var tag = (e.target.tagName || "").toLowerCase();
+      if (e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey &&
+          tag !== "input" && tag !== "textarea" && tag !== "select" && !e.target.isContentEditable) {
+        var box = document.getElementById("site-search");
+        e.preventDefault();
+        if (box) box.focus(); else location.href = "search.html";
+      }
+    });
   });
+
+  /* ---------- light / dark toggle ---------- */
+  function addThemeToggle() {
+    var nav = document.querySelector(".site-header .nav");
+    if (!nav || nav.querySelector(".theme-toggle")) return;
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "theme-toggle";
+    function sync() {
+      var light = document.documentElement.getAttribute("data-theme") === "light";
+      btn.textContent = light ? "\u263E" : "\u2600";
+      btn.title = light ? "Switch to dark theme" : "Switch to light theme";
+      btn.setAttribute("aria-label", btn.title);
+    }
+    btn.addEventListener("click", function () {
+      var next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("grail-theme", next); } catch (e) {}
+      sync();
+    });
+    sync();
+    var gh = nav.querySelector(".gh");
+    nav.insertBefore(btn, gh ? gh.nextSibling : null);
+  }
+
+  /* ---------- copy button on every source block (not on outputs) ---------- */
+  function copyText(text, done) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, function () { fallback(); });
+    } else {
+      fallback();
+    }
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  }
+
+  function addCopyButtons(scope) {
+    var pres = scope.matches && scope.matches("pre.code") ? [scope]
+             : scope.querySelectorAll ? scope.querySelectorAll("pre.code") : [];
+    Array.prototype.forEach.call(pres, function (pre) {
+      if (pre.classList.contains("output") || pre.classList.contains("rec-formula") ||
+          (pre.parentNode && pre.parentNode.classList &&
+           pre.parentNode.classList.contains("code-wrap"))) return;
+      var wrap = document.createElement("div");
+      wrap.className = "code-wrap";
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "copy-btn";
+      btn.textContent = "Copy";
+      btn.setAttribute("aria-label", "Copy code to clipboard");
+      btn.addEventListener("click", function () {
+        copyText(pre.textContent, function () {
+          btn.textContent = "Copied";
+          btn.classList.add("done");
+          setTimeout(function () { btn.textContent = "Copy"; btn.classList.remove("done"); }, 1400);
+        });
+      });
+      wrap.appendChild(btn);
+    });
+  }
 })();

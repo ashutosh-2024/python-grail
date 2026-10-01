@@ -10,6 +10,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import random\nfrom collections import Counter, defaultdict\n\nTreeNode.next = None          # the next-pointer problems attach .next per node\n\n\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(values):\n    dummy = tail = ListNode()\n    for v in values:\n        tail.next = ListNode(v)\n        tail = tail.next\n    return dummy.next\n\n\nclass Node:\n    \"\"\"LeetCode's N-ary tree node.\"\"\"\n    def __init__(self, val=None, children=None):\n        self.val = val\n        self.children = children if children is not None else []\n\n\ndef build_nary(values):\n    \"\"\"LeetCode's N-ary format: level order, None closes each child group.\"\"\"\n    if not values:\n        return None\n    root = Node(values[0])\n    queue, i = deque([root]), 2\n    while queue and i < len(values):\n        parent = queue.popleft()\n        while i < len(values) and values[i] is not None:\n            child = Node(values[i])\n            parent.children.append(child)\n            queue.append(child)\n            i += 1\n        i += 1\n    return root\n\n\ndef vals_pre(root):\n    return [] if root is None else [root.val] + vals_pre(root.left) + vals_pre(root.right)\n\n\ndef vals_in(root):\n    return [] if root is None else vals_in(root.left) + [root.val] + vals_in(root.right)\n\n\ndef vals_post(root):\n    return [] if root is None else vals_post(root.left) + vals_post(root.right) + [root.val]\n\n\ndef find_node(root, val):\n    if root is None or root.val == val:\n        return root\n    return find_node(root.left, val) or find_node(root.right, val)\n\n\ndef all_nodes(root):\n    return [] if root is None else [root] + all_nodes(root.left) + all_nodes(root.right)\n\n\ndef tree_height(root):\n    return 0 if root is None else 1 + max(tree_height(root.left), tree_height(root.right))\n\n\ndef random_tree(n, seed, lo=0, hi=9, distinct=False):\n    \"\"\"A random-shaped tree of n nodes: each new node hangs off a random free slot.\"\"\"\n    rng = random.Random(seed)\n    if n == 0:\n        return None\n    pool = rng.sample(range(lo, hi + 1), n) if distinct else [rng.randint(lo, hi) for _ in range(n)]\n    root = TreeNode(pool[0])\n    slots = [(root, \"left\"), (root, \"right\")]\n    for v in pool[1:]:\n        parent, side = slots.pop(rng.randrange(len(slots)))\n        child = TreeNode(v)\n        setattr(parent, side, child)\n        slots += [(child, \"left\"), (child, \"right\")]\n    return root\n\n\ndef random_bst(n, seed, lo=0, hi=999):\n    \"\"\"A BST of n distinct values inserted in random order.\"\"\"\n    rng = random.Random(seed)\n    root = None\n    for v in rng.sample(range(lo, hi + 1), n):\n        root = _bst_add(root, v)\n    return root\n\n\ndef _bst_add(node, v):\n    if node is None:\n        return TreeNode(v)\n    if v < node.val:\n        node.left = _bst_add(node.left, v)\n    else:\n        node.right = _bst_add(node.right, v)\n    return node\n\n\ndef is_valid_bst(root, lo=float(\"-inf\"), hi=float(\"inf\")):\n    if root is None:\n        return True\n    return lo < root.val < hi and is_valid_bst(root.left, lo, root.val) \\\n        and is_valid_bst(root.right, root.val, hi)\n\n\ndef is_height_balanced(root):\n    def h(node):\n        if node is None:\n            return 0\n        a, b = h(node.left), h(node.right)\n        if a < 0 or b < 0 or abs(a - b) > 1:\n            return -1\n        return 1 + max(a, b)\n    return h(root) >= 0\n\n\ndef shape(root):\n    \"\"\"A hashable description of structure and values, for comparing trees.\"\"\"\n    return None if root is None else (root.val, shape(root.left), shape(root.right))",
     "sections": [
       {
         "id": "dfs-orders",
@@ -23,6 +24,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "preorder-traversal",
+            "starter": "def preorder(root):\n    pass\n",
             "num": 1,
             "lc": 144,
             "slug": "binary-tree-preorder-traversal",
@@ -116,6 +118,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "inorder-traversal",
+            "starter": "def inorder(root):\n    pass\n",
             "num": 2,
             "lc": 94,
             "slug": "binary-tree-inorder-traversal",
@@ -209,6 +212,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "postorder-traversal",
+            "starter": "def postorder(root):\n    pass\n",
             "num": 3,
             "lc": 145,
             "slug": "binary-tree-postorder-traversal",
@@ -314,6 +318,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "maximum-depth",
+            "starter": "def max_depth(root):\n    pass\n",
             "num": 4,
             "lc": 104,
             "slug": "maximum-depth-of-binary-tree",
@@ -400,6 +405,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "minimum-depth",
+            "starter": "def min_depth(root):\n    pass\n",
             "num": 5,
             "lc": 111,
             "slug": "minimum-depth-of-binary-tree",
@@ -487,6 +493,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "level-order-traversal",
+            "starter": "def level_order_lists(root):\n    pass\n",
             "num": 6,
             "lc": 102,
             "slug": "binary-tree-level-order-traversal",
@@ -563,6 +570,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "level-order-bottom-up",
+            "starter": "def level_order_bottom(root):\n    pass\n",
             "num": 7,
             "lc": 107,
             "slug": "binary-tree-level-order-traversal-ii",
@@ -638,6 +646,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "zigzag-level-order",
+            "starter": "def zigzag(root):\n    pass\n",
             "num": 8,
             "lc": 103,
             "slug": "binary-tree-zigzag-level-order-traversal",
@@ -723,6 +732,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "same-tree",
+            "starter": "def is_same_tree(p, q):\n    pass\n",
             "num": 9,
             "lc": 100,
             "slug": "same-tree",
@@ -800,6 +810,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "symmetric-tree",
+            "starter": "def is_symmetric(root):\n    pass\n",
             "num": 10,
             "lc": 101,
             "slug": "symmetric-tree",
@@ -872,6 +883,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "invert-binary-tree",
+            "starter": "def invert(root):\n    pass\n",
             "num": 11,
             "lc": 226,
             "slug": "invert-binary-tree",
@@ -947,6 +959,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "merge-two-binary-trees",
+            "starter": "def merge_trees(root1, root2):\n    pass\n",
             "num": 12,
             "lc": 617,
             "slug": "merge-two-binary-trees",
@@ -1023,6 +1036,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "subtree-of-another-tree",
+            "starter": "def is_subtree(root, sub_root):\n    pass\n",
             "num": 13,
             "lc": 572,
             "slug": "subtree-of-another-tree",
@@ -1112,6 +1126,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "balanced-binary-tree",
+            "starter": "def is_balanced(root):\n    pass\n",
             "num": 14,
             "lc": 110,
             "slug": "balanced-binary-tree",
@@ -1190,6 +1205,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "diameter-of-binary-tree",
+            "starter": "def diameter(root):\n    pass\n",
             "num": 15,
             "lc": 543,
             "slug": "diameter-of-binary-tree",
@@ -1265,6 +1281,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "binary-tree-tilt",
+            "starter": "def find_tilt(root):\n    pass\n",
             "num": 16,
             "lc": 563,
             "slug": "binary-tree-tilt",
@@ -1345,6 +1362,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "max-diff-node-ancestor",
+            "starter": "def max_ancestor_diff(root):\n    pass\n",
             "num": 17,
             "lc": 1026,
             "slug": "maximum-difference-between-node-and-ancestor",
@@ -1418,6 +1436,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "longest-univalue-path",
+            "starter": "def longest_univalue_path(root):\n    pass\n",
             "num": 18,
             "lc": 687,
             "slug": "longest-univalue-path",
@@ -1504,6 +1523,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "path-sum",
+            "starter": "def has_path_sum(root, target):\n    pass\n",
             "num": 19,
             "lc": 112,
             "slug": "path-sum",
@@ -1584,6 +1604,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "path-sum-ii",
+            "starter": "def path_sum(root, target):\n    pass\n",
             "num": 20,
             "lc": 113,
             "slug": "path-sum-ii",
@@ -1663,6 +1684,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "binary-tree-paths",
+            "starter": "def binary_tree_paths(root):\n    pass\n",
             "num": 21,
             "lc": 257,
             "slug": "binary-tree-paths",
@@ -1737,6 +1759,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "sum-root-to-leaf-numbers",
+            "starter": "def sum_numbers(root):\n    pass\n",
             "num": 22,
             "lc": 129,
             "slug": "sum-root-to-leaf-numbers",
@@ -1812,6 +1835,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "sum-root-to-leaf-binary",
+            "starter": "def sum_root_to_leaf(root):\n    pass\n",
             "num": 23,
             "lc": 1022,
             "slug": "sum-of-root-to-leaf-binary-numbers",
@@ -1872,6 +1896,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "smallest-string-from-leaf",
+            "starter": "def smallest_from_leaf(root):\n    pass\n",
             "num": 24,
             "lc": 988,
             "slug": "smallest-string-starting-from-leaf",
@@ -1938,6 +1963,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "pseudo-palindromic-paths",
+            "starter": "def pseudo_palindromic_paths(root):\n    pass\n",
             "num": 25,
             "lc": 1457,
             "slug": "pseudo-palindromic-paths-in-a-binary-tree",
@@ -2028,6 +2054,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "binary-tree-maximum-path-sum",
+            "starter": "def max_path_sum(root):\n    pass\n",
             "num": 26,
             "lc": 124,
             "slug": "binary-tree-maximum-path-sum",
@@ -2105,6 +2132,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "path-sum-iii",
+            "starter": "def path_sum_iii(root, target):\n    pass\n",
             "num": 27,
             "lc": 437,
             "slug": "path-sum-iii",
@@ -2179,6 +2207,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "good-leaf-node-pairs",
+            "starter": "def count_pairs(root, distance):\n    pass\n",
             "num": 28,
             "lc": 1530,
             "slug": "number-of-good-leaf-nodes-pairs",
@@ -2269,6 +2298,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "right-side-view",
+            "starter": "def right_side_view(root):\n    pass\n",
             "num": 29,
             "lc": 199,
             "slug": "binary-tree-right-side-view",
@@ -2348,6 +2378,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "top-bottom-view",
+            "starter": "def top_and_bottom_view(root):\n    pass\n",
             "num": 30,
             "lc": null,
             "slug": "",
@@ -2405,6 +2436,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "bottom-left-value",
+            "starter": "def find_bottom_left_value(root):\n    pass\n",
             "num": 31,
             "lc": 513,
             "slug": "find-bottom-left-tree-value",
@@ -2478,6 +2510,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "add-one-row",
+            "starter": "def add_one_row(root, val, depth):\n    pass\n",
             "num": 32,
             "lc": 623,
             "slug": "add-one-row-to-tree",
@@ -2554,6 +2587,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "average-of-levels",
+            "starter": "def average_of_levels(root):\n    pass\n",
             "num": 33,
             "lc": 637,
             "slug": "average-of-levels-in-binary-tree",
@@ -2624,6 +2658,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "deepest-leaves-sum",
+            "starter": "def deepest_leaves_sum(root):\n    pass\n",
             "num": 34,
             "lc": 1302,
             "slug": "deepest-leaves-sum",
@@ -2703,6 +2738,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "build-from-preorder-inorder",
+            "starter": "def build_tree(preorder, inorder):\n    pass\n",
             "num": 35,
             "lc": 105,
             "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
@@ -2780,6 +2816,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "build-from-inorder-postorder",
+            "starter": "def build_tree(inorder, postorder):\n    pass\n",
             "num": 36,
             "lc": 106,
             "slug": "construct-binary-tree-from-inorder-and-postorder-traversal",
@@ -2844,6 +2881,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "build-from-preorder-postorder",
+            "starter": "def construct_from_pre_post(preorder, postorder):\n    pass\n",
             "num": 37,
             "lc": 889,
             "slug": "construct-binary-tree-from-preorder-and-postorder-traversal",
@@ -2909,6 +2947,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "construct-string-from-tree",
+            "starter": "def tree2str(root):\n    pass\n",
             "num": 38,
             "lc": 606,
             "slug": "construct-string-from-binary-tree",
@@ -2973,6 +3012,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "maximum-binary-tree",
+            "starter": "def construct_maximum_binary_tree(nums):\n    pass\n",
             "num": 39,
             "lc": 654,
             "slug": "maximum-binary-tree",
@@ -3059,6 +3099,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "serialize-deserialize-tree",
+            "starter": "class Codec:\n\n    def serialize(self, root):\n        pass\n\n    def deserialize(self, data):\n        pass\n",
             "num": 40,
             "lc": 297,
             "slug": "serialize-and-deserialize-binary-tree",
@@ -3134,6 +3175,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "serialize-deserialize-bst",
+            "starter": "class Codec:\n\n    def serialize(self, root):\n        pass\n\n    def deserialize(self, data):\n        pass\n",
             "num": 41,
             "lc": 449,
             "slug": "serialize-and-deserialize-bst",
@@ -3208,6 +3250,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "lca-binary-tree",
+            "starter": "def lowest_common_ancestor(root, p, q):\n    pass\n",
             "num": 42,
             "lc": 236,
             "slug": "lowest-common-ancestor-of-a-binary-tree",
@@ -3291,6 +3334,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "lca-bst",
+            "starter": "def lowest_common_ancestor(root, p, q):\n    pass\n",
             "num": 43,
             "lc": 235,
             "slug": "lowest-common-ancestor-of-a-binary-search-tree",
@@ -3373,6 +3417,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "lca-deepest-leaves",
+            "starter": "def lca_deepest_leaves(root):\n    pass\n",
             "num": 44,
             "lc": 1123,
             "slug": "lowest-common-ancestor-of-deepest-leaves",
@@ -3445,6 +3490,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "subtree-deepest-nodes",
+            "starter": "def subtree_with_all_deepest(root):\n    pass\n",
             "num": 45,
             "lc": 865,
             "slug": "smallest-subtree-with-all-the-deepest-nodes",
@@ -3530,6 +3576,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "lca-binary-lifting",
+            "starter": "class LCA:\n\n    def __init__(self, root):\n        pass\n\n    def query(self, a, b):\n        pass\n",
             "num": 46,
             "lc": null,
             "slug": "",
@@ -3596,6 +3643,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "all-nodes-distance-k",
+            "starter": "def distance_k(root, target, k):\n    pass\n",
             "num": 47,
             "lc": 863,
             "slug": "all-nodes-distance-k-in-binary-tree",
@@ -3673,6 +3721,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "find-distance",
+            "starter": "def find_distance(root, p, q):\n    pass\n",
             "num": 48,
             "lc": 1740,
             "slug": "find-distance-in-a-binary-tree",
@@ -3750,6 +3799,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "time-to-infect",
+            "starter": "def amount_of_time(root, start):\n    pass\n",
             "num": 49,
             "lc": 2385,
             "slug": "amount-of-time-for-binary-tree-to-be-infected",
@@ -3840,6 +3890,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "count-complete-tree-nodes",
+            "starter": "def count_nodes(root):\n    pass\n",
             "num": 50,
             "lc": 222,
             "slug": "count-complete-tree-nodes",
@@ -3920,6 +3971,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "check-completeness",
+            "starter": "def is_complete(root):\n    pass\n",
             "num": 51,
             "lc": 958,
             "slug": "check-completeness-of-a-binary-tree",
@@ -3995,6 +4047,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "maximum-width",
+            "starter": "def width_of_binary_tree(root):\n    pass\n",
             "num": 52,
             "lc": 662,
             "slug": "maximum-width-of-binary-tree",
@@ -4063,6 +4116,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "all-possible-full-binary-trees",
+            "starter": "from functools import cache\n\n\n@cache\ndef all_possible_fbt(n):\n    pass\n",
             "num": 53,
             "lc": 894,
             "slug": "all-possible-full-binary-trees",
@@ -4133,6 +4187,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "flatten-to-linked-list",
+            "starter": "def flatten(root):\n    pass\n",
             "num": 54,
             "lc": 114,
             "slug": "flatten-binary-tree-to-linked-list",
@@ -4210,6 +4265,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "binary-tree-pruning",
+            "starter": "def prune_tree(root):\n    pass\n",
             "num": 55,
             "lc": 814,
             "slug": "binary-tree-pruning",
@@ -4273,6 +4329,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "delete-leaves-with-value",
+            "starter": "def remove_leaf_nodes(root, target):\n    pass\n",
             "num": 56,
             "lc": 1325,
             "slug": "delete-leaves-with-a-given-value",
@@ -4347,6 +4404,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "house-robber-iii",
+            "starter": "def rob(root):\n    pass\n",
             "num": 57,
             "lc": 337,
             "slug": "house-robber-iii",
@@ -4423,6 +4481,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "binary-tree-cameras",
+            "starter": "def min_camera_cover(root):\n    pass\n",
             "num": 58,
             "lc": 968,
             "slug": "binary-tree-cameras",
@@ -4499,6 +4558,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "distribute-coins",
+            "starter": "def distribute_coins(root):\n    pass\n",
             "num": 59,
             "lc": 979,
             "slug": "distribute-coins-in-binary-tree",
@@ -4573,6 +4633,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "count-good-nodes",
+            "starter": "def good_nodes(root):\n    pass\n",
             "num": 60,
             "lc": 1448,
             "slug": "count-good-nodes-in-binary-tree",
@@ -4639,6 +4700,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "nodes-equal-average",
+            "starter": "def average_of_subtree(root):\n    pass\n",
             "num": 61,
             "lc": 2265,
             "slug": "count-nodes-equal-to-average-of-subtree",
@@ -4700,6 +4762,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "most-frequent-subtree-sum",
+            "starter": "def find_frequent_tree_sum(root):\n    pass\n",
             "num": 62,
             "lc": 508,
             "slug": "most-frequent-subtree-sum",
@@ -4760,6 +4823,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "find-duplicate-subtrees",
+            "starter": "def find_duplicate_subtrees(root):\n    pass\n",
             "num": 63,
             "lc": 652,
             "slug": "find-duplicate-subtrees",
@@ -4847,6 +4911,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "kth-smallest-bst",
+            "starter": "def kth_smallest(root, k):\n    pass\n",
             "num": 64,
             "lc": 230,
             "slug": "kth-smallest-element-in-a-bst",
@@ -4930,6 +4995,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "search-bst",
+            "starter": "def search_bst(root, val):\n    pass\n",
             "num": 65,
             "lc": 700,
             "slug": "search-in-a-binary-search-tree",
@@ -5002,6 +5068,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "bst-floor-ceiling",
+            "starter": "def bst_min(root):\n    pass\n\n\ndef bst_max(root):\n    pass\n\n\ndef floor(root, x):\n    pass\n\n\ndef ceiling(root, x):\n    pass\n",
             "num": 66,
             "lc": null,
             "slug": "",
@@ -5060,6 +5127,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "insert-bst",
+            "starter": "def insert_into_bst(root, val):\n    pass\n",
             "num": 67,
             "lc": 701,
             "slug": "insert-into-a-binary-search-tree",
@@ -5137,6 +5205,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "delete-bst",
+            "starter": "def delete_node(root, key):\n    pass\n",
             "num": 68,
             "lc": 450,
             "slug": "delete-node-in-a-bst",
@@ -5227,6 +5296,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "validate-bst",
+            "starter": "def is_valid_bst(root):\n    pass\n",
             "num": 69,
             "lc": 98,
             "slug": "validate-binary-search-tree",
@@ -5301,6 +5371,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "verify-preorder-bst",
+            "starter": "def verify_preorder(preorder):\n    pass\n",
             "num": 70,
             "lc": 255,
             "slug": "verify-preorder-sequence-in-binary-search-tree",
@@ -5382,6 +5453,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "kth-largest-bst",
+            "starter": "def kth_largest(root, k):\n    pass\n",
             "num": 71,
             "lc": null,
             "slug": "",
@@ -5436,6 +5508,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "min-abs-diff-bst",
+            "starter": "def get_minimum_difference(root):\n    pass\n",
             "num": 72,
             "lc": 530,
             "slug": "minimum-absolute-difference-in-bst",
@@ -5494,6 +5567,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "find-mode-bst",
+            "starter": "def find_mode(root):\n    pass\n",
             "num": 73,
             "lc": 501,
             "slug": "find-mode-in-binary-search-tree",
@@ -5567,6 +5641,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "increasing-order-search-tree",
+            "starter": "def increasing_bst(root):\n    pass\n",
             "num": 74,
             "lc": 897,
             "slug": "increasing-order-search-tree",
@@ -5636,6 +5711,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "range-sum-bst",
+            "starter": "def range_sum_bst(root, low, high):\n    pass\n",
             "num": 75,
             "lc": 938,
             "slug": "range-sum-of-bst",
@@ -5698,6 +5774,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "trim-bst",
+            "starter": "def trim_bst(root, low, high):\n    pass\n",
             "num": 76,
             "lc": 669,
             "slug": "trim-a-binary-search-tree",
@@ -5770,6 +5847,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "inorder-successor-bst",
+            "starter": "def inorder_successor(root, p):\n    pass\n",
             "num": 77,
             "lc": 285,
             "slug": "inorder-successor-in-bst",
@@ -5852,6 +5930,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "sorted-array-to-bst",
+            "starter": "def sorted_array_to_bst(nums):\n    pass\n",
             "num": 78,
             "lc": 108,
             "slug": "convert-sorted-array-to-binary-search-tree",
@@ -5914,6 +5993,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "sorted-list-to-bst",
+            "starter": "def sorted_list_to_bst(head):\n    pass\n",
             "num": 79,
             "lc": 109,
             "slug": "convert-sorted-list-to-binary-search-tree",
@@ -5998,6 +6078,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "bst-from-preorder",
+            "starter": "def bst_from_preorder(preorder):\n    pass\n",
             "num": 80,
             "lc": 1008,
             "slug": "construct-binary-search-tree-from-preorder-traversal",
@@ -6084,6 +6165,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "bst-to-greater-tree",
+            "starter": "def convert_bst(root):\n    pass\n",
             "num": 81,
             "lc": 538,
             "slug": "convert-bst-to-greater-tree",
@@ -6157,6 +6239,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "balance-bst",
+            "starter": "def balance_bst(root):\n    pass\n",
             "num": 82,
             "lc": 1382,
             "slug": "balance-a-binary-search-tree",
@@ -6231,6 +6314,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "bst-to-sorted-dll",
+            "starter": "def tree_to_doubly_list(root):\n    pass\n",
             "num": 83,
             "lc": 426,
             "slug": "convert-binary-search-tree-to-sorted-doubly-linked-list",
@@ -6300,6 +6384,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "bst-iterator",
+            "starter": "class BSTIterator:\n\n    def __init__(self, root):\n        pass\n\n    def next(self):\n        pass\n\n    def hasNext(self):\n        pass\n",
             "num": 84,
             "lc": 173,
             "slug": "binary-search-tree-iterator",
@@ -6383,6 +6468,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "all-elements-two-bsts",
+            "starter": "def get_all_elements(root1, root2):\n    pass\n",
             "num": 85,
             "lc": 1305,
             "slug": "all-elements-in-two-binary-search-trees",
@@ -6454,6 +6540,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "two-sum-bst",
+            "starter": "def find_target(root, k):\n    pass\n",
             "num": 86,
             "lc": 653,
             "slug": "two-sum-iv-input-is-a-bst",
@@ -6539,6 +6626,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "unique-bsts",
+            "starter": "def num_trees(n):\n    pass\n",
             "num": 87,
             "lc": 96,
             "slug": "unique-binary-search-trees",
@@ -6609,6 +6697,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "unique-bsts-ii",
+            "starter": "from functools import cache\n\n\ndef generate_trees(n):\n    pass\n",
             "num": 88,
             "lc": 95,
             "slug": "unique-binary-search-trees-ii",
@@ -6667,6 +6756,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "max-sum-bst",
+            "starter": "def max_sum_bst(root):\n    pass\n",
             "num": 89,
             "lc": 1373,
             "slug": "maximum-sum-bst-in-binary-tree",
@@ -6746,6 +6836,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "recover-bst",
+            "starter": "def recover_tree(root):\n    pass\n",
             "num": 90,
             "lc": 99,
             "slug": "recover-binary-search-tree",
@@ -6829,6 +6920,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "implement-avl-tree",
+            "starter": "def height(n):\n    pass\n\n\nclass AVLTree:\n\n    def __init__(self):\n        pass\n\n    def insert(self, key):\n        pass\n\n    def delete(self, key):\n        pass\n\n    def __contains__(self, key):\n        pass\n\n    def inorder(self):\n        pass\n",
             "num": 91,
             "lc": null,
             "slug": "",
@@ -6899,6 +6991,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "implement-red-black-tree",
+            "starter": "def is_red(n):\n    pass\n\n\nclass RedBlackTree:\n\n    def __init__(self):\n        pass\n\n    def __contains__(self, key):\n        pass\n\n    def insert(self, key):\n        pass\n\n    def delete(self, key):\n        pass\n\n    def inorder(self):\n        pass\n",
             "num": 92,
             "lc": null,
             "slug": "",
@@ -6967,6 +7060,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "implement-treap",
+            "starter": "class Treap:\n\n    def __init__(self, seed=0):\n        pass\n\n    def insert(self, key):\n        pass\n\n    def delete(self, key):\n        pass\n\n    def __contains__(self, key):\n        pass\n\n    def inorder(self):\n        pass\n",
             "num": 93,
             "lc": null,
             "slug": "",
@@ -7035,6 +7129,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "max-depth-n-ary",
+            "starter": "def max_depth(root):\n    pass\n",
             "num": 94,
             "lc": 559,
             "slug": "maximum-depth-of-n-ary-tree",
@@ -7105,6 +7200,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "n-ary-preorder",
+            "starter": "def preorder(root):\n    pass\n",
             "num": 95,
             "lc": 589,
             "slug": "n-ary-tree-preorder-traversal",
@@ -7175,6 +7271,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "n-ary-postorder",
+            "starter": "def postorder(root):\n    pass\n",
             "num": 96,
             "lc": 590,
             "slug": "n-ary-tree-postorder-traversal",
@@ -7246,6 +7343,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "n-ary-level-order",
+            "starter": "def level_order_nary(root):\n    pass\n",
             "num": 97,
             "lc": 429,
             "slug": "n-ary-tree-level-order-traversal",
@@ -7312,6 +7410,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "next-right-pointers",
+            "starter": "def connect(root):\n    pass\n",
             "num": 98,
             "lc": 116,
             "slug": "populating-next-right-pointers-in-each-node",
@@ -7384,6 +7483,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "next-right-pointers-ii",
+            "starter": "def connect(root):\n    pass\n",
             "num": 99,
             "lc": 117,
             "slug": "populating-next-right-pointers-in-each-node-ii",
@@ -7448,6 +7548,7 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "preorder-traversal",
+        "starter": "def preorder(root):\n    pass\n",
         "num": 1,
         "lc": 144,
         "slug": "binary-tree-preorder-traversal",
@@ -7541,6 +7642,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "inorder-traversal",
+        "starter": "def inorder(root):\n    pass\n",
         "num": 2,
         "lc": 94,
         "slug": "binary-tree-inorder-traversal",
@@ -7634,6 +7736,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "postorder-traversal",
+        "starter": "def postorder(root):\n    pass\n",
         "num": 3,
         "lc": 145,
         "slug": "binary-tree-postorder-traversal",
@@ -7728,6 +7831,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "maximum-depth",
+        "starter": "def max_depth(root):\n    pass\n",
         "num": 4,
         "lc": 104,
         "slug": "maximum-depth-of-binary-tree",
@@ -7814,6 +7918,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "minimum-depth",
+        "starter": "def min_depth(root):\n    pass\n",
         "num": 5,
         "lc": 111,
         "slug": "minimum-depth-of-binary-tree",
@@ -7889,6 +7994,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "level-order-traversal",
+        "starter": "def level_order_lists(root):\n    pass\n",
         "num": 6,
         "lc": 102,
         "slug": "binary-tree-level-order-traversal",
@@ -7965,6 +8071,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "level-order-bottom-up",
+        "starter": "def level_order_bottom(root):\n    pass\n",
         "num": 7,
         "lc": 107,
         "slug": "binary-tree-level-order-traversal-ii",
@@ -8040,6 +8147,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "zigzag-level-order",
+        "starter": "def zigzag(root):\n    pass\n",
         "num": 8,
         "lc": 103,
         "slug": "binary-tree-zigzag-level-order-traversal",
@@ -8114,6 +8222,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "same-tree",
+        "starter": "def is_same_tree(p, q):\n    pass\n",
         "num": 9,
         "lc": 100,
         "slug": "same-tree",
@@ -8191,6 +8300,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "symmetric-tree",
+        "starter": "def is_symmetric(root):\n    pass\n",
         "num": 10,
         "lc": 101,
         "slug": "symmetric-tree",
@@ -8263,6 +8373,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "invert-binary-tree",
+        "starter": "def invert(root):\n    pass\n",
         "num": 11,
         "lc": 226,
         "slug": "invert-binary-tree",
@@ -8338,6 +8449,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "merge-two-binary-trees",
+        "starter": "def merge_trees(root1, root2):\n    pass\n",
         "num": 12,
         "lc": 617,
         "slug": "merge-two-binary-trees",
@@ -8414,6 +8526,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "subtree-of-another-tree",
+        "starter": "def is_subtree(root, sub_root):\n    pass\n",
         "num": 13,
         "lc": 572,
         "slug": "subtree-of-another-tree",
@@ -8491,6 +8604,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "balanced-binary-tree",
+        "starter": "def is_balanced(root):\n    pass\n",
         "num": 14,
         "lc": 110,
         "slug": "balanced-binary-tree",
@@ -8569,6 +8683,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "diameter-of-binary-tree",
+        "starter": "def diameter(root):\n    pass\n",
         "num": 15,
         "lc": 543,
         "slug": "diameter-of-binary-tree",
@@ -8644,6 +8759,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "binary-tree-tilt",
+        "starter": "def find_tilt(root):\n    pass\n",
         "num": 16,
         "lc": 563,
         "slug": "binary-tree-tilt",
@@ -8724,6 +8840,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "max-diff-node-ancestor",
+        "starter": "def max_ancestor_diff(root):\n    pass\n",
         "num": 17,
         "lc": 1026,
         "slug": "maximum-difference-between-node-and-ancestor",
@@ -8797,6 +8914,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "longest-univalue-path",
+        "starter": "def longest_univalue_path(root):\n    pass\n",
         "num": 18,
         "lc": 687,
         "slug": "longest-univalue-path",
@@ -8873,6 +8991,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "path-sum",
+        "starter": "def has_path_sum(root, target):\n    pass\n",
         "num": 19,
         "lc": 112,
         "slug": "path-sum",
@@ -8953,6 +9072,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "path-sum-ii",
+        "starter": "def path_sum(root, target):\n    pass\n",
         "num": 20,
         "lc": 113,
         "slug": "path-sum-ii",
@@ -9032,6 +9152,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "binary-tree-paths",
+        "starter": "def binary_tree_paths(root):\n    pass\n",
         "num": 21,
         "lc": 257,
         "slug": "binary-tree-paths",
@@ -9106,6 +9227,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sum-root-to-leaf-numbers",
+        "starter": "def sum_numbers(root):\n    pass\n",
         "num": 22,
         "lc": 129,
         "slug": "sum-root-to-leaf-numbers",
@@ -9181,6 +9303,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sum-root-to-leaf-binary",
+        "starter": "def sum_root_to_leaf(root):\n    pass\n",
         "num": 23,
         "lc": 1022,
         "slug": "sum-of-root-to-leaf-binary-numbers",
@@ -9241,6 +9364,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "smallest-string-from-leaf",
+        "starter": "def smallest_from_leaf(root):\n    pass\n",
         "num": 24,
         "lc": 988,
         "slug": "smallest-string-starting-from-leaf",
@@ -9307,6 +9431,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "pseudo-palindromic-paths",
+        "starter": "def pseudo_palindromic_paths(root):\n    pass\n",
         "num": 25,
         "lc": 1457,
         "slug": "pseudo-palindromic-paths-in-a-binary-tree",
@@ -9387,6 +9512,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "binary-tree-maximum-path-sum",
+        "starter": "def max_path_sum(root):\n    pass\n",
         "num": 26,
         "lc": 124,
         "slug": "binary-tree-maximum-path-sum",
@@ -9464,6 +9590,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "path-sum-iii",
+        "starter": "def path_sum_iii(root, target):\n    pass\n",
         "num": 27,
         "lc": 437,
         "slug": "path-sum-iii",
@@ -9538,6 +9665,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "good-leaf-node-pairs",
+        "starter": "def count_pairs(root, distance):\n    pass\n",
         "num": 28,
         "lc": 1530,
         "slug": "number-of-good-leaf-nodes-pairs",
@@ -9618,6 +9746,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "right-side-view",
+        "starter": "def right_side_view(root):\n    pass\n",
         "num": 29,
         "lc": 199,
         "slug": "binary-tree-right-side-view",
@@ -9697,6 +9826,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "top-bottom-view",
+        "starter": "def top_and_bottom_view(root):\n    pass\n",
         "num": 30,
         "lc": null,
         "slug": "",
@@ -9754,6 +9884,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "bottom-left-value",
+        "starter": "def find_bottom_left_value(root):\n    pass\n",
         "num": 31,
         "lc": 513,
         "slug": "find-bottom-left-tree-value",
@@ -9827,6 +9958,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "add-one-row",
+        "starter": "def add_one_row(root, val, depth):\n    pass\n",
         "num": 32,
         "lc": 623,
         "slug": "add-one-row-to-tree",
@@ -9903,6 +10035,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "average-of-levels",
+        "starter": "def average_of_levels(root):\n    pass\n",
         "num": 33,
         "lc": 637,
         "slug": "average-of-levels-in-binary-tree",
@@ -9973,6 +10106,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "deepest-leaves-sum",
+        "starter": "def deepest_leaves_sum(root):\n    pass\n",
         "num": 34,
         "lc": 1302,
         "slug": "deepest-leaves-sum",
@@ -10042,6 +10176,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "build-from-preorder-inorder",
+        "starter": "def build_tree(preorder, inorder):\n    pass\n",
         "num": 35,
         "lc": 105,
         "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
@@ -10119,6 +10254,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "build-from-inorder-postorder",
+        "starter": "def build_tree(inorder, postorder):\n    pass\n",
         "num": 36,
         "lc": 106,
         "slug": "construct-binary-tree-from-inorder-and-postorder-traversal",
@@ -10183,6 +10319,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "build-from-preorder-postorder",
+        "starter": "def construct_from_pre_post(preorder, postorder):\n    pass\n",
         "num": 37,
         "lc": 889,
         "slug": "construct-binary-tree-from-preorder-and-postorder-traversal",
@@ -10248,6 +10385,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "construct-string-from-tree",
+        "starter": "def tree2str(root):\n    pass\n",
         "num": 38,
         "lc": 606,
         "slug": "construct-string-from-binary-tree",
@@ -10312,6 +10450,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "maximum-binary-tree",
+        "starter": "def construct_maximum_binary_tree(nums):\n    pass\n",
         "num": 39,
         "lc": 654,
         "slug": "maximum-binary-tree",
@@ -10388,6 +10527,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "serialize-deserialize-tree",
+        "starter": "class Codec:\n\n    def serialize(self, root):\n        pass\n\n    def deserialize(self, data):\n        pass\n",
         "num": 40,
         "lc": 297,
         "slug": "serialize-and-deserialize-binary-tree",
@@ -10463,6 +10603,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "serialize-deserialize-bst",
+        "starter": "class Codec:\n\n    def serialize(self, root):\n        pass\n\n    def deserialize(self, data):\n        pass\n",
         "num": 41,
         "lc": 449,
         "slug": "serialize-and-deserialize-bst",
@@ -10527,6 +10668,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "lca-binary-tree",
+        "starter": "def lowest_common_ancestor(root, p, q):\n    pass\n",
         "num": 42,
         "lc": 236,
         "slug": "lowest-common-ancestor-of-a-binary-tree",
@@ -10610,6 +10752,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "lca-bst",
+        "starter": "def lowest_common_ancestor(root, p, q):\n    pass\n",
         "num": 43,
         "lc": 235,
         "slug": "lowest-common-ancestor-of-a-binary-search-tree",
@@ -10692,6 +10835,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "lca-deepest-leaves",
+        "starter": "def lca_deepest_leaves(root):\n    pass\n",
         "num": 44,
         "lc": 1123,
         "slug": "lowest-common-ancestor-of-deepest-leaves",
@@ -10764,6 +10908,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "subtree-deepest-nodes",
+        "starter": "def subtree_with_all_deepest(root):\n    pass\n",
         "num": 45,
         "lc": 865,
         "slug": "smallest-subtree-with-all-the-deepest-nodes",
@@ -10849,6 +10994,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "lca-binary-lifting",
+        "starter": "class LCA:\n\n    def __init__(self, root):\n        pass\n\n    def query(self, a, b):\n        pass\n",
         "num": 46,
         "lc": null,
         "slug": "",
@@ -10905,6 +11051,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "all-nodes-distance-k",
+        "starter": "def distance_k(root, target, k):\n    pass\n",
         "num": 47,
         "lc": 863,
         "slug": "all-nodes-distance-k-in-binary-tree",
@@ -10982,6 +11129,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "find-distance",
+        "starter": "def find_distance(root, p, q):\n    pass\n",
         "num": 48,
         "lc": 1740,
         "slug": "find-distance-in-a-binary-tree",
@@ -11059,6 +11207,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "time-to-infect",
+        "starter": "def amount_of_time(root, start):\n    pass\n",
         "num": 49,
         "lc": 2385,
         "slug": "amount-of-time-for-binary-tree-to-be-infected",
@@ -11137,6 +11286,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "count-complete-tree-nodes",
+        "starter": "def count_nodes(root):\n    pass\n",
         "num": 50,
         "lc": 222,
         "slug": "count-complete-tree-nodes",
@@ -11217,6 +11367,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "check-completeness",
+        "starter": "def is_complete(root):\n    pass\n",
         "num": 51,
         "lc": 958,
         "slug": "check-completeness-of-a-binary-tree",
@@ -11292,6 +11443,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "maximum-width",
+        "starter": "def width_of_binary_tree(root):\n    pass\n",
         "num": 52,
         "lc": 662,
         "slug": "maximum-width-of-binary-tree",
@@ -11360,6 +11512,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "all-possible-full-binary-trees",
+        "starter": "from functools import cache\n\n\n@cache\ndef all_possible_fbt(n):\n    pass\n",
         "num": 53,
         "lc": 894,
         "slug": "all-possible-full-binary-trees",
@@ -11420,6 +11573,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "flatten-to-linked-list",
+        "starter": "def flatten(root):\n    pass\n",
         "num": 54,
         "lc": 114,
         "slug": "flatten-binary-tree-to-linked-list",
@@ -11497,6 +11651,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "binary-tree-pruning",
+        "starter": "def prune_tree(root):\n    pass\n",
         "num": 55,
         "lc": 814,
         "slug": "binary-tree-pruning",
@@ -11560,6 +11715,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "delete-leaves-with-value",
+        "starter": "def remove_leaf_nodes(root, target):\n    pass\n",
         "num": 56,
         "lc": 1325,
         "slug": "delete-leaves-with-a-given-value",
@@ -11624,6 +11780,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "house-robber-iii",
+        "starter": "def rob(root):\n    pass\n",
         "num": 57,
         "lc": 337,
         "slug": "house-robber-iii",
@@ -11700,6 +11857,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "binary-tree-cameras",
+        "starter": "def min_camera_cover(root):\n    pass\n",
         "num": 58,
         "lc": 968,
         "slug": "binary-tree-cameras",
@@ -11776,6 +11934,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "distribute-coins",
+        "starter": "def distribute_coins(root):\n    pass\n",
         "num": 59,
         "lc": 979,
         "slug": "distribute-coins-in-binary-tree",
@@ -11840,6 +11999,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "count-good-nodes",
+        "starter": "def good_nodes(root):\n    pass\n",
         "num": 60,
         "lc": 1448,
         "slug": "count-good-nodes-in-binary-tree",
@@ -11906,6 +12066,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "nodes-equal-average",
+        "starter": "def average_of_subtree(root):\n    pass\n",
         "num": 61,
         "lc": 2265,
         "slug": "count-nodes-equal-to-average-of-subtree",
@@ -11967,6 +12128,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "most-frequent-subtree-sum",
+        "starter": "def find_frequent_tree_sum(root):\n    pass\n",
         "num": 62,
         "lc": 508,
         "slug": "most-frequent-subtree-sum",
@@ -12027,6 +12189,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "find-duplicate-subtrees",
+        "starter": "def find_duplicate_subtrees(root):\n    pass\n",
         "num": 63,
         "lc": 652,
         "slug": "find-duplicate-subtrees",
@@ -12104,6 +12267,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "kth-smallest-bst",
+        "starter": "def kth_smallest(root, k):\n    pass\n",
         "num": 64,
         "lc": 230,
         "slug": "kth-smallest-element-in-a-bst",
@@ -12177,6 +12341,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "search-bst",
+        "starter": "def search_bst(root, val):\n    pass\n",
         "num": 65,
         "lc": 700,
         "slug": "search-in-a-binary-search-tree",
@@ -12249,6 +12414,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "bst-floor-ceiling",
+        "starter": "def bst_min(root):\n    pass\n\n\ndef bst_max(root):\n    pass\n\n\ndef floor(root, x):\n    pass\n\n\ndef ceiling(root, x):\n    pass\n",
         "num": 66,
         "lc": null,
         "slug": "",
@@ -12307,6 +12473,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "insert-bst",
+        "starter": "def insert_into_bst(root, val):\n    pass\n",
         "num": 67,
         "lc": 701,
         "slug": "insert-into-a-binary-search-tree",
@@ -12384,6 +12551,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "delete-bst",
+        "starter": "def delete_node(root, key):\n    pass\n",
         "num": 68,
         "lc": 450,
         "slug": "delete-node-in-a-bst",
@@ -12464,6 +12632,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "validate-bst",
+        "starter": "def is_valid_bst(root):\n    pass\n",
         "num": 69,
         "lc": 98,
         "slug": "validate-binary-search-tree",
@@ -12538,6 +12707,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "verify-preorder-bst",
+        "starter": "def verify_preorder(preorder):\n    pass\n",
         "num": 70,
         "lc": 255,
         "slug": "verify-preorder-sequence-in-binary-search-tree",
@@ -12609,6 +12779,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "kth-largest-bst",
+        "starter": "def kth_largest(root, k):\n    pass\n",
         "num": 71,
         "lc": null,
         "slug": "",
@@ -12663,6 +12834,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "min-abs-diff-bst",
+        "starter": "def get_minimum_difference(root):\n    pass\n",
         "num": 72,
         "lc": 530,
         "slug": "minimum-absolute-difference-in-bst",
@@ -12721,6 +12893,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "find-mode-bst",
+        "starter": "def find_mode(root):\n    pass\n",
         "num": 73,
         "lc": 501,
         "slug": "find-mode-in-binary-search-tree",
@@ -12794,6 +12967,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "increasing-order-search-tree",
+        "starter": "def increasing_bst(root):\n    pass\n",
         "num": 74,
         "lc": 897,
         "slug": "increasing-order-search-tree",
@@ -12853,6 +13027,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "range-sum-bst",
+        "starter": "def range_sum_bst(root, low, high):\n    pass\n",
         "num": 75,
         "lc": 938,
         "slug": "range-sum-of-bst",
@@ -12915,6 +13090,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "trim-bst",
+        "starter": "def trim_bst(root, low, high):\n    pass\n",
         "num": 76,
         "lc": 669,
         "slug": "trim-a-binary-search-tree",
@@ -12977,6 +13153,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "inorder-successor-bst",
+        "starter": "def inorder_successor(root, p):\n    pass\n",
         "num": 77,
         "lc": 285,
         "slug": "inorder-successor-in-bst",
@@ -13049,6 +13226,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sorted-array-to-bst",
+        "starter": "def sorted_array_to_bst(nums):\n    pass\n",
         "num": 78,
         "lc": 108,
         "slug": "convert-sorted-array-to-binary-search-tree",
@@ -13111,6 +13289,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sorted-list-to-bst",
+        "starter": "def sorted_list_to_bst(head):\n    pass\n",
         "num": 79,
         "lc": 109,
         "slug": "convert-sorted-list-to-binary-search-tree",
@@ -13195,6 +13374,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "bst-from-preorder",
+        "starter": "def bst_from_preorder(preorder):\n    pass\n",
         "num": 80,
         "lc": 1008,
         "slug": "construct-binary-search-tree-from-preorder-traversal",
@@ -13271,6 +13451,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "bst-to-greater-tree",
+        "starter": "def convert_bst(root):\n    pass\n",
         "num": 81,
         "lc": 538,
         "slug": "convert-bst-to-greater-tree",
@@ -13344,6 +13525,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "balance-bst",
+        "starter": "def balance_bst(root):\n    pass\n",
         "num": 82,
         "lc": 1382,
         "slug": "balance-a-binary-search-tree",
@@ -13418,6 +13600,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "bst-to-sorted-dll",
+        "starter": "def tree_to_doubly_list(root):\n    pass\n",
         "num": 83,
         "lc": 426,
         "slug": "convert-binary-search-tree-to-sorted-doubly-linked-list",
@@ -13477,6 +13660,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "bst-iterator",
+        "starter": "class BSTIterator:\n\n    def __init__(self, root):\n        pass\n\n    def next(self):\n        pass\n\n    def hasNext(self):\n        pass\n",
         "num": 84,
         "lc": 173,
         "slug": "binary-search-tree-iterator",
@@ -13550,6 +13734,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "all-elements-two-bsts",
+        "starter": "def get_all_elements(root1, root2):\n    pass\n",
         "num": 85,
         "lc": 1305,
         "slug": "all-elements-in-two-binary-search-trees",
@@ -13621,6 +13806,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "two-sum-bst",
+        "starter": "def find_target(root, k):\n    pass\n",
         "num": 86,
         "lc": 653,
         "slug": "two-sum-iv-input-is-a-bst",
@@ -13696,6 +13882,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "unique-bsts",
+        "starter": "def num_trees(n):\n    pass\n",
         "num": 87,
         "lc": 96,
         "slug": "unique-binary-search-trees",
@@ -13766,6 +13953,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "unique-bsts-ii",
+        "starter": "from functools import cache\n\n\ndef generate_trees(n):\n    pass\n",
         "num": 88,
         "lc": 95,
         "slug": "unique-binary-search-trees-ii",
@@ -13824,6 +14012,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "max-sum-bst",
+        "starter": "def max_sum_bst(root):\n    pass\n",
         "num": 89,
         "lc": 1373,
         "slug": "maximum-sum-bst-in-binary-tree",
@@ -13893,6 +14082,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "recover-bst",
+        "starter": "def recover_tree(root):\n    pass\n",
         "num": 90,
         "lc": 99,
         "slug": "recover-binary-search-tree",
@@ -13966,6 +14156,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "implement-avl-tree",
+        "starter": "def height(n):\n    pass\n\n\nclass AVLTree:\n\n    def __init__(self):\n        pass\n\n    def insert(self, key):\n        pass\n\n    def delete(self, key):\n        pass\n\n    def __contains__(self, key):\n        pass\n\n    def inorder(self):\n        pass\n",
         "num": 91,
         "lc": null,
         "slug": "",
@@ -14026,6 +14217,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "implement-red-black-tree",
+        "starter": "def is_red(n):\n    pass\n\n\nclass RedBlackTree:\n\n    def __init__(self):\n        pass\n\n    def __contains__(self, key):\n        pass\n\n    def insert(self, key):\n        pass\n\n    def delete(self, key):\n        pass\n\n    def inorder(self):\n        pass\n",
         "num": 92,
         "lc": null,
         "slug": "",
@@ -14084,6 +14276,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "implement-treap",
+        "starter": "class Treap:\n\n    def __init__(self, seed=0):\n        pass\n\n    def insert(self, key):\n        pass\n\n    def delete(self, key):\n        pass\n\n    def __contains__(self, key):\n        pass\n\n    def inorder(self):\n        pass\n",
         "num": 93,
         "lc": null,
         "slug": "",
@@ -14142,6 +14335,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "max-depth-n-ary",
+        "starter": "def max_depth(root):\n    pass\n",
         "num": 94,
         "lc": 559,
         "slug": "maximum-depth-of-n-ary-tree",
@@ -14212,6 +14406,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "n-ary-preorder",
+        "starter": "def preorder(root):\n    pass\n",
         "num": 95,
         "lc": 589,
         "slug": "n-ary-tree-preorder-traversal",
@@ -14282,6 +14477,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "n-ary-postorder",
+        "starter": "def postorder(root):\n    pass\n",
         "num": 96,
         "lc": 590,
         "slug": "n-ary-tree-postorder-traversal",
@@ -14353,6 +14549,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "n-ary-level-order",
+        "starter": "def level_order_nary(root):\n    pass\n",
         "num": 97,
         "lc": 429,
         "slug": "n-ary-tree-level-order-traversal",
@@ -14409,6 +14606,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "next-right-pointers",
+        "starter": "def connect(root):\n    pass\n",
         "num": 98,
         "lc": 116,
         "slug": "populating-next-right-pointers-in-each-node",
@@ -14481,6 +14679,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "next-right-pointers-ii",
+        "starter": "def connect(root):\n    pass\n",
         "num": 99,
         "lc": 117,
         "slug": "populating-next-right-pointers-in-each-node-ii",
@@ -14548,6 +14747,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import heapq\nfrom collections import Counter, deque\n\n\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(values):\n    head = tail = None\n    for v in values:\n        node = ListNode(v)\n        if head is None:\n            head = tail = node\n        else:\n            tail.next = node\n            tail = node\n    return head\n\n\ndef list_vals(head):\n    out = []\n    while head is not None:\n        out.append(head.val)\n        head = head.next\n    return out",
     "sections": [
       {
         "id": "foundations",
@@ -14557,6 +14757,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "heapify",
+            "starter": "def heapify(nums):\n    pass\n",
             "num": 100,
             "lc": null,
             "slug": "",
@@ -14637,6 +14838,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "kth-largest-element",
+            "starter": "def find_kth_largest(nums, k):\n    pass\n",
             "num": 101,
             "lc": 215,
             "slug": "kth-largest-element-in-an-array",
@@ -14726,6 +14928,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "kth-largest-in-stream",
+            "starter": "class KthLargest:\n\n    def __init__(self, k, nums):\n        pass\n\n    def add(self, val):\n        pass\n",
             "num": 102,
             "lc": 703,
             "slug": "kth-largest-element-in-a-stream",
@@ -14808,6 +15011,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "top-k-frequent",
+            "starter": "def top_k_frequent(nums, k):\n    pass\n",
             "num": 103,
             "lc": 347,
             "slug": "top-k-frequent-elements",
@@ -14891,6 +15095,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "sort-by-frequency",
+            "starter": "def frequency_sort(s):\n    pass\n",
             "num": 104,
             "lc": 451,
             "slug": "sort-characters-by-frequency",
@@ -14981,6 +15186,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "sort-nearly-sorted",
+            "starter": "def sort_k_sorted(nums, k):\n    pass\n",
             "num": 105,
             "lc": null,
             "slug": "",
@@ -15053,6 +15259,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "merge-k-sorted-arrays",
+            "starter": "def merge_k_arrays(arrays):\n    pass\n",
             "num": 106,
             "lc": null,
             "slug": "",
@@ -15121,6 +15328,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "merge-k-sorted-lists",
+            "starter": "def merge_k_lists(lists):\n    pass\n",
             "num": 107,
             "lc": 23,
             "slug": "merge-k-sorted-lists",
@@ -15206,6 +15414,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "smallest-range-k-lists",
+            "starter": "def smallest_range(nums):\n    pass\n",
             "num": 108,
             "lc": 632,
             "slug": "smallest-range-covering-elements-from-k-lists",
@@ -15273,6 +15482,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "kth-smallest-in-sorted-matrix",
+            "starter": "def kth_smallest(matrix, k):\n    pass\n",
             "num": 109,
             "lc": 378,
             "slug": "kth-smallest-element-in-a-sorted-matrix",
@@ -15362,6 +15572,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "kth-smallest-matrix-row-sums",
+            "starter": "def kth_smallest(mat, k):\n    pass\n",
             "num": 110,
             "lc": 1439,
             "slug": "find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
@@ -15448,6 +15659,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "connect-sticks",
+            "starter": "def connect_sticks(sticks):\n    pass\n",
             "num": 111,
             "lc": 1167,
             "slug": "minimum-cost-to-connect-sticks",
@@ -15516,6 +15728,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "task-scheduler",
+            "starter": "def least_interval(tasks, n):\n    pass\n",
             "num": 112,
             "lc": 621,
             "slug": "task-scheduler",
@@ -15600,6 +15813,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "reorganize-string",
+            "starter": "def reorganize_string(s):\n    pass\n",
             "num": 113,
             "lc": 767,
             "slug": "reorganize-string",
@@ -15676,6 +15890,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "ipo",
+            "starter": "def find_maximized_capital(k, w, profits, capital):\n    pass\n",
             "num": 114,
             "lc": 502,
             "slug": "ipo",
@@ -15754,6 +15969,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "meeting-rooms",
+            "starter": "def can_attend_meetings(intervals):\n    pass\n",
             "num": 115,
             "lc": 252,
             "slug": "meeting-rooms",
@@ -15817,6 +16033,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "meeting-rooms-ii",
+            "starter": "def min_meeting_rooms(intervals):\n    pass\n",
             "num": 116,
             "lc": 253,
             "slug": "meeting-rooms-ii",
@@ -15895,6 +16112,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "refueling-stops",
+            "starter": "def min_refuel_stops(target, start_fuel, stations):\n    pass\n",
             "num": 117,
             "lc": 871,
             "slug": "minimum-number-of-refueling-stops",
@@ -15975,6 +16193,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "find-median-from-data-stream",
+            "starter": "class MedianFinder:\n\n    def __init__(self):\n        pass\n\n    def add_num(self, num):\n        pass\n\n    def find_median(self):\n        pass\n",
             "num": 118,
             "lc": 295,
             "slug": "find-median-from-data-stream",
@@ -16049,6 +16268,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "sliding-window-median",
+            "starter": "import bisect\n\n\ndef median_sliding_window(nums, k):\n    pass\n",
             "num": 119,
             "lc": 480,
             "slug": "sliding-window-median",
@@ -16131,6 +16351,7 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "heapify",
+        "starter": "def heapify(nums):\n    pass\n",
         "num": 100,
         "lc": null,
         "slug": "",
@@ -16203,6 +16424,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "kth-largest-element",
+        "starter": "def find_kth_largest(nums, k):\n    pass\n",
         "num": 101,
         "lc": 215,
         "slug": "kth-largest-element-in-an-array",
@@ -16292,6 +16514,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "kth-largest-in-stream",
+        "starter": "class KthLargest:\n\n    def __init__(self, k, nums):\n        pass\n\n    def add(self, val):\n        pass\n",
         "num": 102,
         "lc": 703,
         "slug": "kth-largest-element-in-a-stream",
@@ -16374,6 +16597,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "top-k-frequent",
+        "starter": "def top_k_frequent(nums, k):\n    pass\n",
         "num": 103,
         "lc": 347,
         "slug": "top-k-frequent-elements",
@@ -16457,6 +16681,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sort-by-frequency",
+        "starter": "def frequency_sort(s):\n    pass\n",
         "num": 104,
         "lc": 451,
         "slug": "sort-characters-by-frequency",
@@ -16539,6 +16764,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sort-nearly-sorted",
+        "starter": "def sort_k_sorted(nums, k):\n    pass\n",
         "num": 105,
         "lc": null,
         "slug": "",
@@ -16611,6 +16837,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "merge-k-sorted-arrays",
+        "starter": "def merge_k_arrays(arrays):\n    pass\n",
         "num": 106,
         "lc": null,
         "slug": "",
@@ -16679,6 +16906,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "merge-k-sorted-lists",
+        "starter": "def merge_k_lists(lists):\n    pass\n",
         "num": 107,
         "lc": 23,
         "slug": "merge-k-sorted-lists",
@@ -16764,6 +16992,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "smallest-range-k-lists",
+        "starter": "def smallest_range(nums):\n    pass\n",
         "num": 108,
         "lc": 632,
         "slug": "smallest-range-covering-elements-from-k-lists",
@@ -16831,6 +17060,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "kth-smallest-in-sorted-matrix",
+        "starter": "def kth_smallest(matrix, k):\n    pass\n",
         "num": 109,
         "lc": 378,
         "slug": "kth-smallest-element-in-a-sorted-matrix",
@@ -16912,6 +17142,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "kth-smallest-matrix-row-sums",
+        "starter": "def kth_smallest(mat, k):\n    pass\n",
         "num": 110,
         "lc": 1439,
         "slug": "find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
@@ -16998,6 +17229,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "connect-sticks",
+        "starter": "def connect_sticks(sticks):\n    pass\n",
         "num": 111,
         "lc": 1167,
         "slug": "minimum-cost-to-connect-sticks",
@@ -17066,6 +17298,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "task-scheduler",
+        "starter": "def least_interval(tasks, n):\n    pass\n",
         "num": 112,
         "lc": 621,
         "slug": "task-scheduler",
@@ -17150,6 +17383,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "reorganize-string",
+        "starter": "def reorganize_string(s):\n    pass\n",
         "num": 113,
         "lc": 767,
         "slug": "reorganize-string",
@@ -17226,6 +17460,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "ipo",
+        "starter": "def find_maximized_capital(k, w, profits, capital):\n    pass\n",
         "num": 114,
         "lc": 502,
         "slug": "ipo",
@@ -17296,6 +17531,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "meeting-rooms",
+        "starter": "def can_attend_meetings(intervals):\n    pass\n",
         "num": 115,
         "lc": 252,
         "slug": "meeting-rooms",
@@ -17359,6 +17595,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "meeting-rooms-ii",
+        "starter": "def min_meeting_rooms(intervals):\n    pass\n",
         "num": 116,
         "lc": 253,
         "slug": "meeting-rooms-ii",
@@ -17437,6 +17674,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "refueling-stops",
+        "starter": "def min_refuel_stops(target, start_fuel, stations):\n    pass\n",
         "num": 117,
         "lc": 871,
         "slug": "minimum-number-of-refueling-stops",
@@ -17509,6 +17747,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "find-median-from-data-stream",
+        "starter": "class MedianFinder:\n\n    def __init__(self):\n        pass\n\n    def add_num(self, num):\n        pass\n\n    def find_median(self):\n        pass\n",
         "num": 118,
         "lc": 295,
         "slug": "find-median-from-data-stream",
@@ -17583,6 +17822,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sliding-window-median",
+        "starter": "import bisect\n\n\ndef median_sliding_window(nums, k):\n    pass\n",
         "num": 119,
         "lc": 480,
         "slug": "sliding-window-median",
@@ -17668,6 +17908,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "patterns",
+    "prelude": "import bisect\nimport itertools\nimport random\nfrom functools import cache\nfrom math import comb, inf, isqrt",
     "sections": [
       {
         "id": "foundations",
@@ -17681,6 +17922,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "nth-fibonacci",
+            "starter": "def fib(n):\n    pass\n",
             "num": 120,
             "lc": null,
             "slug": "",
@@ -17811,6 +18053,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "climbing-stairs",
+            "starter": "def climb_stairs(n):\n    pass\n",
             "num": 121,
             "lc": 70,
             "slug": "climbing-stairs",
@@ -17932,6 +18175,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "house-robber",
+            "starter": "def rob(nums):\n    pass\n",
             "num": 122,
             "lc": 198,
             "slug": "house-robber",
@@ -18041,6 +18285,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "house-robber-ii",
+            "starter": "def rob(nums):\n    pass\n",
             "num": 123,
             "lc": 213,
             "slug": "house-robber-ii",
@@ -18155,6 +18400,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "maximum-subarray",
+            "starter": "def max_sub_array(nums):\n    pass\n",
             "num": 124,
             "lc": 53,
             "slug": "maximum-subarray",
@@ -18267,6 +18513,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "decode-ways",
+            "starter": "def num_decodings(s):\n    pass\n",
             "num": 125,
             "lc": 91,
             "slug": "decode-ways",
@@ -18389,6 +18636,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "delete-and-earn",
+            "starter": "def delete_and_earn(nums):\n    pass\n",
             "num": 126,
             "lc": 740,
             "slug": "delete-and-earn",
@@ -18522,6 +18770,7 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "knapsack-01",
+            "starter": "def knapsack(W, val, wt):\n    pass\n",
             "num": 127,
             "lc": null,
             "slug": "",
@@ -18650,6 +18899,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "partition-equal-subset-sum",
+            "starter": "def can_partition(nums):\n    pass\n",
             "num": 128,
             "lc": 416,
             "slug": "partition-equal-subset-sum",
@@ -18785,6 +19035,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "target-sum",
+            "starter": "def find_target_sum_ways(nums, target):\n    pass\n",
             "num": 129,
             "lc": 494,
             "slug": "target-sum",
@@ -18912,6 +19163,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "last-stone-weight-ii",
+            "starter": "def last_stone_weight_ii(stones):\n    pass\n",
             "num": 130,
             "lc": 1049,
             "slug": "last-stone-weight-ii",
@@ -19034,6 +19286,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "ones-and-zeroes",
+            "starter": "def find_max_form(strs, m, n):\n    pass\n",
             "num": 131,
             "lc": 474,
             "slug": "ones-and-zeroes",
@@ -19157,6 +19410,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "coin-change",
+            "starter": "def coin_change(coins, amount):\n    pass\n",
             "num": 132,
             "lc": 322,
             "slug": "coin-change",
@@ -19299,6 +19553,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "coin-change-ii",
+            "starter": "def change(amount, coins):\n    pass\n",
             "num": 133,
             "lc": 518,
             "slug": "coin-change-ii",
@@ -19425,6 +19680,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "perfect-squares",
+            "starter": "def num_squares(n):\n    pass\n",
             "num": 134,
             "lc": 279,
             "slug": "perfect-squares",
@@ -19543,11 +19799,13 @@ window.GRAIL_DSA = [
           "Movement is restricted to right and down (or down and diagonally), so a cell can only be reached from the cells above and to its left. That gives the recurrence immediately: <code>f(r, c)</code> combines <code>f(r-1, c)</code> and <code>f(r, c-1)</code> &mdash; add them to count paths, take the min to find the cheapest.",
           "Fill row by row, left to right, and both inputs are ready when you need them. The first row and column are the base cases, because they have only one neighbour to pull from.",
           "Every grid problem here shrinks the same way. <strong>Two rows:</strong> row <code>r</code> reads only row <code>r-1</code> and itself. <strong>One row:</strong> before the update <code>row[c]</code> is still \"the cell above\", and <code>row[c-1]</code> has just become \"the cell to the left\". O(rows&middot;cols) time, O(cols) space.",
+          "Matrix problems that are not about paths still fit when the state is anchored at a corner. <strong>Maximal Square</strong> stores the largest square whose <em>bottom-right</em> corner is the cell, which makes it depend only on its up, left and up-left neighbours. And when moves go in all four directions (Longest Increasing Path), there is no fill order &mdash; but if the moves can never loop, memoised DFS is the fill order.",
           "Sometimes you must go <strong>backwards</strong>. In Dungeon Game what a cell needs depends on the path <em>after</em> it, not before, so the table is filled from the bottom-right corner. When the forward direction does not give a clean recurrence, try the other end."
         ],
         "problems": [
           {
             "id": "unique-paths",
+            "starter": "def unique_paths(m, n):\n    pass\n",
             "num": 135,
             "lc": 62,
             "slug": "unique-paths",
@@ -19679,6 +19937,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "unique-paths-ii",
+            "starter": "def unique_paths_with_obstacles(grid):\n    pass\n",
             "num": 136,
             "lc": 63,
             "slug": "unique-paths-ii",
@@ -19798,6 +20057,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "minimum-path-sum",
+            "starter": "def min_path_sum(grid):\n    pass\n",
             "num": 137,
             "lc": 64,
             "slug": "minimum-path-sum",
@@ -19927,6 +20187,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "triangle",
+            "starter": "def minimum_total(triangle):\n    pass\n",
             "num": 138,
             "lc": 120,
             "slug": "triangle",
@@ -20044,6 +20305,7 @@ window.GRAIL_DSA = [
           },
           {
             "id": "dungeon-game",
+            "starter": "def calculate_minimum_hp(dungeon):\n    pass\n",
             "num": 139,
             "lc": 174,
             "slug": "dungeon-game",
@@ -20167,6 +20429,382 @@ window.GRAIL_DSA = [
             "section": "grid",
             "sectionTitle": "Grid DP",
             "ref": null
+          },
+          {
+            "id": "minimum-falling-path-sum",
+            "starter": "def min_falling_path_sum(matrix):\n    pass\n",
+            "num": 140,
+            "lc": 931,
+            "slug": "minimum-falling-path-sum",
+            "url": "https://leetcode.com/problems/minimum-falling-path-sum/",
+            "premium": false,
+            "name": "Minimum Falling Path Sum",
+            "difficulty": "medium",
+            "tags": [
+              "Array",
+              "Dynamic Programming",
+              "Matrix"
+            ],
+            "statement": [
+              "Given an <code>n x n</code> array of integers <code>matrix</code>, return <em>the <strong>minimum sum</strong> of any <strong>falling path</strong> through</em> <code>matrix</code>.",
+              "A <strong>falling path</strong> starts at any element in the first row and chooses the element in the next row that is either directly below or diagonally left/right. Specifically, the next element from position <code>(row, col)</code> will be <code>(row + 1, col - 1)</code>, <code>(row + 1, col)</code>, or <code>(row + 1, col + 1)</code>."
+            ],
+            "examples": [
+              {
+                "input": "matrix = [[2,1,3],[6,5,4],[7,8,9]] Output: 13 Explanation: There are two falling paths with a minimum sum as shown.",
+                "output": "13 Explanation: There are two falling paths with a minimum sum as shown.",
+                "explanation": "There are two falling paths with a minimum sum as shown."
+              },
+              {
+                "input": "matrix = [[-19,57],[-40,-5]] Output: -59 Explanation: The falling path with a minimum sum is shown.",
+                "output": "-59 Explanation: The falling path with a minimum sum is shown.",
+                "explanation": "The falling path with a minimum sum is shown."
+              }
+            ],
+            "constraints": [
+              "<code>n == matrix.length == matrix[i].length</code>",
+              "<code>1 &lt;= n &lt;= 100</code>",
+              "<code>-100 &lt;= matrix[i][j] &lt;= 100</code>"
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Plain recursion",
+                "time": "O(n&middot;3<sup>n</sup>)",
+                "space": "O(n)",
+                "why": [
+                  "From every bottom cell, branch three ways per row upward. The same upper cells are priced again and again."
+                ],
+                "code": "def min_falling_path_sum(matrix):\n    n = len(matrix)\n\n    def f(r, c):\n        if c < 0 or c >= n:\n            return inf\n        if r == 0:\n            return matrix[0][c]\n        return matrix[r][c] + min(f(r - 1, c - 1), f(r - 1, c), f(r - 1, c + 1))\n\n    return min(f(n - 1, c) for c in range(n))",
+                "best": false,
+                "tag": "brute force",
+                "change": ""
+              },
+              {
+                "name": "Top-down memo",
+                "time": "O(n&sup2;)",
+                "space": "O(n&sup2;)",
+                "why": [
+                  "Each cell is priced once."
+                ],
+                "code": "def min_falling_path_sum(matrix):\n    n = len(matrix)\n\n    @cache\n    def f(r, c):\n        if c < 0 or c >= n:\n            return inf\n        if r == 0:\n            return matrix[0][c]\n        return matrix[r][c] + min(f(r - 1, c - 1), f(r - 1, c), f(r - 1, c + 1))\n\n    return min(f(n - 1, c) for c in range(n))",
+                "best": false,
+                "tag": "",
+                "change": "Cache on <code>(r, c)</code>: n&sup2; states, three lookups each."
+              },
+              {
+                "name": "One row at a time",
+                "time": "O(n&sup2;)",
+                "space": "O(n)",
+                "why": [
+                  "Pad the previous row with infinity on both sides so the edge columns need no special case.",
+                  "This is the one-row trick's limit: it works when only the left neighbour is read from the current row. Reading a diagonal on both sides needs a second buffer."
+                ],
+                "code": "def min_falling_path_sum(matrix):\n    prev = matrix[0][:]\n    for row in matrix[1:]:\n        padded = [inf] + prev + [inf]\n        prev = [x + min(padded[c], padded[c + 1], padded[c + 2])\n                for c, x in enumerate(row)]\n    return min(prev)",
+                "best": true,
+                "tag": "",
+                "change": "Row <code>r</code> reads only row <code>r-1</code>, so keep one previous row. It cannot be updated in place: cell <code>c</code> needs the old <code>prev[c-1]</code>, which the in-place write would already have overwritten."
+              }
+            ],
+            "recurrence": {
+              "state": "<code>f(r, c)</code> = the smallest sum of a falling path that starts anywhere in row 0 and ends at <code>(r, c)</code>.",
+              "derive": [
+                "A falling path enters <code>(r, c)</code> from one of three cells in the row above: <code>c-1</code>, <code>c</code> or <code>c+1</code>.",
+                "Take the cheapest of the three and pay for this cell. Columns outside the grid are infinity.",
+                "Row 0 is the base case, and the answer is the minimum over the whole last row, because the path may end in any column."
+              ],
+              "formula": "f(0, c) = matrix[0][c]\nf(r, c) = matrix[r][c] + min(f(r-1, c-1), f(r-1, c), f(r-1, c+1))\nanswer: min over c of f(n-1, c)"
+            },
+            "tests": "assert min_falling_path_sum([[2, 1, 3], [6, 5, 4], [7, 8, 9]]) == 13\nassert min_falling_path_sum([[-19, 57], [-40, -5]]) == -59\nassert min_falling_path_sum([[7]]) == 7\n\ndef brute(m):\n    n = len(m)\n    best = inf\n    for start in range(n):\n        stack = [(0, start, m[0][start])]\n        while stack:\n            r, c, s = stack.pop()\n            if r == n - 1:\n                best = min(best, s)\n                continue\n            for d in (-1, 0, 1):\n                if 0 <= c + d < n:\n                    stack.append((r + 1, c + d, s + m[r + 1][c + d]))\n    return best\n\nrandom.seed(931)\nfor _ in range(60):\n    n = random.randint(1, 7)\n    m = [[random.randint(-20, 20) for _ in range(n)] for _ in range(n)]\n    assert min_falling_path_sum(m) == brute(m)",
+            "smallTests": "assert min_falling_path_sum([[2, 1, 3], [6, 5, 4], [7, 8, 9]]) == 13\nassert min_falling_path_sum([[-19, 57], [-40, -5]]) == -59\nassert min_falling_path_sum([[7]]) == 7",
+            "topic": "dp",
+            "topicTitle": "Dynamic Programming",
+            "section": "grid",
+            "sectionTitle": "Grid DP",
+            "ref": null
+          },
+          {
+            "id": "maximal-square",
+            "starter": "def maximal_square(matrix):\n    pass\n",
+            "num": 141,
+            "lc": 221,
+            "slug": "maximal-square",
+            "url": "https://leetcode.com/problems/maximal-square/",
+            "premium": false,
+            "name": "Maximal Square",
+            "difficulty": "medium",
+            "tags": [
+              "Array",
+              "Dynamic Programming",
+              "Matrix"
+            ],
+            "statement": [
+              "Given an <code>m x n</code> binary <code>matrix</code> filled with <code>0</code>&#39;s and <code>1</code>&#39;s, <em>find the largest square containing only</em> <code>1</code>&#39;s <em>and return its area</em>."
+            ],
+            "examples": [
+              {
+                "input": "matrix = [[\"1\",\"0\",\"1\",\"0\",\"0\"],[\"1\",\"0\",\"1\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\",\"1\"],[\"1\",\"0\",\"0\",\"1\",\"0\"]] Output: 4",
+                "output": "4"
+              },
+              {
+                "input": "matrix = [[\"0\",\"1\"],[\"1\",\"0\"]] Output: 1",
+                "output": "1"
+              },
+              {
+                "input": "matrix = [[\"0\"]] Output: 0",
+                "output": "0"
+              }
+            ],
+            "constraints": [
+              "<code>m == matrix.length</code>",
+              "<code>n == matrix[i].length</code>",
+              "<code>1 &lt;= m, n &lt;= 300</code>",
+              "<code>matrix[i][j]</code> is <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>."
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Grow a square from every cell",
+                "time": "O(m&middot;n&middot;min(m,n)<sup>2</sup>)",
+                "space": "O(1)",
+                "why": [
+                  "From each top-left corner, grow the side while the new bottom row and right column are all ones. Rechecks the same cells for every corner."
+                ],
+                "code": "def maximal_square(matrix):\n    m, n, best = len(matrix), len(matrix[0]), 0\n    for r in range(m):\n        for c in range(n):\n            k = 0\n            while r + k < m and c + k < n and \\\n                    all(matrix[r + k][c + j] == \"1\" for j in range(k + 1)) and \\\n                    all(matrix[r + i][c + k] == \"1\" for i in range(k + 1)):\n                k += 1\n            best = max(best, k)\n    return best * best",
+                "best": false,
+                "tag": "brute force",
+                "change": ""
+              },
+              {
+                "name": "Bottom-up 2-D table",
+                "time": "O(m&middot;n)",
+                "space": "O(m&middot;n)",
+                "why": [
+                  "The three cells read are above, left and up-left, all filled earlier in row-major order."
+                ],
+                "code": "def maximal_square(matrix):\n    m, n = len(matrix), len(matrix[0])\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    best = 0\n    for r in range(1, m + 1):\n        for c in range(1, n + 1):\n            if matrix[r - 1][c - 1] == \"1\":\n                dp[r][c] = 1 + min(dp[r - 1][c], dp[r][c - 1], dp[r - 1][c - 1])\n                best = max(best, dp[r][c])\n    return best * best",
+                "best": false,
+                "tag": "",
+                "change": "Fill row by row with one padding row and column of zeros, so the edges need no special case."
+              },
+              {
+                "name": "One row plus one saved diagonal",
+                "time": "O(m&middot;n)",
+                "space": "O(n)",
+                "why": [
+                  "<code>row[c]</code> before the write is \"above\", <code>row[c-1]</code> after its write is \"left\", and <code>diag</code> holds the old <code>row[c-1]</code>, which is \"up-left\".",
+                  "Reset <code>diag</code> to 0 at the start of each row: the padding column."
+                ],
+                "code": "def maximal_square(matrix):\n    n = len(matrix[0])\n    row, best = [0] * (n + 1), 0\n    for line in matrix:\n        diag = 0\n        for c in range(1, n + 1):\n            above = row[c]\n            row[c] = 1 + min(row[c], row[c - 1], diag) if line[c - 1] == \"1\" else 0\n            diag = above\n            best = max(best, row[c])\n    return best * best",
+                "best": true,
+                "tag": "",
+                "change": "Keep one row. Before overwriting <code>row[c]</code>, save its old value: it is the up-left cell for column <code>c+1</code>."
+              }
+            ],
+            "recurrence": {
+              "state": "<code>f(r, c)</code> = the side of the largest all-<code>1</code> square whose <strong>bottom-right corner</strong> is <code>(r, c)</code>.",
+              "derive": [
+                "Anchoring the square at its bottom-right corner is the whole trick: it makes the state local, so a cell only needs its up, left and up-left neighbours.",
+                "A square of side k ending at <code>(r, c)</code> needs squares of side k-1 ending at the cell above, the cell to the left and the cell diagonally up-left. The largest k is limited by the smallest of the three.",
+                "A <code>0</code> cell ends no square: <code>f = 0</code>."
+              ],
+              "formula": "f(r, c) = 0                                          if matrix[r][c] == \"0\"\nf(r, c) = 1 + min(f(r-1, c), f(r, c-1), f(r-1, c-1))   otherwise\nf = 0 outside the grid\nanswer: (max over all cells of f)^2"
+            },
+            "tests": "M = [[\"1\",\"0\",\"1\",\"0\",\"0\"],[\"1\",\"0\",\"1\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\",\"1\"],[\"1\",\"0\",\"0\",\"1\",\"0\"]]\nassert maximal_square(M) == 4\nassert maximal_square([[\"0\",\"1\"],[\"1\",\"0\"]]) == 1\nassert maximal_square([[\"0\"]]) == 0\n\ndef brute(mat):\n    m, n, best = len(mat), len(mat[0]), 0\n    for r in range(m):\n        for c in range(n):\n            for k in range(1, min(m - r, n - c) + 1):\n                if all(mat[r + i][c + j] == \"1\" for i in range(k) for j in range(k)):\n                    best = max(best, k * k)\n    return best\n\nrandom.seed(221)\nfor _ in range(150):\n    m, n = random.randint(1, 7), random.randint(1, 7)\n    mat = [[random.choice(\"1110\") for _ in range(n)] for _ in range(m)]\n    assert maximal_square(mat) == brute(mat), mat",
+            "smallTests": "",
+            "topic": "dp",
+            "topicTitle": "Dynamic Programming",
+            "section": "grid",
+            "sectionTitle": "Grid DP",
+            "ref": null
+          },
+          {
+            "id": "count-square-submatrices",
+            "starter": "def count_squares(matrix):\n    pass\n",
+            "num": 142,
+            "lc": 1277,
+            "slug": "count-square-submatrices-with-all-ones",
+            "url": "https://leetcode.com/problems/count-square-submatrices-with-all-ones/",
+            "premium": false,
+            "name": "Count Square Submatrices with All Ones",
+            "difficulty": "medium",
+            "tags": [
+              "Array",
+              "Dynamic Programming",
+              "Matrix"
+            ],
+            "statement": [
+              "Given a <code>m * n</code> matrix of ones and zeros, return how many <strong>square</strong> submatrices have all ones."
+            ],
+            "examples": [
+              {
+                "input": "matrix = [ [0,1,1,1], [1,1,1,1], [0,1,1,1] ] Output: 15",
+                "output": "15",
+                "explanation": "There are 10 squares of side 1. There are 4 squares of side 2. There is 1 square of side 3. Total number of squares = 10 + 4 + 1 = 15."
+              },
+              {
+                "input": "matrix = [ [1,0,1], [1,1,0], [1,1,0] ] Output: 7",
+                "output": "7",
+                "explanation": "There are 6 squares of side 1. There is 1 square of side 2. Total number of squares = 6 + 1 = 7."
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= arr.length &lt;= 300</code>",
+              "<code>1 &lt;= arr[0].length &lt;= 300</code>",
+              "<code>0 &lt;= arr[i][j] &lt;= 1</code>"
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Check every square",
+                "time": "O(m&middot;n&middot;min(m,n)<sup>3</sup>)",
+                "space": "O(1)",
+                "why": [
+                  "Enumerate every top-left corner and size, and test every cell inside."
+                ],
+                "code": "def count_squares(matrix):\n    m, n, total = len(matrix), len(matrix[0]), 0\n    for r in range(m):\n        for c in range(n):\n            for k in range(1, min(m - r, n - c) + 1):\n                if all(matrix[r + i][c + j] for i in range(k) for j in range(k)):\n                    total += 1\n                else:\n                    break\n    return total",
+                "best": false,
+                "tag": "brute force",
+                "change": ""
+              },
+              {
+                "name": "In-place DP",
+                "time": "O(m&middot;n)",
+                "space": "O(1)",
+                "why": [
+                  "The neighbours read (above, left, up-left) have already been converted to square sides, which is exactly what the recurrence needs.",
+                  "Mutating the input is fine on LeetCode and worth asking about in an interview; copy first if the caller still needs it."
+                ],
+                "code": "def count_squares(matrix):\n    for r in range(1, len(matrix)):\n        for c in range(1, len(matrix[0])):\n            if matrix[r][c]:\n                matrix[r][c] = 1 + min(matrix[r - 1][c], matrix[r][c - 1], matrix[r - 1][c - 1])\n    return sum(map(sum, matrix))",
+                "best": true,
+                "tag": "",
+                "change": "Reuse the input matrix as the table: each cell is read as input exactly once, just before it is overwritten."
+              }
+            ],
+            "recurrence": {
+              "state": "<code>f(r, c)</code> = the side of the largest all-ones square with bottom-right corner <code>(r, c)</code> &mdash; the same state as Maximal Square.",
+              "derive": [
+                "If the largest square ending at <code>(r, c)</code> has side k, then squares of side 1, 2, &hellip;, k all end there too, and no others. So the cell contributes exactly k squares.",
+                "The answer is therefore the <em>sum</em> of the table instead of its maximum. Same recurrence, different reduction."
+              ],
+              "formula": "f(r, c) = 0                                          if matrix[r][c] == 0\nf(r, c) = 1 + min(f(r-1, c), f(r, c-1), f(r-1, c-1))   otherwise\nanswer: sum of f over all cells"
+            },
+            "tests": "assert count_squares([[0,1,1,1],[1,1,1,1],[0,1,1,1]]) == 15\nassert count_squares([[1,0,1],[1,1,0],[1,1,0]]) == 7\nassert count_squares([[0]]) == 0\n\ndef brute(mat):\n    m, n, t = len(mat), len(mat[0]), 0\n    for r in range(m):\n        for c in range(n):\n            for k in range(1, min(m - r, n - c) + 1):\n                t += all(mat[r + i][c + j] for i in range(k) for j in range(k))\n    return t\n\nrandom.seed(1277)\nfor _ in range(150):\n    m, n = random.randint(1, 7), random.randint(1, 7)\n    mat = [[random.choice([1, 1, 1, 0]) for _ in range(n)] for _ in range(m)]\n    expect = brute(mat)\n    assert count_squares([row[:] for row in mat]) == expect",
+            "smallTests": "",
+            "topic": "dp",
+            "topicTitle": "Dynamic Programming",
+            "section": "grid",
+            "sectionTitle": "Grid DP",
+            "ref": null
+          },
+          {
+            "id": "longest-increasing-path-in-a-matrix",
+            "starter": "def longest_increasing_path(matrix):\n    pass\n",
+            "num": 143,
+            "lc": 329,
+            "slug": "longest-increasing-path-in-a-matrix",
+            "url": "https://leetcode.com/problems/longest-increasing-path-in-a-matrix/",
+            "premium": false,
+            "name": "Longest Increasing Path in a Matrix",
+            "difficulty": "hard",
+            "tags": [
+              "Array",
+              "Dynamic Programming",
+              "Depth-First Search",
+              "Breadth-First Search",
+              "Graph Theory",
+              "Topological Sort",
+              "Memoization",
+              "Matrix",
+              "Directed Acyclic Graph"
+            ],
+            "statement": [
+              "Given an <code>m x n</code> integers <code>matrix</code>, return <em>the length of the longest increasing path in </em><code>matrix</code>.",
+              "From each cell, you can either move in four directions: left, right, up, or down. You <strong>may not</strong> move <strong>diagonally</strong> or move <strong>outside the boundary</strong> (i.e., wrap-around is not allowed)."
+            ],
+            "examples": [
+              {
+                "input": "matrix = [[9,9,4],[6,6,8],[2,1,1]] Output: 4 Explanation: The longest increasing path is [1, 2, 6, 9].",
+                "output": "4 Explanation: The longest increasing path is [1, 2, 6, 9].",
+                "explanation": "The longest increasing path is [1, 2, 6, 9]."
+              },
+              {
+                "input": "matrix = [[3,4,5],[3,2,6],[2,2,1]] Output: 4 Explanation: The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.",
+                "output": "4 Explanation: The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.",
+                "explanation": "The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed."
+              },
+              {
+                "input": "matrix = [[1]] Output: 1",
+                "output": "1"
+              }
+            ],
+            "constraints": [
+              "<code>m == matrix.length</code>",
+              "<code>n == matrix[i].length</code>",
+              "<code>1 &lt;= m, n &lt;= 200</code>",
+              "<code>0 &lt;= matrix[i][j] &lt;= 2<sup>31</sup> - 1</code>"
+            ],
+            "note": "",
+            "pitfall": "Adding a visited set \"to avoid cycles\". Strictly increasing paths cannot revisit a cell, and a visited set that is not reset per start makes the memo return wrong answers.",
+            "approaches": [
+              {
+                "name": "Plain DFS from every cell",
+                "time": "O(m&middot;n&middot;4<sup>m&middot;n</sup>) worst case",
+                "space": "O(m&middot;n)",
+                "why": [
+                  "Explore every increasing path from every start. A grid that increases in a snake pattern makes the same long tails get re-walked from every start."
+                ],
+                "code": "def longest_increasing_path(matrix):\n    m, n = len(matrix), len(matrix[0])\n\n    def f(r, c):\n        best = 1\n        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > matrix[r][c]:\n                best = max(best, 1 + f(nr, nc))\n        return best\n\n    return max(f(r, c) for r in range(m) for c in range(n))",
+                "best": false,
+                "tag": "brute force",
+                "change": ""
+              },
+              {
+                "name": "Memoised DFS",
+                "time": "O(m&middot;n)",
+                "space": "O(m&middot;n)",
+                "why": [
+                  "Each cell is computed once and looks at four neighbours.",
+                  "Recursion depth can reach m&middot;n on a snake-shaped grid. Python's default limit is 1000, so raise it or use the bottom-up version for big inputs."
+                ],
+                "code": "def longest_increasing_path(matrix):\n    m, n = len(matrix), len(matrix[0])\n\n    @cache\n    def f(r, c):\n        best = 1\n        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > matrix[r][c]:\n                best = max(best, 1 + f(nr, nc))\n        return best\n\n    return max(f(r, c) for r in range(m) for c in range(n))",
+                "best": true,
+                "tag": "",
+                "change": "Cache <code>f(r, c)</code>. Strictly increasing moves mean no cycles, so no visited-set is needed &mdash; the cache alone is correct."
+              },
+              {
+                "name": "Bottom-up in decreasing value order",
+                "time": "O(m&middot;n&middot;log(m&middot;n))",
+                "space": "O(m&middot;n)",
+                "why": [
+                  "This is the DAG's topological order made explicit by sorting. No recursion, so no depth limit; the sort adds the log factor.",
+                  "Kahn's algorithm on the same DAG (peel cells with no larger neighbour, layer by layer) gives O(m&middot;n) and counts layers instead."
+                ],
+                "code": "def longest_increasing_path(matrix):\n    m, n = len(matrix), len(matrix[0])\n    f = [[1] * n for _ in range(m)]\n    cells = sorted(((matrix[r][c], r, c) for r in range(m) for c in range(n)), reverse=True)\n    for v, r, c in cells:\n        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > v:\n                f[r][c] = max(f[r][c], 1 + f[nr][nc])\n    return max(map(max, f))",
+                "best": false,
+                "tag": "",
+                "change": "Process cells from largest value to smallest. When a cell is processed, every larger neighbour already has its final answer."
+              }
+            ],
+            "recurrence": {
+              "state": "<code>f(r, c)</code> = the length of the longest strictly increasing path that <strong>starts</strong> at <code>(r, c)</code>.",
+              "derive": [
+                "Moves go in all four directions, so there is no row-major order to fill the table in. But every move goes to a strictly larger value, so following moves can never loop: the cells form a DAG ordered by value.",
+                "A path from <code>(r, c)</code> is this cell plus the best path from any larger neighbour.",
+                "So memoised DFS works (the recursion order is the DAG order), and so does a bottom-up pass over cells sorted by value."
+              ],
+              "formula": "f(r, c) = 1 + max(f(nr, nc) for each neighbour with matrix[nr][nc] > matrix[r][c])\nf(r, c) = 1 if no neighbour is larger\nanswer: max over all cells of f"
+            },
+            "tests": "assert longest_increasing_path([[9,9,4],[6,6,8],[2,1,1]]) == 4\nassert longest_increasing_path([[3,4,5],[3,2,6],[2,2,1]]) == 4\nassert longest_increasing_path([[1]]) == 1\n\nrandom.seed(329)\ndef brute(mat):\n    m, n = len(mat), len(mat[0])\n    def go(r, c):\n        return 1 + max([go(a, b) for a, b in ((r+1,c),(r-1,c),(r,c+1),(r,c-1))\n                        if 0 <= a < m and 0 <= b < n and mat[a][b] > mat[r][c]], default=0)\n    return max(go(r, c) for r in range(m) for c in range(n))\n\nfor _ in range(100):\n    m, n = random.randint(1, 4), random.randint(1, 4)\n    mat = [[random.randint(0, 9) for _ in range(n)] for _ in range(m)]\n    assert longest_increasing_path(mat) == brute(mat)\n\nsnake = [[r * 30 + (c if r % 2 == 0 else 29 - c) for c in range(30)] for r in range(30)]\nimport sys; sys.setrecursionlimit(5000)\nassert longest_increasing_path(snake) == 900",
+            "smallTests": "assert longest_increasing_path([[9,9,4],[6,6,8],[2,1,1]]) == 4\nassert longest_increasing_path([[3,4,5],[3,2,6],[2,2,1]]) == 4\nassert longest_increasing_path([[1]]) == 1",
+            "topic": "dp",
+            "topicTitle": "Dynamic Programming",
+            "section": "grid",
+            "sectionTitle": "Grid DP",
+            "ref": null
           }
         ]
       },
@@ -20183,7 +20821,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "longest-increasing-subsequence",
-            "num": 140,
+            "starter": "def length_of_lis(nums):\n    pass\n",
+            "num": 144,
             "lc": 300,
             "slug": "longest-increasing-subsequence",
             "url": "https://leetcode.com/problems/longest-increasing-subsequence/",
@@ -20334,7 +20973,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "russian-doll-envelopes",
-            "num": 141,
+            "starter": "def max_envelopes(envelopes):\n    pass\n",
+            "num": 145,
             "lc": 354,
             "slug": "russian-doll-envelopes",
             "url": "https://leetcode.com/problems/russian-doll-envelopes/",
@@ -20467,7 +21107,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "maximum-length-of-pair-chain",
-            "num": 142,
+            "starter": "def find_longest_chain(pairs):\n    pass\n",
+            "num": 146,
             "lc": 646,
             "slug": "maximum-length-of-pair-chain",
             "url": "https://leetcode.com/problems/maximum-length-of-pair-chain/",
@@ -20615,7 +21256,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "longest-common-subsequence",
-            "num": 143,
+            "starter": "def longest_common_subsequence(a, b):\n    pass\n",
+            "num": 147,
             "lc": 1143,
             "slug": "longest-common-subsequence",
             "url": "https://leetcode.com/problems/longest-common-subsequence/",
@@ -20743,7 +21385,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "edit-distance",
-            "num": 144,
+            "starter": "def min_distance(a, b):\n    pass\n",
+            "num": 148,
             "lc": 72,
             "slug": "edit-distance",
             "url": "https://leetcode.com/problems/edit-distance/",
@@ -20860,7 +21503,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "distinct-subsequences",
-            "num": 145,
+            "starter": "def num_distinct(s, t):\n    pass\n",
+            "num": 149,
             "lc": 115,
             "slug": "distinct-subsequences",
             "url": "https://leetcode.com/problems/distinct-subsequences/",
@@ -20977,7 +21621,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "longest-palindromic-subsequence",
-            "num": 146,
+            "starter": "def longest_palindrome_subseq(s):\n    pass\n",
+            "num": 150,
             "lc": 516,
             "slug": "longest-palindromic-subsequence",
             "url": "https://leetcode.com/problems/longest-palindromic-subsequence/",
@@ -21110,7 +21755,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "interleaving-string",
-            "num": 147,
+            "starter": "def is_interleave(s1, s2, s3):\n    pass\n",
+            "num": 151,
             "lc": 97,
             "slug": "interleaving-string",
             "url": "https://leetcode.com/problems/interleaving-string/",
@@ -21248,7 +21894,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "palindromic-substrings",
-            "num": 148,
+            "starter": "def count_substrings(s):\n    pass\n",
+            "num": 152,
             "lc": 647,
             "slug": "palindromic-substrings",
             "url": "https://leetcode.com/problems/palindromic-substrings/",
@@ -21381,7 +22028,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "longest-palindromic-substring",
-            "num": 149,
+            "starter": "def longest_palindrome(s):\n    pass\n",
+            "num": 153,
             "lc": 5,
             "slug": "longest-palindromic-substring",
             "url": "https://leetcode.com/problems/longest-palindromic-substring/",
@@ -21510,7 +22158,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "matrix-chain-multiplication",
-            "num": 150,
+            "starter": "def matrix_chain_order(arr):\n    pass\n",
+            "num": 154,
             "lc": null,
             "slug": "",
             "url": "",
@@ -21615,7 +22264,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "burst-balloons",
-            "num": 151,
+            "starter": "def max_coins(nums):\n    pass\n",
+            "num": 155,
             "lc": 312,
             "slug": "burst-balloons",
             "url": "https://leetcode.com/problems/burst-balloons/",
@@ -21711,7 +22361,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "minimum-cost-to-cut-a-stick",
-            "num": 152,
+            "starter": "def min_cost(n, cuts):\n    pass\n",
+            "num": 156,
             "lc": 1547,
             "slug": "minimum-cost-to-cut-a-stick",
             "url": "https://leetcode.com/problems/minimum-cost-to-cut-a-stick/",
@@ -21816,6 +22467,7 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "nth-fibonacci",
+        "starter": "def fib(n):\n    pass\n",
         "num": 120,
         "lc": null,
         "slug": "",
@@ -21946,6 +22598,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "climbing-stairs",
+        "starter": "def climb_stairs(n):\n    pass\n",
         "num": 121,
         "lc": 70,
         "slug": "climbing-stairs",
@@ -22055,6 +22708,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "house-robber",
+        "starter": "def rob(nums):\n    pass\n",
         "num": 122,
         "lc": 198,
         "slug": "house-robber",
@@ -22164,6 +22818,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "house-robber-ii",
+        "starter": "def rob(nums):\n    pass\n",
         "num": 123,
         "lc": 213,
         "slug": "house-robber-ii",
@@ -22278,6 +22933,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "maximum-subarray",
+        "starter": "def max_sub_array(nums):\n    pass\n",
         "num": 124,
         "lc": 53,
         "slug": "maximum-subarray",
@@ -22390,6 +23046,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "decode-ways",
+        "starter": "def num_decodings(s):\n    pass\n",
         "num": 125,
         "lc": 91,
         "slug": "decode-ways",
@@ -22512,6 +23169,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "delete-and-earn",
+        "starter": "def delete_and_earn(nums):\n    pass\n",
         "num": 126,
         "lc": 740,
         "slug": "delete-and-earn",
@@ -22632,6 +23290,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "knapsack-01",
+        "starter": "def knapsack(W, val, wt):\n    pass\n",
         "num": 127,
         "lc": null,
         "slug": "",
@@ -22760,6 +23419,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "partition-equal-subset-sum",
+        "starter": "def can_partition(nums):\n    pass\n",
         "num": 128,
         "lc": 416,
         "slug": "partition-equal-subset-sum",
@@ -22895,6 +23555,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "target-sum",
+        "starter": "def find_target_sum_ways(nums, target):\n    pass\n",
         "num": 129,
         "lc": 494,
         "slug": "target-sum",
@@ -23022,6 +23683,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "last-stone-weight-ii",
+        "starter": "def last_stone_weight_ii(stones):\n    pass\n",
         "num": 130,
         "lc": 1049,
         "slug": "last-stone-weight-ii",
@@ -23144,6 +23806,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "ones-and-zeroes",
+        "starter": "def find_max_form(strs, m, n):\n    pass\n",
         "num": 131,
         "lc": 474,
         "slug": "ones-and-zeroes",
@@ -23267,6 +23930,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "coin-change",
+        "starter": "def coin_change(coins, amount):\n    pass\n",
         "num": 132,
         "lc": 322,
         "slug": "coin-change",
@@ -23409,6 +24073,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "coin-change-ii",
+        "starter": "def change(amount, coins):\n    pass\n",
         "num": 133,
         "lc": 518,
         "slug": "coin-change-ii",
@@ -23535,6 +24200,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "perfect-squares",
+        "starter": "def num_squares(n):\n    pass\n",
         "num": 134,
         "lc": 279,
         "slug": "perfect-squares",
@@ -23645,6 +24311,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "unique-paths",
+        "starter": "def unique_paths(m, n):\n    pass\n",
         "num": 135,
         "lc": 62,
         "slug": "unique-paths",
@@ -23776,6 +24443,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "unique-paths-ii",
+        "starter": "def unique_paths_with_obstacles(grid):\n    pass\n",
         "num": 136,
         "lc": 63,
         "slug": "unique-paths-ii",
@@ -23895,6 +24563,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "minimum-path-sum",
+        "starter": "def min_path_sum(grid):\n    pass\n",
         "num": 137,
         "lc": 64,
         "slug": "minimum-path-sum",
@@ -24024,6 +24693,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "triangle",
+        "starter": "def minimum_total(triangle):\n    pass\n",
         "num": 138,
         "lc": 120,
         "slug": "triangle",
@@ -24141,6 +24811,7 @@ window.GRAIL_DSA = [
       },
       {
         "id": "dungeon-game",
+        "starter": "def calculate_minimum_hp(dungeon):\n    pass\n",
         "num": 139,
         "lc": 174,
         "slug": "dungeon-game",
@@ -24266,8 +24937,385 @@ window.GRAIL_DSA = [
         "ref": null
       },
       {
-        "id": "longest-increasing-subsequence",
+        "id": "minimum-falling-path-sum",
+        "starter": "def min_falling_path_sum(matrix):\n    pass\n",
         "num": 140,
+        "lc": 931,
+        "slug": "minimum-falling-path-sum",
+        "url": "https://leetcode.com/problems/minimum-falling-path-sum/",
+        "premium": false,
+        "name": "Minimum Falling Path Sum",
+        "difficulty": "medium",
+        "tags": [
+          "Array",
+          "Dynamic Programming",
+          "Matrix"
+        ],
+        "statement": [
+          "Given an <code>n x n</code> array of integers <code>matrix</code>, return <em>the <strong>minimum sum</strong> of any <strong>falling path</strong> through</em> <code>matrix</code>.",
+          "A <strong>falling path</strong> starts at any element in the first row and chooses the element in the next row that is either directly below or diagonally left/right. Specifically, the next element from position <code>(row, col)</code> will be <code>(row + 1, col - 1)</code>, <code>(row + 1, col)</code>, or <code>(row + 1, col + 1)</code>."
+        ],
+        "examples": [
+          {
+            "input": "matrix = [[2,1,3],[6,5,4],[7,8,9]] Output: 13 Explanation: There are two falling paths with a minimum sum as shown.",
+            "output": "13 Explanation: There are two falling paths with a minimum sum as shown.",
+            "explanation": "There are two falling paths with a minimum sum as shown."
+          },
+          {
+            "input": "matrix = [[-19,57],[-40,-5]] Output: -59 Explanation: The falling path with a minimum sum is shown.",
+            "output": "-59 Explanation: The falling path with a minimum sum is shown.",
+            "explanation": "The falling path with a minimum sum is shown."
+          }
+        ],
+        "constraints": [
+          "<code>n == matrix.length == matrix[i].length</code>",
+          "<code>1 &lt;= n &lt;= 100</code>",
+          "<code>-100 &lt;= matrix[i][j] &lt;= 100</code>"
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Plain recursion",
+            "time": "O(n&middot;3<sup>n</sup>)",
+            "space": "O(n)",
+            "why": [
+              "From every bottom cell, branch three ways per row upward. The same upper cells are priced again and again."
+            ],
+            "code": "def min_falling_path_sum(matrix):\n    n = len(matrix)\n\n    def f(r, c):\n        if c < 0 or c >= n:\n            return inf\n        if r == 0:\n            return matrix[0][c]\n        return matrix[r][c] + min(f(r - 1, c - 1), f(r - 1, c), f(r - 1, c + 1))\n\n    return min(f(n - 1, c) for c in range(n))",
+            "best": false,
+            "tag": "brute force",
+            "change": ""
+          },
+          {
+            "name": "Top-down memo",
+            "time": "O(n&sup2;)",
+            "space": "O(n&sup2;)",
+            "why": [
+              "Each cell is priced once."
+            ],
+            "code": "def min_falling_path_sum(matrix):\n    n = len(matrix)\n\n    @cache\n    def f(r, c):\n        if c < 0 or c >= n:\n            return inf\n        if r == 0:\n            return matrix[0][c]\n        return matrix[r][c] + min(f(r - 1, c - 1), f(r - 1, c), f(r - 1, c + 1))\n\n    return min(f(n - 1, c) for c in range(n))",
+            "best": false,
+            "tag": "",
+            "change": "Cache on <code>(r, c)</code>: n&sup2; states, three lookups each."
+          },
+          {
+            "name": "One row at a time",
+            "time": "O(n&sup2;)",
+            "space": "O(n)",
+            "why": [
+              "Pad the previous row with infinity on both sides so the edge columns need no special case.",
+              "This is the one-row trick's limit: it works when only the left neighbour is read from the current row. Reading a diagonal on both sides needs a second buffer."
+            ],
+            "code": "def min_falling_path_sum(matrix):\n    prev = matrix[0][:]\n    for row in matrix[1:]:\n        padded = [inf] + prev + [inf]\n        prev = [x + min(padded[c], padded[c + 1], padded[c + 2])\n                for c, x in enumerate(row)]\n    return min(prev)",
+            "best": true,
+            "tag": "",
+            "change": "Row <code>r</code> reads only row <code>r-1</code>, so keep one previous row. It cannot be updated in place: cell <code>c</code> needs the old <code>prev[c-1]</code>, which the in-place write would already have overwritten."
+          }
+        ],
+        "recurrence": {
+          "state": "<code>f(r, c)</code> = the smallest sum of a falling path that starts anywhere in row 0 and ends at <code>(r, c)</code>.",
+          "derive": [
+            "A falling path enters <code>(r, c)</code> from one of three cells in the row above: <code>c-1</code>, <code>c</code> or <code>c+1</code>.",
+            "Take the cheapest of the three and pay for this cell. Columns outside the grid are infinity.",
+            "Row 0 is the base case, and the answer is the minimum over the whole last row, because the path may end in any column."
+          ],
+          "formula": "f(0, c) = matrix[0][c]\nf(r, c) = matrix[r][c] + min(f(r-1, c-1), f(r-1, c), f(r-1, c+1))\nanswer: min over c of f(n-1, c)"
+        },
+        "tests": "assert min_falling_path_sum([[2, 1, 3], [6, 5, 4], [7, 8, 9]]) == 13\nassert min_falling_path_sum([[-19, 57], [-40, -5]]) == -59\nassert min_falling_path_sum([[7]]) == 7\n\ndef brute(m):\n    n = len(m)\n    best = inf\n    for start in range(n):\n        stack = [(0, start, m[0][start])]\n        while stack:\n            r, c, s = stack.pop()\n            if r == n - 1:\n                best = min(best, s)\n                continue\n            for d in (-1, 0, 1):\n                if 0 <= c + d < n:\n                    stack.append((r + 1, c + d, s + m[r + 1][c + d]))\n    return best\n\nrandom.seed(931)\nfor _ in range(60):\n    n = random.randint(1, 7)\n    m = [[random.randint(-20, 20) for _ in range(n)] for _ in range(n)]\n    assert min_falling_path_sum(m) == brute(m)",
+        "smallTests": "assert min_falling_path_sum([[2, 1, 3], [6, 5, 4], [7, 8, 9]]) == 13\nassert min_falling_path_sum([[-19, 57], [-40, -5]]) == -59\nassert min_falling_path_sum([[7]]) == 7",
+        "topic": "dp",
+        "topicTitle": "Dynamic Programming",
+        "section": "grid",
+        "sectionTitle": "Grid DP",
+        "ref": null
+      },
+      {
+        "id": "maximal-square",
+        "starter": "def maximal_square(matrix):\n    pass\n",
+        "num": 141,
+        "lc": 221,
+        "slug": "maximal-square",
+        "url": "https://leetcode.com/problems/maximal-square/",
+        "premium": false,
+        "name": "Maximal Square",
+        "difficulty": "medium",
+        "tags": [
+          "Array",
+          "Dynamic Programming",
+          "Matrix"
+        ],
+        "statement": [
+          "Given an <code>m x n</code> binary <code>matrix</code> filled with <code>0</code>&#39;s and <code>1</code>&#39;s, <em>find the largest square containing only</em> <code>1</code>&#39;s <em>and return its area</em>."
+        ],
+        "examples": [
+          {
+            "input": "matrix = [[\"1\",\"0\",\"1\",\"0\",\"0\"],[\"1\",\"0\",\"1\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\",\"1\"],[\"1\",\"0\",\"0\",\"1\",\"0\"]] Output: 4",
+            "output": "4"
+          },
+          {
+            "input": "matrix = [[\"0\",\"1\"],[\"1\",\"0\"]] Output: 1",
+            "output": "1"
+          },
+          {
+            "input": "matrix = [[\"0\"]] Output: 0",
+            "output": "0"
+          }
+        ],
+        "constraints": [
+          "<code>m == matrix.length</code>",
+          "<code>n == matrix[i].length</code>",
+          "<code>1 &lt;= m, n &lt;= 300</code>",
+          "<code>matrix[i][j]</code> is <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>."
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Grow a square from every cell",
+            "time": "O(m&middot;n&middot;min(m,n)<sup>2</sup>)",
+            "space": "O(1)",
+            "why": [
+              "From each top-left corner, grow the side while the new bottom row and right column are all ones. Rechecks the same cells for every corner."
+            ],
+            "code": "def maximal_square(matrix):\n    m, n, best = len(matrix), len(matrix[0]), 0\n    for r in range(m):\n        for c in range(n):\n            k = 0\n            while r + k < m and c + k < n and \\\n                    all(matrix[r + k][c + j] == \"1\" for j in range(k + 1)) and \\\n                    all(matrix[r + i][c + k] == \"1\" for i in range(k + 1)):\n                k += 1\n            best = max(best, k)\n    return best * best",
+            "best": false,
+            "tag": "brute force",
+            "change": ""
+          },
+          {
+            "name": "Bottom-up 2-D table",
+            "time": "O(m&middot;n)",
+            "space": "O(m&middot;n)",
+            "why": [
+              "The three cells read are above, left and up-left, all filled earlier in row-major order."
+            ],
+            "code": "def maximal_square(matrix):\n    m, n = len(matrix), len(matrix[0])\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    best = 0\n    for r in range(1, m + 1):\n        for c in range(1, n + 1):\n            if matrix[r - 1][c - 1] == \"1\":\n                dp[r][c] = 1 + min(dp[r - 1][c], dp[r][c - 1], dp[r - 1][c - 1])\n                best = max(best, dp[r][c])\n    return best * best",
+            "best": false,
+            "tag": "",
+            "change": "Fill row by row with one padding row and column of zeros, so the edges need no special case."
+          },
+          {
+            "name": "One row plus one saved diagonal",
+            "time": "O(m&middot;n)",
+            "space": "O(n)",
+            "why": [
+              "<code>row[c]</code> before the write is \"above\", <code>row[c-1]</code> after its write is \"left\", and <code>diag</code> holds the old <code>row[c-1]</code>, which is \"up-left\".",
+              "Reset <code>diag</code> to 0 at the start of each row: the padding column."
+            ],
+            "code": "def maximal_square(matrix):\n    n = len(matrix[0])\n    row, best = [0] * (n + 1), 0\n    for line in matrix:\n        diag = 0\n        for c in range(1, n + 1):\n            above = row[c]\n            row[c] = 1 + min(row[c], row[c - 1], diag) if line[c - 1] == \"1\" else 0\n            diag = above\n            best = max(best, row[c])\n    return best * best",
+            "best": true,
+            "tag": "",
+            "change": "Keep one row. Before overwriting <code>row[c]</code>, save its old value: it is the up-left cell for column <code>c+1</code>."
+          }
+        ],
+        "recurrence": {
+          "state": "<code>f(r, c)</code> = the side of the largest all-<code>1</code> square whose <strong>bottom-right corner</strong> is <code>(r, c)</code>.",
+          "derive": [
+            "Anchoring the square at its bottom-right corner is the whole trick: it makes the state local, so a cell only needs its up, left and up-left neighbours.",
+            "A square of side k ending at <code>(r, c)</code> needs squares of side k-1 ending at the cell above, the cell to the left and the cell diagonally up-left. The largest k is limited by the smallest of the three.",
+            "A <code>0</code> cell ends no square: <code>f = 0</code>."
+          ],
+          "formula": "f(r, c) = 0                                          if matrix[r][c] == \"0\"\nf(r, c) = 1 + min(f(r-1, c), f(r, c-1), f(r-1, c-1))   otherwise\nf = 0 outside the grid\nanswer: (max over all cells of f)^2"
+        },
+        "tests": "M = [[\"1\",\"0\",\"1\",\"0\",\"0\"],[\"1\",\"0\",\"1\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\",\"1\"],[\"1\",\"0\",\"0\",\"1\",\"0\"]]\nassert maximal_square(M) == 4\nassert maximal_square([[\"0\",\"1\"],[\"1\",\"0\"]]) == 1\nassert maximal_square([[\"0\"]]) == 0\n\ndef brute(mat):\n    m, n, best = len(mat), len(mat[0]), 0\n    for r in range(m):\n        for c in range(n):\n            for k in range(1, min(m - r, n - c) + 1):\n                if all(mat[r + i][c + j] == \"1\" for i in range(k) for j in range(k)):\n                    best = max(best, k * k)\n    return best\n\nrandom.seed(221)\nfor _ in range(150):\n    m, n = random.randint(1, 7), random.randint(1, 7)\n    mat = [[random.choice(\"1110\") for _ in range(n)] for _ in range(m)]\n    assert maximal_square(mat) == brute(mat), mat",
+        "smallTests": "",
+        "topic": "dp",
+        "topicTitle": "Dynamic Programming",
+        "section": "grid",
+        "sectionTitle": "Grid DP",
+        "ref": null
+      },
+      {
+        "id": "count-square-submatrices",
+        "starter": "def count_squares(matrix):\n    pass\n",
+        "num": 142,
+        "lc": 1277,
+        "slug": "count-square-submatrices-with-all-ones",
+        "url": "https://leetcode.com/problems/count-square-submatrices-with-all-ones/",
+        "premium": false,
+        "name": "Count Square Submatrices with All Ones",
+        "difficulty": "medium",
+        "tags": [
+          "Array",
+          "Dynamic Programming",
+          "Matrix"
+        ],
+        "statement": [
+          "Given a <code>m * n</code> matrix of ones and zeros, return how many <strong>square</strong> submatrices have all ones."
+        ],
+        "examples": [
+          {
+            "input": "matrix = [ [0,1,1,1], [1,1,1,1], [0,1,1,1] ] Output: 15",
+            "output": "15",
+            "explanation": "There are 10 squares of side 1. There are 4 squares of side 2. There is 1 square of side 3. Total number of squares = 10 + 4 + 1 = 15."
+          },
+          {
+            "input": "matrix = [ [1,0,1], [1,1,0], [1,1,0] ] Output: 7",
+            "output": "7",
+            "explanation": "There are 6 squares of side 1. There is 1 square of side 2. Total number of squares = 6 + 1 = 7."
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= arr.length &lt;= 300</code>",
+          "<code>1 &lt;= arr[0].length &lt;= 300</code>",
+          "<code>0 &lt;= arr[i][j] &lt;= 1</code>"
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Check every square",
+            "time": "O(m&middot;n&middot;min(m,n)<sup>3</sup>)",
+            "space": "O(1)",
+            "why": [
+              "Enumerate every top-left corner and size, and test every cell inside."
+            ],
+            "code": "def count_squares(matrix):\n    m, n, total = len(matrix), len(matrix[0]), 0\n    for r in range(m):\n        for c in range(n):\n            for k in range(1, min(m - r, n - c) + 1):\n                if all(matrix[r + i][c + j] for i in range(k) for j in range(k)):\n                    total += 1\n                else:\n                    break\n    return total",
+            "best": false,
+            "tag": "brute force",
+            "change": ""
+          },
+          {
+            "name": "In-place DP",
+            "time": "O(m&middot;n)",
+            "space": "O(1)",
+            "why": [
+              "The neighbours read (above, left, up-left) have already been converted to square sides, which is exactly what the recurrence needs.",
+              "Mutating the input is fine on LeetCode and worth asking about in an interview; copy first if the caller still needs it."
+            ],
+            "code": "def count_squares(matrix):\n    for r in range(1, len(matrix)):\n        for c in range(1, len(matrix[0])):\n            if matrix[r][c]:\n                matrix[r][c] = 1 + min(matrix[r - 1][c], matrix[r][c - 1], matrix[r - 1][c - 1])\n    return sum(map(sum, matrix))",
+            "best": true,
+            "tag": "",
+            "change": "Reuse the input matrix as the table: each cell is read as input exactly once, just before it is overwritten."
+          }
+        ],
+        "recurrence": {
+          "state": "<code>f(r, c)</code> = the side of the largest all-ones square with bottom-right corner <code>(r, c)</code> &mdash; the same state as Maximal Square.",
+          "derive": [
+            "If the largest square ending at <code>(r, c)</code> has side k, then squares of side 1, 2, &hellip;, k all end there too, and no others. So the cell contributes exactly k squares.",
+            "The answer is therefore the <em>sum</em> of the table instead of its maximum. Same recurrence, different reduction."
+          ],
+          "formula": "f(r, c) = 0                                          if matrix[r][c] == 0\nf(r, c) = 1 + min(f(r-1, c), f(r, c-1), f(r-1, c-1))   otherwise\nanswer: sum of f over all cells"
+        },
+        "tests": "assert count_squares([[0,1,1,1],[1,1,1,1],[0,1,1,1]]) == 15\nassert count_squares([[1,0,1],[1,1,0],[1,1,0]]) == 7\nassert count_squares([[0]]) == 0\n\ndef brute(mat):\n    m, n, t = len(mat), len(mat[0]), 0\n    for r in range(m):\n        for c in range(n):\n            for k in range(1, min(m - r, n - c) + 1):\n                t += all(mat[r + i][c + j] for i in range(k) for j in range(k))\n    return t\n\nrandom.seed(1277)\nfor _ in range(150):\n    m, n = random.randint(1, 7), random.randint(1, 7)\n    mat = [[random.choice([1, 1, 1, 0]) for _ in range(n)] for _ in range(m)]\n    expect = brute(mat)\n    assert count_squares([row[:] for row in mat]) == expect",
+        "smallTests": "",
+        "topic": "dp",
+        "topicTitle": "Dynamic Programming",
+        "section": "grid",
+        "sectionTitle": "Grid DP",
+        "ref": null
+      },
+      {
+        "id": "longest-increasing-path-in-a-matrix",
+        "starter": "def longest_increasing_path(matrix):\n    pass\n",
+        "num": 143,
+        "lc": 329,
+        "slug": "longest-increasing-path-in-a-matrix",
+        "url": "https://leetcode.com/problems/longest-increasing-path-in-a-matrix/",
+        "premium": false,
+        "name": "Longest Increasing Path in a Matrix",
+        "difficulty": "hard",
+        "tags": [
+          "Array",
+          "Dynamic Programming",
+          "Depth-First Search",
+          "Breadth-First Search",
+          "Graph Theory",
+          "Topological Sort",
+          "Memoization",
+          "Matrix",
+          "Directed Acyclic Graph"
+        ],
+        "statement": [
+          "Given an <code>m x n</code> integers <code>matrix</code>, return <em>the length of the longest increasing path in </em><code>matrix</code>.",
+          "From each cell, you can either move in four directions: left, right, up, or down. You <strong>may not</strong> move <strong>diagonally</strong> or move <strong>outside the boundary</strong> (i.e., wrap-around is not allowed)."
+        ],
+        "examples": [
+          {
+            "input": "matrix = [[9,9,4],[6,6,8],[2,1,1]] Output: 4 Explanation: The longest increasing path is [1, 2, 6, 9].",
+            "output": "4 Explanation: The longest increasing path is [1, 2, 6, 9].",
+            "explanation": "The longest increasing path is [1, 2, 6, 9]."
+          },
+          {
+            "input": "matrix = [[3,4,5],[3,2,6],[2,2,1]] Output: 4 Explanation: The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.",
+            "output": "4 Explanation: The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.",
+            "explanation": "The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed."
+          },
+          {
+            "input": "matrix = [[1]] Output: 1",
+            "output": "1"
+          }
+        ],
+        "constraints": [
+          "<code>m == matrix.length</code>",
+          "<code>n == matrix[i].length</code>",
+          "<code>1 &lt;= m, n &lt;= 200</code>",
+          "<code>0 &lt;= matrix[i][j] &lt;= 2<sup>31</sup> - 1</code>"
+        ],
+        "note": "",
+        "pitfall": "Adding a visited set \"to avoid cycles\". Strictly increasing paths cannot revisit a cell, and a visited set that is not reset per start makes the memo return wrong answers.",
+        "approaches": [
+          {
+            "name": "Plain DFS from every cell",
+            "time": "O(m&middot;n&middot;4<sup>m&middot;n</sup>) worst case",
+            "space": "O(m&middot;n)",
+            "why": [
+              "Explore every increasing path from every start. A grid that increases in a snake pattern makes the same long tails get re-walked from every start."
+            ],
+            "code": "def longest_increasing_path(matrix):\n    m, n = len(matrix), len(matrix[0])\n\n    def f(r, c):\n        best = 1\n        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > matrix[r][c]:\n                best = max(best, 1 + f(nr, nc))\n        return best\n\n    return max(f(r, c) for r in range(m) for c in range(n))",
+            "best": false,
+            "tag": "brute force",
+            "change": ""
+          },
+          {
+            "name": "Memoised DFS",
+            "time": "O(m&middot;n)",
+            "space": "O(m&middot;n)",
+            "why": [
+              "Each cell is computed once and looks at four neighbours.",
+              "Recursion depth can reach m&middot;n on a snake-shaped grid. Python's default limit is 1000, so raise it or use the bottom-up version for big inputs."
+            ],
+            "code": "def longest_increasing_path(matrix):\n    m, n = len(matrix), len(matrix[0])\n\n    @cache\n    def f(r, c):\n        best = 1\n        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > matrix[r][c]:\n                best = max(best, 1 + f(nr, nc))\n        return best\n\n    return max(f(r, c) for r in range(m) for c in range(n))",
+            "best": true,
+            "tag": "",
+            "change": "Cache <code>f(r, c)</code>. Strictly increasing moves mean no cycles, so no visited-set is needed &mdash; the cache alone is correct."
+          },
+          {
+            "name": "Bottom-up in decreasing value order",
+            "time": "O(m&middot;n&middot;log(m&middot;n))",
+            "space": "O(m&middot;n)",
+            "why": [
+              "This is the DAG's topological order made explicit by sorting. No recursion, so no depth limit; the sort adds the log factor.",
+              "Kahn's algorithm on the same DAG (peel cells with no larger neighbour, layer by layer) gives O(m&middot;n) and counts layers instead."
+            ],
+            "code": "def longest_increasing_path(matrix):\n    m, n = len(matrix), len(matrix[0])\n    f = [[1] * n for _ in range(m)]\n    cells = sorted(((matrix[r][c], r, c) for r in range(m) for c in range(n)), reverse=True)\n    for v, r, c in cells:\n        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):\n            if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > v:\n                f[r][c] = max(f[r][c], 1 + f[nr][nc])\n    return max(map(max, f))",
+            "best": false,
+            "tag": "",
+            "change": "Process cells from largest value to smallest. When a cell is processed, every larger neighbour already has its final answer."
+          }
+        ],
+        "recurrence": {
+          "state": "<code>f(r, c)</code> = the length of the longest strictly increasing path that <strong>starts</strong> at <code>(r, c)</code>.",
+          "derive": [
+            "Moves go in all four directions, so there is no row-major order to fill the table in. But every move goes to a strictly larger value, so following moves can never loop: the cells form a DAG ordered by value.",
+            "A path from <code>(r, c)</code> is this cell plus the best path from any larger neighbour.",
+            "So memoised DFS works (the recursion order is the DAG order), and so does a bottom-up pass over cells sorted by value."
+          ],
+          "formula": "f(r, c) = 1 + max(f(nr, nc) for each neighbour with matrix[nr][nc] > matrix[r][c])\nf(r, c) = 1 if no neighbour is larger\nanswer: max over all cells of f"
+        },
+        "tests": "assert longest_increasing_path([[9,9,4],[6,6,8],[2,1,1]]) == 4\nassert longest_increasing_path([[3,4,5],[3,2,6],[2,2,1]]) == 4\nassert longest_increasing_path([[1]]) == 1\n\nrandom.seed(329)\ndef brute(mat):\n    m, n = len(mat), len(mat[0])\n    def go(r, c):\n        return 1 + max([go(a, b) for a, b in ((r+1,c),(r-1,c),(r,c+1),(r,c-1))\n                        if 0 <= a < m and 0 <= b < n and mat[a][b] > mat[r][c]], default=0)\n    return max(go(r, c) for r in range(m) for c in range(n))\n\nfor _ in range(100):\n    m, n = random.randint(1, 4), random.randint(1, 4)\n    mat = [[random.randint(0, 9) for _ in range(n)] for _ in range(m)]\n    assert longest_increasing_path(mat) == brute(mat)\n\nsnake = [[r * 30 + (c if r % 2 == 0 else 29 - c) for c in range(30)] for r in range(30)]\nimport sys; sys.setrecursionlimit(5000)\nassert longest_increasing_path(snake) == 900",
+        "smallTests": "assert longest_increasing_path([[9,9,4],[6,6,8],[2,1,1]]) == 4\nassert longest_increasing_path([[3,4,5],[3,2,6],[2,2,1]]) == 4\nassert longest_increasing_path([[1]]) == 1",
+        "topic": "dp",
+        "topicTitle": "Dynamic Programming",
+        "section": "grid",
+        "sectionTitle": "Grid DP",
+        "ref": null
+      },
+      {
+        "id": "longest-increasing-subsequence",
+        "starter": "def length_of_lis(nums):\n    pass\n",
+        "num": 144,
         "lc": 300,
         "slug": "longest-increasing-subsequence",
         "url": "https://leetcode.com/problems/longest-increasing-subsequence/",
@@ -24418,7 +25466,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "russian-doll-envelopes",
-        "num": 141,
+        "starter": "def max_envelopes(envelopes):\n    pass\n",
+        "num": 145,
         "lc": 354,
         "slug": "russian-doll-envelopes",
         "url": "https://leetcode.com/problems/russian-doll-envelopes/",
@@ -24551,7 +25600,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "maximum-length-of-pair-chain",
-        "num": 142,
+        "starter": "def find_longest_chain(pairs):\n    pass\n",
+        "num": 146,
         "lc": 646,
         "slug": "maximum-length-of-pair-chain",
         "url": "https://leetcode.com/problems/maximum-length-of-pair-chain/",
@@ -24687,7 +25737,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "longest-common-subsequence",
-        "num": 143,
+        "starter": "def longest_common_subsequence(a, b):\n    pass\n",
+        "num": 147,
         "lc": 1143,
         "slug": "longest-common-subsequence",
         "url": "https://leetcode.com/problems/longest-common-subsequence/",
@@ -24815,7 +25866,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "edit-distance",
-        "num": 144,
+        "starter": "def min_distance(a, b):\n    pass\n",
+        "num": 148,
         "lc": 72,
         "slug": "edit-distance",
         "url": "https://leetcode.com/problems/edit-distance/",
@@ -24932,7 +25984,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "distinct-subsequences",
-        "num": 145,
+        "starter": "def num_distinct(s, t):\n    pass\n",
+        "num": 149,
         "lc": 115,
         "slug": "distinct-subsequences",
         "url": "https://leetcode.com/problems/distinct-subsequences/",
@@ -25049,7 +26102,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "longest-palindromic-subsequence",
-        "num": 146,
+        "starter": "def longest_palindrome_subseq(s):\n    pass\n",
+        "num": 150,
         "lc": 516,
         "slug": "longest-palindromic-subsequence",
         "url": "https://leetcode.com/problems/longest-palindromic-subsequence/",
@@ -25182,7 +26236,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "interleaving-string",
-        "num": 147,
+        "starter": "def is_interleave(s1, s2, s3):\n    pass\n",
+        "num": 151,
         "lc": 97,
         "slug": "interleaving-string",
         "url": "https://leetcode.com/problems/interleaving-string/",
@@ -25307,7 +26362,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "palindromic-substrings",
-        "num": 148,
+        "starter": "def count_substrings(s):\n    pass\n",
+        "num": 152,
         "lc": 647,
         "slug": "palindromic-substrings",
         "url": "https://leetcode.com/problems/palindromic-substrings/",
@@ -25440,7 +26496,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "longest-palindromic-substring",
-        "num": 149,
+        "starter": "def longest_palindrome(s):\n    pass\n",
+        "num": 153,
         "lc": 5,
         "slug": "longest-palindromic-substring",
         "url": "https://leetcode.com/problems/longest-palindromic-substring/",
@@ -25569,7 +26626,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "matrix-chain-multiplication",
-        "num": 150,
+        "starter": "def matrix_chain_order(arr):\n    pass\n",
+        "num": 154,
         "lc": null,
         "slug": "",
         "url": "",
@@ -25674,7 +26732,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "burst-balloons",
-        "num": 151,
+        "starter": "def max_coins(nums):\n    pass\n",
+        "num": 155,
         "lc": 312,
         "slug": "burst-balloons",
         "url": "https://leetcode.com/problems/burst-balloons/",
@@ -25770,7 +26829,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "minimum-cost-to-cut-a-stick",
-        "num": 152,
+        "starter": "def min_cost(n, cuts):\n    pass\n",
+        "num": 156,
         "lc": 1547,
         "slug": "minimum-cost-to-cut-a-stick",
         "url": "https://leetcode.com/problems/minimum-cost-to-cut-a-stick/",
@@ -25870,7 +26930,7 @@ window.GRAIL_DSA = [
         "ref": null
       }
     ],
-    "count": 33
+    "count": 37
   },
   {
     "id": "backtracking",
@@ -25878,6 +26938,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import itertools\nimport random\nfrom collections import Counter, defaultdict\nfrom functools import cache\n\n\ndef as_set(lists):\n    \"\"\"Order-insensitive view of a list of lists, for comparing outputs.\"\"\"\n    return sorted(tuple(x) for x in lists)",
     "sections": [
       {
         "id": "choose-explore-unchoose",
@@ -25889,7 +26950,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "synonymous-sentences",
-            "num": 153,
+            "starter": "def generate_sentences(synonyms, text):\n    pass\n",
+            "num": 157,
             "lc": 1258,
             "slug": "synonymous-sentences",
             "url": "https://leetcode.com/problems/synonymous-sentences/",
@@ -25960,7 +27022,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "subset-xor-totals",
-            "num": 154,
+            "starter": "from functools import reduce\n\n\nfrom operator import or_\n\n\ndef subset_xor_sum(nums):\n    pass\n",
+            "num": 158,
             "lc": 1863,
             "slug": "sum-of-all-subset-xor-totals",
             "url": "https://leetcode.com/problems/sum-of-all-subset-xor-totals/",
@@ -26043,7 +27106,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "subsets",
-            "num": 155,
+            "starter": "def subsets(nums):\n    pass\n",
+            "num": 159,
             "lc": 78,
             "slug": "subsets",
             "url": "https://leetcode.com/problems/subsets/",
@@ -26126,7 +27190,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "combination-sum",
-            "num": 156,
+            "starter": "def combination_sum(candidates, target):\n    pass\n",
+            "num": 160,
             "lc": 39,
             "slug": "combination-sum",
             "url": "https://leetcode.com/problems/combination-sum/",
@@ -26205,7 +27270,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "combination-sum-ii",
-            "num": 157,
+            "starter": "def combination_sum2(candidates, target):\n    pass\n",
+            "num": 161,
             "lc": 40,
             "slug": "combination-sum-ii",
             "url": "https://leetcode.com/problems/combination-sum-ii/",
@@ -26265,7 +27331,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "combinations",
-            "num": 158,
+            "starter": "def combine(n, k):\n    pass\n",
+            "num": 162,
             "lc": 77,
             "slug": "combinations",
             "url": "https://leetcode.com/problems/combinations/",
@@ -26335,7 +27402,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "permutations",
-            "num": 159,
+            "starter": "def permute(nums):\n    pass\n",
+            "num": 163,
             "lc": 46,
             "slug": "permutations",
             "url": "https://leetcode.com/problems/permutations/",
@@ -26408,7 +27476,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "subsets-ii",
-            "num": 160,
+            "starter": "def subsets_with_dup(nums):\n    pass\n",
+            "num": 164,
             "lc": 90,
             "slug": "subsets-ii",
             "url": "https://leetcode.com/problems/subsets-ii/",
@@ -26477,7 +27546,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "permutations-ii",
-            "num": 161,
+            "starter": "def permute_unique(nums):\n    pass\n",
+            "num": 165,
             "lc": 47,
             "slug": "permutations-ii",
             "url": "https://leetcode.com/problems/permutations-ii/",
@@ -26556,7 +27626,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "generate-parentheses",
-            "num": 162,
+            "starter": "def generate_parenthesis(n):\n    pass\n",
+            "num": 166,
             "lc": 22,
             "slug": "generate-parentheses",
             "url": "https://leetcode.com/problems/generate-parentheses/",
@@ -26625,7 +27696,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "word-search",
-            "num": 163,
+            "starter": "def exist(board, word):\n    pass\n",
+            "num": 167,
             "lc": 79,
             "slug": "word-search",
             "url": "https://leetcode.com/problems/word-search/",
@@ -26693,7 +27765,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "palindrome-partitioning",
-            "num": 164,
+            "starter": "def partition(s):\n    pass\n",
+            "num": 168,
             "lc": 131,
             "slug": "palindrome-partitioning",
             "url": "https://leetcode.com/problems/palindrome-partitioning/",
@@ -26762,7 +27835,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "restore-ip-addresses",
-            "num": 165,
+            "starter": "def restore_ip_addresses(s):\n    pass\n",
+            "num": 169,
             "lc": 93,
             "slug": "restore-ip-addresses",
             "url": "https://leetcode.com/problems/restore-ip-addresses/",
@@ -26823,7 +27897,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "letter-combinations-phone",
-            "num": 166,
+            "starter": "def letter_combinations(digits):\n    pass\n",
+            "num": 170,
             "lc": 17,
             "slug": "letter-combinations-of-a-phone-number",
             "url": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
@@ -26903,7 +27978,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "matchsticks-to-square",
-            "num": 167,
+            "starter": "def makesquare(matchsticks):\n    pass\n",
+            "num": 171,
             "lc": 473,
             "slug": "matchsticks-to-square",
             "url": "https://leetcode.com/problems/matchsticks-to-square/",
@@ -26979,7 +28055,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "partition-k-equal-subsets",
-            "num": 168,
+            "starter": "def can_partition_k_subsets(nums, k):\n    pass\n",
+            "num": 172,
             "lc": 698,
             "slug": "partition-to-k-equal-sum-subsets",
             "url": "https://leetcode.com/problems/partition-to-k-equal-sum-subsets/",
@@ -27063,7 +28140,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "factor-combinations",
-            "num": 169,
+            "starter": "def get_factors(n):\n    pass\n",
+            "num": 173,
             "lc": 254,
             "slug": "factor-combinations",
             "url": "https://leetcode.com/problems/factor-combinations/",
@@ -27123,7 +28201,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "brace-expansion",
-            "num": 170,
+            "starter": "def expand(s):\n    pass\n",
+            "num": 174,
             "lc": 1087,
             "slug": "brace-expansion",
             "url": "https://leetcode.com/problems/brace-expansion/",
@@ -27182,7 +28261,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "word-pattern-ii",
-            "num": 171,
+            "starter": "def word_pattern_match(pattern, s):\n    pass\n",
+            "num": 175,
             "lc": 291,
             "slug": "word-pattern-ii",
             "url": "https://leetcode.com/problems/word-pattern-ii/",
@@ -27247,7 +28327,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "android-unlock-patterns",
-            "num": 172,
+            "starter": "def number_of_patterns(m, n):\n    pass\n",
+            "num": 176,
             "lc": 351,
             "slug": "android-unlock-patterns",
             "url": "https://leetcode.com/problems/android-unlock-patterns/",
@@ -27330,7 +28411,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "n-queens",
-            "num": 173,
+            "starter": "def solve_n_queens(n):\n    pass\n",
+            "num": 177,
             "lc": 51,
             "slug": "n-queens",
             "url": "https://leetcode.com/problems/n-queens/",
@@ -27389,7 +28471,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "n-queens-ii",
-            "num": 174,
+            "starter": "def total_n_queens(n):\n    pass\n",
+            "num": 178,
             "lc": 52,
             "slug": "n-queens-ii",
             "url": "https://leetcode.com/problems/n-queens-ii/",
@@ -27458,7 +28541,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "word-break-ii",
-            "num": 175,
+            "starter": "def word_break(s, word_dict):\n    pass\n",
+            "num": 179,
             "lc": 140,
             "slug": "word-break-ii",
             "url": "https://leetcode.com/problems/word-break-ii/",
@@ -27542,7 +28626,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "robot-room-cleaner",
-            "num": 176,
+            "starter": "def clean_room(robot):\n    pass\n",
+            "num": 180,
             "lc": 489,
             "slug": "robot-room-cleaner",
             "url": "https://leetcode.com/problems/robot-room-cleaner/",
@@ -27598,7 +28683,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "word-search-ii",
-            "num": 177,
+            "starter": "def find_words(board, words):\n    pass\n",
+            "num": 181,
             "lc": 212,
             "slug": "word-search-ii",
             "url": "https://leetcode.com/problems/word-search-ii/",
@@ -27681,7 +28767,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "synonymous-sentences",
-        "num": 153,
+        "starter": "def generate_sentences(synonyms, text):\n    pass\n",
+        "num": 157,
         "lc": 1258,
         "slug": "synonymous-sentences",
         "url": "https://leetcode.com/problems/synonymous-sentences/",
@@ -27752,7 +28839,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "subset-xor-totals",
-        "num": 154,
+        "starter": "from functools import reduce\n\n\nfrom operator import or_\n\n\ndef subset_xor_sum(nums):\n    pass\n",
+        "num": 158,
         "lc": 1863,
         "slug": "sum-of-all-subset-xor-totals",
         "url": "https://leetcode.com/problems/sum-of-all-subset-xor-totals/",
@@ -27835,7 +28923,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "subsets",
-        "num": 155,
+        "starter": "def subsets(nums):\n    pass\n",
+        "num": 159,
         "lc": 78,
         "slug": "subsets",
         "url": "https://leetcode.com/problems/subsets/",
@@ -27918,7 +29007,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "combination-sum",
-        "num": 156,
+        "starter": "def combination_sum(candidates, target):\n    pass\n",
+        "num": 160,
         "lc": 39,
         "slug": "combination-sum",
         "url": "https://leetcode.com/problems/combination-sum/",
@@ -27997,7 +29087,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "combination-sum-ii",
-        "num": 157,
+        "starter": "def combination_sum2(candidates, target):\n    pass\n",
+        "num": 161,
         "lc": 40,
         "slug": "combination-sum-ii",
         "url": "https://leetcode.com/problems/combination-sum-ii/",
@@ -28057,7 +29148,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "combinations",
-        "num": 158,
+        "starter": "def combine(n, k):\n    pass\n",
+        "num": 162,
         "lc": 77,
         "slug": "combinations",
         "url": "https://leetcode.com/problems/combinations/",
@@ -28127,7 +29219,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "permutations",
-        "num": 159,
+        "starter": "def permute(nums):\n    pass\n",
+        "num": 163,
         "lc": 46,
         "slug": "permutations",
         "url": "https://leetcode.com/problems/permutations/",
@@ -28200,7 +29293,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "subsets-ii",
-        "num": 160,
+        "starter": "def subsets_with_dup(nums):\n    pass\n",
+        "num": 164,
         "lc": 90,
         "slug": "subsets-ii",
         "url": "https://leetcode.com/problems/subsets-ii/",
@@ -28269,7 +29363,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "permutations-ii",
-        "num": 161,
+        "starter": "def permute_unique(nums):\n    pass\n",
+        "num": 165,
         "lc": 47,
         "slug": "permutations-ii",
         "url": "https://leetcode.com/problems/permutations-ii/",
@@ -28338,7 +29433,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "generate-parentheses",
-        "num": 162,
+        "starter": "def generate_parenthesis(n):\n    pass\n",
+        "num": 166,
         "lc": 22,
         "slug": "generate-parentheses",
         "url": "https://leetcode.com/problems/generate-parentheses/",
@@ -28407,7 +29503,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "word-search",
-        "num": 163,
+        "starter": "def exist(board, word):\n    pass\n",
+        "num": 167,
         "lc": 79,
         "slug": "word-search",
         "url": "https://leetcode.com/problems/word-search/",
@@ -28475,7 +29572,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "palindrome-partitioning",
-        "num": 164,
+        "starter": "def partition(s):\n    pass\n",
+        "num": 168,
         "lc": 131,
         "slug": "palindrome-partitioning",
         "url": "https://leetcode.com/problems/palindrome-partitioning/",
@@ -28544,7 +29642,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "restore-ip-addresses",
-        "num": 165,
+        "starter": "def restore_ip_addresses(s):\n    pass\n",
+        "num": 169,
         "lc": 93,
         "slug": "restore-ip-addresses",
         "url": "https://leetcode.com/problems/restore-ip-addresses/",
@@ -28605,7 +29704,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "letter-combinations-phone",
-        "num": 166,
+        "starter": "def letter_combinations(digits):\n    pass\n",
+        "num": 170,
         "lc": 17,
         "slug": "letter-combinations-of-a-phone-number",
         "url": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
@@ -28675,7 +29775,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "matchsticks-to-square",
-        "num": 167,
+        "starter": "def makesquare(matchsticks):\n    pass\n",
+        "num": 171,
         "lc": 473,
         "slug": "matchsticks-to-square",
         "url": "https://leetcode.com/problems/matchsticks-to-square/",
@@ -28751,7 +29852,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "partition-k-equal-subsets",
-        "num": 168,
+        "starter": "def can_partition_k_subsets(nums, k):\n    pass\n",
+        "num": 172,
         "lc": 698,
         "slug": "partition-to-k-equal-sum-subsets",
         "url": "https://leetcode.com/problems/partition-to-k-equal-sum-subsets/",
@@ -28825,7 +29927,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "factor-combinations",
-        "num": 169,
+        "starter": "def get_factors(n):\n    pass\n",
+        "num": 173,
         "lc": 254,
         "slug": "factor-combinations",
         "url": "https://leetcode.com/problems/factor-combinations/",
@@ -28885,7 +29988,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "brace-expansion",
-        "num": 170,
+        "starter": "def expand(s):\n    pass\n",
+        "num": 174,
         "lc": 1087,
         "slug": "brace-expansion",
         "url": "https://leetcode.com/problems/brace-expansion/",
@@ -28944,7 +30048,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "word-pattern-ii",
-        "num": 171,
+        "starter": "def word_pattern_match(pattern, s):\n    pass\n",
+        "num": 175,
         "lc": 291,
         "slug": "word-pattern-ii",
         "url": "https://leetcode.com/problems/word-pattern-ii/",
@@ -29009,7 +30114,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "android-unlock-patterns",
-        "num": 172,
+        "starter": "def number_of_patterns(m, n):\n    pass\n",
+        "num": 176,
         "lc": 351,
         "slug": "android-unlock-patterns",
         "url": "https://leetcode.com/problems/android-unlock-patterns/",
@@ -29082,7 +30188,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "n-queens",
-        "num": 173,
+        "starter": "def solve_n_queens(n):\n    pass\n",
+        "num": 177,
         "lc": 51,
         "slug": "n-queens",
         "url": "https://leetcode.com/problems/n-queens/",
@@ -29141,7 +30248,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "n-queens-ii",
-        "num": 174,
+        "starter": "def total_n_queens(n):\n    pass\n",
+        "num": 178,
         "lc": 52,
         "slug": "n-queens-ii",
         "url": "https://leetcode.com/problems/n-queens-ii/",
@@ -29210,7 +30318,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "word-break-ii",
-        "num": 175,
+        "starter": "def word_break(s, word_dict):\n    pass\n",
+        "num": 179,
         "lc": 140,
         "slug": "word-break-ii",
         "url": "https://leetcode.com/problems/word-break-ii/",
@@ -29294,7 +30403,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "robot-room-cleaner",
-        "num": 176,
+        "starter": "def clean_room(robot):\n    pass\n",
+        "num": 180,
         "lc": 489,
         "slug": "robot-room-cleaner",
         "url": "https://leetcode.com/problems/robot-room-cleaner/",
@@ -29350,7 +30460,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "word-search-ii",
-        "num": 177,
+        "starter": "def find_words(board, words):\n    pass\n",
+        "num": 181,
         "lc": 212,
         "slug": "word-search-ii",
         "url": "https://leetcode.com/problems/word-search-ii/",
@@ -29436,6 +30547,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import random\nfrom collections import Counter, defaultdict",
     "sections": [
       {
         "id": "arrays-hashing",
@@ -29447,7 +30559,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "concatenation-of-array",
-            "num": 178,
+            "starter": "def get_concatenation(nums):\n    pass\n",
+            "num": 182,
             "lc": 1929,
             "slug": "concatenation-of-array",
             "url": "https://leetcode.com/problems/concatenation-of-array/",
@@ -29534,7 +30647,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "contains-duplicate",
-            "num": 179,
+            "starter": "def contains_duplicate(nums):\n    pass\n",
+            "num": 183,
             "lc": 217,
             "slug": "contains-duplicate",
             "url": "https://leetcode.com/problems/contains-duplicate/",
@@ -29625,7 +30739,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "valid-anagram",
-            "num": 180,
+            "starter": "def is_anagram(s, t):\n    pass\n",
+            "num": 184,
             "lc": 242,
             "slug": "valid-anagram",
             "url": "https://leetcode.com/problems/valid-anagram/",
@@ -29708,7 +30823,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "two-sum",
-            "num": 181,
+            "starter": "def two_sum(nums, target):\n    pass\n",
+            "num": 185,
             "lc": 1,
             "slug": "two-sum",
             "url": "https://leetcode.com/problems/two-sum/",
@@ -29798,7 +30914,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "longest-common-prefix",
-            "num": 182,
+            "starter": "def longest_common_prefix(strs):\n    pass\n",
+            "num": 186,
             "lc": 14,
             "slug": "longest-common-prefix",
             "url": "https://leetcode.com/problems/longest-common-prefix/",
@@ -29884,7 +31001,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "group-anagrams",
-            "num": 183,
+            "starter": "def group_anagrams(strs):\n    pass\n",
+            "num": 187,
             "lc": 49,
             "slug": "group-anagrams",
             "url": "https://leetcode.com/problems/group-anagrams/",
@@ -29974,7 +31092,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "remove-element",
-            "num": 184,
+            "starter": "def remove_element(nums, val):\n    pass\n",
+            "num": 188,
             "lc": 27,
             "slug": "remove-element",
             "url": "https://leetcode.com/problems/remove-element/",
@@ -30064,7 +31183,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "majority-element",
-            "num": 185,
+            "starter": "def majority_element(nums):\n    pass\n",
+            "num": 189,
             "lc": 169,
             "slug": "majority-element",
             "url": "https://leetcode.com/problems/majority-element/",
@@ -30164,7 +31284,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "design-hashset",
-            "num": 186,
+            "starter": "class MyHashSet:\n\n    def __init__(self):\n        pass\n\n    def add(self, key):\n        pass\n\n    def remove(self, key):\n        pass\n\n    def contains(self, key):\n        pass\n",
+            "num": 190,
             "lc": 705,
             "slug": "design-hashset",
             "url": "https://leetcode.com/problems/design-hashset/",
@@ -30235,7 +31356,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "design-hashmap",
-            "num": 187,
+            "starter": "class MyHashMap:\n\n    def __init__(self):\n        pass\n\n    def put(self, key, value):\n        pass\n\n    def get(self, key):\n        pass\n\n    def remove(self, key):\n        pass\n",
+            "num": 191,
             "lc": 706,
             "slug": "design-hashmap",
             "url": "https://leetcode.com/problems/design-hashmap/",
@@ -30305,7 +31427,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "sort-an-array",
-            "num": 188,
+            "starter": "def sort_array(nums):\n    pass\n",
+            "num": 192,
             "lc": 912,
             "slug": "sort-an-array",
             "url": "https://leetcode.com/problems/sort-an-array/",
@@ -30420,7 +31543,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "sort-colors",
-            "num": 189,
+            "starter": "def sort_colors(nums):\n    pass\n",
+            "num": 193,
             "lc": 75,
             "slug": "sort-colors",
             "url": "https://leetcode.com/problems/sort-colors/",
@@ -30509,7 +31633,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "encode-decode-strings",
-            "num": 190,
+            "starter": "def encode(strs):\n    pass\n\n\ndef decode(s):\n    pass\n",
+            "num": 194,
             "lc": 271,
             "slug": "encode-and-decode-strings",
             "url": "https://leetcode.com/problems/encode-and-decode-strings/",
@@ -30581,7 +31706,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "range-sum-query-2d",
-            "num": 191,
+            "starter": "class NumMatrix:\n\n    def __init__(self, matrix):\n        pass\n\n    def sumRegion(self, r1, c1, r2, c2):\n        pass\n",
+            "num": 195,
             "lc": 304,
             "slug": "range-sum-query-2d-immutable",
             "url": "https://leetcode.com/problems/range-sum-query-2d-immutable/",
@@ -30667,7 +31793,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "product-except-self",
-            "num": 192,
+            "starter": "def product_except_self(nums):\n    pass\n",
+            "num": 196,
             "lc": 238,
             "slug": "product-of-array-except-self",
             "url": "https://leetcode.com/problems/product-of-array-except-self/",
@@ -30762,7 +31889,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "valid-sudoku",
-            "num": 193,
+            "starter": "def is_valid_sudoku(board):\n    pass\n",
+            "num": 197,
             "lc": 36,
             "slug": "valid-sudoku",
             "url": "https://leetcode.com/problems/valid-sudoku/",
@@ -30846,7 +31974,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "longest-consecutive-sequence",
-            "num": 194,
+            "starter": "def longest_consecutive(nums):\n    pass\n",
+            "num": 198,
             "lc": 128,
             "slug": "longest-consecutive-sequence",
             "url": "https://leetcode.com/problems/longest-consecutive-sequence/",
@@ -30935,7 +32064,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "best-time-stock-ii",
-            "num": 195,
+            "starter": "def max_profit(prices):\n    pass\n",
+            "num": 199,
             "lc": 122,
             "slug": "best-time-to-buy-and-sell-stock-ii",
             "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/",
@@ -31037,7 +32167,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "majority-element-ii",
-            "num": 196,
+            "starter": "def majority_element_ii(nums):\n    pass\n",
+            "num": 200,
             "lc": 229,
             "slug": "majority-element-ii",
             "url": "https://leetcode.com/problems/majority-element-ii/",
@@ -31124,7 +32255,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "subarray-sum-equals-k",
-            "num": 197,
+            "starter": "def subarray_sum(nums, k):\n    pass\n",
+            "num": 201,
             "lc": 560,
             "slug": "subarray-sum-equals-k",
             "url": "https://leetcode.com/problems/subarray-sum-equals-k/",
@@ -31208,7 +32340,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "first-missing-positive",
-            "num": 198,
+            "starter": "def first_missing_positive(nums):\n    pass\n",
+            "num": 202,
             "lc": 41,
             "slug": "first-missing-positive",
             "url": "https://leetcode.com/problems/first-missing-positive/",
@@ -31313,7 +32446,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "concatenation-of-array",
-        "num": 178,
+        "starter": "def get_concatenation(nums):\n    pass\n",
+        "num": 182,
         "lc": 1929,
         "slug": "concatenation-of-array",
         "url": "https://leetcode.com/problems/concatenation-of-array/",
@@ -31400,7 +32534,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "contains-duplicate",
-        "num": 179,
+        "starter": "def contains_duplicate(nums):\n    pass\n",
+        "num": 183,
         "lc": 217,
         "slug": "contains-duplicate",
         "url": "https://leetcode.com/problems/contains-duplicate/",
@@ -31491,7 +32626,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "valid-anagram",
-        "num": 180,
+        "starter": "def is_anagram(s, t):\n    pass\n",
+        "num": 184,
         "lc": 242,
         "slug": "valid-anagram",
         "url": "https://leetcode.com/problems/valid-anagram/",
@@ -31574,7 +32710,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "two-sum",
-        "num": 181,
+        "starter": "def two_sum(nums, target):\n    pass\n",
+        "num": 185,
         "lc": 1,
         "slug": "two-sum",
         "url": "https://leetcode.com/problems/two-sum/",
@@ -31664,7 +32801,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "longest-common-prefix",
-        "num": 182,
+        "starter": "def longest_common_prefix(strs):\n    pass\n",
+        "num": 186,
         "lc": 14,
         "slug": "longest-common-prefix",
         "url": "https://leetcode.com/problems/longest-common-prefix/",
@@ -31750,7 +32888,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "group-anagrams",
-        "num": 183,
+        "starter": "def group_anagrams(strs):\n    pass\n",
+        "num": 187,
         "lc": 49,
         "slug": "group-anagrams",
         "url": "https://leetcode.com/problems/group-anagrams/",
@@ -31840,7 +32979,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "remove-element",
-        "num": 184,
+        "starter": "def remove_element(nums, val):\n    pass\n",
+        "num": 188,
         "lc": 27,
         "slug": "remove-element",
         "url": "https://leetcode.com/problems/remove-element/",
@@ -31930,7 +33070,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "majority-element",
-        "num": 185,
+        "starter": "def majority_element(nums):\n    pass\n",
+        "num": 189,
         "lc": 169,
         "slug": "majority-element",
         "url": "https://leetcode.com/problems/majority-element/",
@@ -32030,7 +33171,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "design-hashset",
-        "num": 186,
+        "starter": "class MyHashSet:\n\n    def __init__(self):\n        pass\n\n    def add(self, key):\n        pass\n\n    def remove(self, key):\n        pass\n\n    def contains(self, key):\n        pass\n",
+        "num": 190,
         "lc": 705,
         "slug": "design-hashset",
         "url": "https://leetcode.com/problems/design-hashset/",
@@ -32101,7 +33243,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "design-hashmap",
-        "num": 187,
+        "starter": "class MyHashMap:\n\n    def __init__(self):\n        pass\n\n    def put(self, key, value):\n        pass\n\n    def get(self, key):\n        pass\n\n    def remove(self, key):\n        pass\n",
+        "num": 191,
         "lc": 706,
         "slug": "design-hashmap",
         "url": "https://leetcode.com/problems/design-hashmap/",
@@ -32171,7 +33314,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sort-an-array",
-        "num": 188,
+        "starter": "def sort_array(nums):\n    pass\n",
+        "num": 192,
         "lc": 912,
         "slug": "sort-an-array",
         "url": "https://leetcode.com/problems/sort-an-array/",
@@ -32286,7 +33430,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sort-colors",
-        "num": 189,
+        "starter": "def sort_colors(nums):\n    pass\n",
+        "num": 193,
         "lc": 75,
         "slug": "sort-colors",
         "url": "https://leetcode.com/problems/sort-colors/",
@@ -32375,7 +33520,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "encode-decode-strings",
-        "num": 190,
+        "starter": "def encode(strs):\n    pass\n\n\ndef decode(s):\n    pass\n",
+        "num": 194,
         "lc": 271,
         "slug": "encode-and-decode-strings",
         "url": "https://leetcode.com/problems/encode-and-decode-strings/",
@@ -32447,7 +33593,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "range-sum-query-2d",
-        "num": 191,
+        "starter": "class NumMatrix:\n\n    def __init__(self, matrix):\n        pass\n\n    def sumRegion(self, r1, c1, r2, c2):\n        pass\n",
+        "num": 195,
         "lc": 304,
         "slug": "range-sum-query-2d-immutable",
         "url": "https://leetcode.com/problems/range-sum-query-2d-immutable/",
@@ -32533,7 +33680,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "product-except-self",
-        "num": 192,
+        "starter": "def product_except_self(nums):\n    pass\n",
+        "num": 196,
         "lc": 238,
         "slug": "product-of-array-except-self",
         "url": "https://leetcode.com/problems/product-of-array-except-self/",
@@ -32628,7 +33776,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "valid-sudoku",
-        "num": 193,
+        "starter": "def is_valid_sudoku(board):\n    pass\n",
+        "num": 197,
         "lc": 36,
         "slug": "valid-sudoku",
         "url": "https://leetcode.com/problems/valid-sudoku/",
@@ -32712,7 +33861,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "longest-consecutive-sequence",
-        "num": 194,
+        "starter": "def longest_consecutive(nums):\n    pass\n",
+        "num": 198,
         "lc": 128,
         "slug": "longest-consecutive-sequence",
         "url": "https://leetcode.com/problems/longest-consecutive-sequence/",
@@ -32801,7 +33951,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "best-time-stock-ii",
-        "num": 195,
+        "starter": "def max_profit(prices):\n    pass\n",
+        "num": 199,
         "lc": 122,
         "slug": "best-time-to-buy-and-sell-stock-ii",
         "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/",
@@ -32903,7 +34054,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "majority-element-ii",
-        "num": 196,
+        "starter": "def majority_element_ii(nums):\n    pass\n",
+        "num": 200,
         "lc": 229,
         "slug": "majority-element-ii",
         "url": "https://leetcode.com/problems/majority-element-ii/",
@@ -32990,7 +34142,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "subarray-sum-equals-k",
-        "num": 197,
+        "starter": "def subarray_sum(nums, k):\n    pass\n",
+        "num": 201,
         "lc": 560,
         "slug": "subarray-sum-equals-k",
         "url": "https://leetcode.com/problems/subarray-sum-equals-k/",
@@ -33074,7 +34227,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "first-missing-positive",
-        "num": 198,
+        "starter": "def first_missing_positive(nums):\n    pass\n",
+        "num": 202,
         "lc": 41,
         "slug": "first-missing-positive",
         "url": "https://leetcode.com/problems/first-missing-positive/",
@@ -33182,6 +34336,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import bisect\nimport heapq\nimport itertools\nimport random\nfrom collections import Counter",
     "sections": [
       {
         "id": "two-pointers",
@@ -33193,7 +34348,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "reverse-string",
-            "num": 199,
+            "starter": "def reverse_string(s):\n    pass\n",
+            "num": 203,
             "lc": 344,
             "slug": "reverse-string",
             "url": "https://leetcode.com/problems/reverse-string/",
@@ -33273,7 +34429,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "valid-palindrome",
-            "num": 200,
+            "starter": "def is_palindrome(s):\n    pass\n",
+            "num": 204,
             "lc": 125,
             "slug": "valid-palindrome",
             "url": "https://leetcode.com/problems/valid-palindrome/",
@@ -33348,7 +34505,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "valid-palindrome-ii",
-            "num": 201,
+            "starter": "def valid_palindrome(s):\n    pass\n",
+            "num": 205,
             "lc": 680,
             "slug": "valid-palindrome-ii",
             "url": "https://leetcode.com/problems/valid-palindrome-ii/",
@@ -33422,7 +34580,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "merge-strings-alternately",
-            "num": 202,
+            "starter": "def merge_alternately(word1, word2):\n    pass\n",
+            "num": 206,
             "lc": 1768,
             "slug": "merge-strings-alternately",
             "url": "https://leetcode.com/problems/merge-strings-alternately/",
@@ -33497,7 +34656,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "merge-sorted-array",
-            "num": 203,
+            "starter": "def merge(nums1, m, nums2, n):\n    pass\n",
+            "num": 207,
             "lc": 88,
             "slug": "merge-sorted-array",
             "url": "https://leetcode.com/problems/merge-sorted-array/",
@@ -33590,7 +34750,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "remove-duplicates-sorted",
-            "num": 204,
+            "starter": "def remove_duplicates(nums):\n    pass\n",
+            "num": 208,
             "lc": 26,
             "slug": "remove-duplicates-from-sorted-array",
             "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
@@ -33668,7 +34829,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "two-sum-ii",
-            "num": 205,
+            "starter": "def two_sum_sorted(numbers, target):\n    pass\n",
+            "num": 209,
             "lc": 167,
             "slug": "two-sum-ii-input-array-is-sorted",
             "url": "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/",
@@ -33763,7 +34925,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "three-sum",
-            "num": 206,
+            "starter": "def three_sum(nums):\n    pass\n",
+            "num": 210,
             "lc": 15,
             "slug": "3sum",
             "url": "https://leetcode.com/problems/3sum/",
@@ -33852,7 +35015,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "four-sum",
-            "num": 207,
+            "starter": "def four_sum(nums, target):\n    pass\n",
+            "num": 211,
             "lc": 18,
             "slug": "4sum",
             "url": "https://leetcode.com/problems/4sum/",
@@ -33935,7 +35099,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "rotate-array",
-            "num": 208,
+            "starter": "def rotate(nums, k):\n    pass\n",
+            "num": 212,
             "lc": 189,
             "slug": "rotate-array",
             "url": "https://leetcode.com/problems/rotate-array/",
@@ -34032,7 +35197,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "container-most-water",
-            "num": 209,
+            "starter": "def max_area(height):\n    pass\n",
+            "num": 213,
             "lc": 11,
             "slug": "container-with-most-water",
             "url": "https://leetcode.com/problems/container-with-most-water/",
@@ -34106,7 +35272,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "boats-to-save-people",
-            "num": 210,
+            "starter": "def num_rescue_boats(people, limit):\n    pass\n",
+            "num": 214,
             "lc": 881,
             "slug": "boats-to-save-people",
             "url": "https://leetcode.com/problems/boats-to-save-people/",
@@ -34185,7 +35352,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "trapping-rain-water",
-            "num": 211,
+            "starter": "def trap(height):\n    pass\n",
+            "num": 215,
             "lc": 42,
             "slug": "trapping-rain-water",
             "url": "https://leetcode.com/problems/trapping-rain-water/",
@@ -34293,7 +35461,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "insert-interval",
-            "num": 212,
+            "starter": "def insert(intervals, new):\n    pass\n",
+            "num": 216,
             "lc": 57,
             "slug": "insert-interval",
             "url": "https://leetcode.com/problems/insert-interval/",
@@ -34369,7 +35538,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "merge-intervals",
-            "num": 213,
+            "starter": "def merge(intervals):\n    pass\n",
+            "num": 217,
             "lc": 56,
             "slug": "merge-intervals",
             "url": "https://leetcode.com/problems/merge-intervals/",
@@ -34446,7 +35616,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "non-overlapping-intervals",
-            "num": 214,
+            "starter": "def erase_overlap_intervals(intervals):\n    pass\n",
+            "num": 218,
             "lc": 435,
             "slug": "non-overlapping-intervals",
             "url": "https://leetcode.com/problems/non-overlapping-intervals/",
@@ -34537,7 +35708,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "meeting-rooms-iii",
-            "num": 215,
+            "starter": "def most_booked(n, meetings):\n    pass\n",
+            "num": 219,
             "lc": 2402,
             "slug": "meeting-rooms-iii",
             "url": "https://leetcode.com/problems/meeting-rooms-iii/",
@@ -34617,7 +35789,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "min-interval-each-query",
-            "num": 216,
+            "starter": "def min_interval(intervals, queries):\n    pass\n",
+            "num": 220,
             "lc": 1851,
             "slug": "minimum-interval-to-include-each-query",
             "url": "https://leetcode.com/problems/minimum-interval-to-include-each-query/",
@@ -34699,7 +35872,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "reverse-string",
-        "num": 199,
+        "starter": "def reverse_string(s):\n    pass\n",
+        "num": 203,
         "lc": 344,
         "slug": "reverse-string",
         "url": "https://leetcode.com/problems/reverse-string/",
@@ -34779,7 +35953,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "valid-palindrome",
-        "num": 200,
+        "starter": "def is_palindrome(s):\n    pass\n",
+        "num": 204,
         "lc": 125,
         "slug": "valid-palindrome",
         "url": "https://leetcode.com/problems/valid-palindrome/",
@@ -34854,7 +36029,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "valid-palindrome-ii",
-        "num": 201,
+        "starter": "def valid_palindrome(s):\n    pass\n",
+        "num": 205,
         "lc": 680,
         "slug": "valid-palindrome-ii",
         "url": "https://leetcode.com/problems/valid-palindrome-ii/",
@@ -34928,7 +36104,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "merge-strings-alternately",
-        "num": 202,
+        "starter": "def merge_alternately(word1, word2):\n    pass\n",
+        "num": 206,
         "lc": 1768,
         "slug": "merge-strings-alternately",
         "url": "https://leetcode.com/problems/merge-strings-alternately/",
@@ -35003,7 +36180,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "merge-sorted-array",
-        "num": 203,
+        "starter": "def merge(nums1, m, nums2, n):\n    pass\n",
+        "num": 207,
         "lc": 88,
         "slug": "merge-sorted-array",
         "url": "https://leetcode.com/problems/merge-sorted-array/",
@@ -35096,7 +36274,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "remove-duplicates-sorted",
-        "num": 204,
+        "starter": "def remove_duplicates(nums):\n    pass\n",
+        "num": 208,
         "lc": 26,
         "slug": "remove-duplicates-from-sorted-array",
         "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
@@ -35174,7 +36353,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "two-sum-ii",
-        "num": 205,
+        "starter": "def two_sum_sorted(numbers, target):\n    pass\n",
+        "num": 209,
         "lc": 167,
         "slug": "two-sum-ii-input-array-is-sorted",
         "url": "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/",
@@ -35269,7 +36449,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "three-sum",
-        "num": 206,
+        "starter": "def three_sum(nums):\n    pass\n",
+        "num": 210,
         "lc": 15,
         "slug": "3sum",
         "url": "https://leetcode.com/problems/3sum/",
@@ -35358,7 +36539,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "four-sum",
-        "num": 207,
+        "starter": "def four_sum(nums, target):\n    pass\n",
+        "num": 211,
         "lc": 18,
         "slug": "4sum",
         "url": "https://leetcode.com/problems/4sum/",
@@ -35441,7 +36623,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "rotate-array",
-        "num": 208,
+        "starter": "def rotate(nums, k):\n    pass\n",
+        "num": 212,
         "lc": 189,
         "slug": "rotate-array",
         "url": "https://leetcode.com/problems/rotate-array/",
@@ -35538,7 +36721,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "container-most-water",
-        "num": 209,
+        "starter": "def max_area(height):\n    pass\n",
+        "num": 213,
         "lc": 11,
         "slug": "container-with-most-water",
         "url": "https://leetcode.com/problems/container-with-most-water/",
@@ -35612,7 +36796,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "boats-to-save-people",
-        "num": 210,
+        "starter": "def num_rescue_boats(people, limit):\n    pass\n",
+        "num": 214,
         "lc": 881,
         "slug": "boats-to-save-people",
         "url": "https://leetcode.com/problems/boats-to-save-people/",
@@ -35691,7 +36876,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "trapping-rain-water",
-        "num": 211,
+        "starter": "def trap(height):\n    pass\n",
+        "num": 215,
         "lc": 42,
         "slug": "trapping-rain-water",
         "url": "https://leetcode.com/problems/trapping-rain-water/",
@@ -35789,7 +36975,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "insert-interval",
-        "num": 212,
+        "starter": "def insert(intervals, new):\n    pass\n",
+        "num": 216,
         "lc": 57,
         "slug": "insert-interval",
         "url": "https://leetcode.com/problems/insert-interval/",
@@ -35865,7 +37052,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "merge-intervals",
-        "num": 213,
+        "starter": "def merge(intervals):\n    pass\n",
+        "num": 217,
         "lc": 56,
         "slug": "merge-intervals",
         "url": "https://leetcode.com/problems/merge-intervals/",
@@ -35942,7 +37130,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "non-overlapping-intervals",
-        "num": 214,
+        "starter": "def erase_overlap_intervals(intervals):\n    pass\n",
+        "num": 218,
         "lc": 435,
         "slug": "non-overlapping-intervals",
         "url": "https://leetcode.com/problems/non-overlapping-intervals/",
@@ -36033,7 +37222,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "meeting-rooms-iii",
-        "num": 215,
+        "starter": "def most_booked(n, meetings):\n    pass\n",
+        "num": 219,
         "lc": 2402,
         "slug": "meeting-rooms-iii",
         "url": "https://leetcode.com/problems/meeting-rooms-iii/",
@@ -36113,7 +37303,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "min-interval-each-query",
-        "num": 216,
+        "starter": "def min_interval(intervals, queries):\n    pass\n",
+        "num": 220,
         "lc": 1851,
         "slug": "minimum-interval-to-include-each-query",
         "url": "https://leetcode.com/problems/minimum-interval-to-include-each-query/",
@@ -36198,6 +37389,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import bisect\nimport heapq\nimport itertools\nimport random\nfrom collections import Counter, defaultdict, deque",
     "sections": [
       {
         "id": "sliding-window",
@@ -36209,7 +37401,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "contains-duplicate-ii",
-            "num": 217,
+            "starter": "def contains_nearby_duplicate(nums, k):\n    pass\n",
+            "num": 221,
             "lc": 219,
             "slug": "contains-duplicate-ii",
             "url": "https://leetcode.com/problems/contains-duplicate-ii/",
@@ -36296,7 +37489,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "best-time-stock",
-            "num": 218,
+            "starter": "def max_profit(prices):\n    pass\n",
+            "num": 222,
             "lc": 121,
             "slug": "best-time-to-buy-and-sell-stock",
             "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
@@ -36380,7 +37574,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "longest-substring-no-repeat",
-            "num": 219,
+            "starter": "def length_of_longest_substring(s):\n    pass\n",
+            "num": 223,
             "lc": 3,
             "slug": "longest-substring-without-repeating-characters",
             "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
@@ -36480,7 +37675,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "longest-repeating-replacement",
-            "num": 220,
+            "starter": "def character_replacement(s, k):\n    pass\n",
+            "num": 224,
             "lc": 424,
             "slug": "longest-repeating-character-replacement",
             "url": "https://leetcode.com/problems/longest-repeating-character-replacement/",
@@ -36565,7 +37761,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "permutation-in-string",
-            "num": 221,
+            "starter": "def check_inclusion(s1, s2):\n    pass\n",
+            "num": 225,
             "lc": 567,
             "slug": "permutation-in-string",
             "url": "https://leetcode.com/problems/permutation-in-string/",
@@ -36661,7 +37858,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "minimum-size-subarray-sum",
-            "num": 222,
+            "starter": "def min_subarray_len(target, nums):\n    pass\n",
+            "num": 226,
             "lc": 209,
             "slug": "minimum-size-subarray-sum",
             "url": "https://leetcode.com/problems/minimum-size-subarray-sum/",
@@ -36749,7 +37947,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "find-k-closest-elements",
-            "num": 223,
+            "starter": "def find_closest_elements(arr, k, x):\n    pass\n",
+            "num": 227,
             "lc": 658,
             "slug": "find-k-closest-elements",
             "url": "https://leetcode.com/problems/find-k-closest-elements/",
@@ -36837,7 +38036,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "minimum-window-substring",
-            "num": 224,
+            "starter": "def min_window(s, t):\n    pass\n",
+            "num": 228,
             "lc": 76,
             "slug": "minimum-window-substring",
             "url": "https://leetcode.com/problems/minimum-window-substring/",
@@ -36916,7 +38116,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "sliding-window-maximum",
-            "num": 225,
+            "starter": "def max_sliding_window(nums, k):\n    pass\n",
+            "num": 229,
             "lc": 239,
             "slug": "sliding-window-maximum",
             "url": "https://leetcode.com/problems/sliding-window-maximum/",
@@ -37019,7 +38220,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "contains-duplicate-ii",
-        "num": 217,
+        "starter": "def contains_nearby_duplicate(nums, k):\n    pass\n",
+        "num": 221,
         "lc": 219,
         "slug": "contains-duplicate-ii",
         "url": "https://leetcode.com/problems/contains-duplicate-ii/",
@@ -37106,7 +38308,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "best-time-stock",
-        "num": 218,
+        "starter": "def max_profit(prices):\n    pass\n",
+        "num": 222,
         "lc": 121,
         "slug": "best-time-to-buy-and-sell-stock",
         "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
@@ -37190,7 +38393,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "longest-substring-no-repeat",
-        "num": 219,
+        "starter": "def length_of_longest_substring(s):\n    pass\n",
+        "num": 223,
         "lc": 3,
         "slug": "longest-substring-without-repeating-characters",
         "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
@@ -37290,7 +38494,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "longest-repeating-replacement",
-        "num": 220,
+        "starter": "def character_replacement(s, k):\n    pass\n",
+        "num": 224,
         "lc": 424,
         "slug": "longest-repeating-character-replacement",
         "url": "https://leetcode.com/problems/longest-repeating-character-replacement/",
@@ -37375,7 +38580,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "permutation-in-string",
-        "num": 221,
+        "starter": "def check_inclusion(s1, s2):\n    pass\n",
+        "num": 225,
         "lc": 567,
         "slug": "permutation-in-string",
         "url": "https://leetcode.com/problems/permutation-in-string/",
@@ -37471,7 +38677,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "minimum-size-subarray-sum",
-        "num": 222,
+        "starter": "def min_subarray_len(target, nums):\n    pass\n",
+        "num": 226,
         "lc": 209,
         "slug": "minimum-size-subarray-sum",
         "url": "https://leetcode.com/problems/minimum-size-subarray-sum/",
@@ -37559,7 +38766,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "find-k-closest-elements",
-        "num": 223,
+        "starter": "def find_closest_elements(arr, k, x):\n    pass\n",
+        "num": 227,
         "lc": 658,
         "slug": "find-k-closest-elements",
         "url": "https://leetcode.com/problems/find-k-closest-elements/",
@@ -37647,7 +38855,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "minimum-window-substring",
-        "num": 224,
+        "starter": "def min_window(s, t):\n    pass\n",
+        "num": 228,
         "lc": 76,
         "slug": "minimum-window-substring",
         "url": "https://leetcode.com/problems/minimum-window-substring/",
@@ -37726,7 +38935,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sliding-window-maximum",
-        "num": 225,
+        "starter": "def max_sliding_window(nums, k):\n    pass\n",
+        "num": 229,
         "lc": 239,
         "slug": "sliding-window-maximum",
         "url": "https://leetcode.com/problems/sliding-window-maximum/",
@@ -37832,6 +39042,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import heapq\nimport itertools\nimport random\nfrom collections import Counter, defaultdict, deque",
     "sections": [
       {
         "id": "stacks",
@@ -37843,7 +39054,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "baseball-game",
-            "num": 226,
+            "starter": "def cal_points(operations):\n    pass\n",
+            "num": 230,
             "lc": 682,
             "slug": "baseball-game",
             "url": "https://leetcode.com/problems/baseball-game/",
@@ -37912,7 +39124,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "valid-parentheses",
-            "num": 227,
+            "starter": "def is_valid(s):\n    pass\n",
+            "num": 231,
             "lc": 20,
             "slug": "valid-parentheses",
             "url": "https://leetcode.com/problems/valid-parentheses/",
@@ -37995,7 +39208,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "stack-using-queues",
-            "num": 228,
+            "starter": "class MyStack:\n\n    def __init__(self):\n        pass\n\n    def push(self, x):\n        pass\n\n    def pop(self):\n        pass\n\n    def top(self):\n        pass\n\n    def empty(self):\n        pass\n",
+            "num": 232,
             "lc": 225,
             "slug": "implement-stack-using-queues",
             "url": "https://leetcode.com/problems/implement-stack-using-queues/",
@@ -38065,7 +39279,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "queue-using-stacks",
-            "num": 229,
+            "starter": "class MyQueue:\n\n    def __init__(self):\n        pass\n\n    def push(self, x):\n        pass\n\n    def pop(self):\n        pass\n\n    def peek(self):\n        pass\n\n    def empty(self):\n        pass\n",
+            "num": 233,
             "lc": 232,
             "slug": "implement-queue-using-stacks",
             "url": "https://leetcode.com/problems/implement-queue-using-stacks/",
@@ -38135,7 +39350,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "min-stack",
-            "num": 230,
+            "starter": "class MinStack:\n\n    def __init__(self):\n        pass\n\n    def push(self, val):\n        pass\n\n    def pop(self):\n        pass\n\n    def top(self):\n        pass\n\n    def getMin(self):\n        pass\n",
+            "num": 234,
             "lc": 155,
             "slug": "min-stack",
             "url": "https://leetcode.com/problems/min-stack/",
@@ -38229,7 +39445,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "evaluate-rpn",
-            "num": 231,
+            "starter": "def eval_rpn(tokens):\n    pass\n",
+            "num": 235,
             "lc": 150,
             "slug": "evaluate-reverse-polish-notation",
             "url": "https://leetcode.com/problems/evaluate-reverse-polish-notation/",
@@ -38308,7 +39525,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "asteroid-collision",
-            "num": 232,
+            "starter": "def asteroid_collision(asteroids):\n    pass\n",
+            "num": 236,
             "lc": 735,
             "slug": "asteroid-collision",
             "url": "https://leetcode.com/problems/asteroid-collision/",
@@ -38392,7 +39610,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "daily-temperatures",
-            "num": 233,
+            "starter": "def daily_temperatures(temps):\n    pass\n",
+            "num": 237,
             "lc": 739,
             "slug": "daily-temperatures",
             "url": "https://leetcode.com/problems/daily-temperatures/",
@@ -38478,7 +39697,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "online-stock-span",
-            "num": 234,
+            "starter": "class StockSpanner:\n\n    def __init__(self):\n        pass\n\n    def next(self, price):\n        pass\n",
+            "num": 238,
             "lc": 901,
             "slug": "online-stock-span",
             "url": "https://leetcode.com/problems/online-stock-span/",
@@ -38548,7 +39768,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "car-fleet",
-            "num": 235,
+            "starter": "def car_fleet(target, position, speed):\n    pass\n",
+            "num": 239,
             "lc": 853,
             "slug": "car-fleet",
             "url": "https://leetcode.com/problems/car-fleet/",
@@ -38635,7 +39856,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "simplify-path",
-            "num": 236,
+            "starter": "def simplify_path(path):\n    pass\n",
+            "num": 240,
             "lc": 71,
             "slug": "simplify-path",
             "url": "https://leetcode.com/problems/simplify-path/",
@@ -38711,7 +39933,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "decode-string",
-            "num": 237,
+            "starter": "def decode_string(s):\n    pass\n",
+            "num": 241,
             "lc": 394,
             "slug": "decode-string",
             "url": "https://leetcode.com/problems/decode-string/",
@@ -38789,7 +40012,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "maximum-frequency-stack",
-            "num": 238,
+            "starter": "class FreqStack:\n\n    def __init__(self):\n        pass\n\n    def push(self, val):\n        pass\n\n    def pop(self):\n        pass\n",
+            "num": 242,
             "lc": 895,
             "slug": "maximum-frequency-stack",
             "url": "https://leetcode.com/problems/maximum-frequency-stack/",
@@ -38871,7 +40095,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "largest-rectangle-histogram",
-            "num": 239,
+            "starter": "def largest_rectangle_area(heights):\n    pass\n",
+            "num": 243,
             "lc": 84,
             "slug": "largest-rectangle-in-histogram",
             "url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
@@ -38970,7 +40195,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "baseball-game",
-        "num": 226,
+        "starter": "def cal_points(operations):\n    pass\n",
+        "num": 230,
         "lc": 682,
         "slug": "baseball-game",
         "url": "https://leetcode.com/problems/baseball-game/",
@@ -39039,7 +40265,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "valid-parentheses",
-        "num": 227,
+        "starter": "def is_valid(s):\n    pass\n",
+        "num": 231,
         "lc": 20,
         "slug": "valid-parentheses",
         "url": "https://leetcode.com/problems/valid-parentheses/",
@@ -39122,7 +40349,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "stack-using-queues",
-        "num": 228,
+        "starter": "class MyStack:\n\n    def __init__(self):\n        pass\n\n    def push(self, x):\n        pass\n\n    def pop(self):\n        pass\n\n    def top(self):\n        pass\n\n    def empty(self):\n        pass\n",
+        "num": 232,
         "lc": 225,
         "slug": "implement-stack-using-queues",
         "url": "https://leetcode.com/problems/implement-stack-using-queues/",
@@ -39192,7 +40420,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "queue-using-stacks",
-        "num": 229,
+        "starter": "class MyQueue:\n\n    def __init__(self):\n        pass\n\n    def push(self, x):\n        pass\n\n    def pop(self):\n        pass\n\n    def peek(self):\n        pass\n\n    def empty(self):\n        pass\n",
+        "num": 233,
         "lc": 232,
         "slug": "implement-queue-using-stacks",
         "url": "https://leetcode.com/problems/implement-queue-using-stacks/",
@@ -39262,7 +40491,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "min-stack",
-        "num": 230,
+        "starter": "class MinStack:\n\n    def __init__(self):\n        pass\n\n    def push(self, val):\n        pass\n\n    def pop(self):\n        pass\n\n    def top(self):\n        pass\n\n    def getMin(self):\n        pass\n",
+        "num": 234,
         "lc": 155,
         "slug": "min-stack",
         "url": "https://leetcode.com/problems/min-stack/",
@@ -39356,7 +40586,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "evaluate-rpn",
-        "num": 231,
+        "starter": "def eval_rpn(tokens):\n    pass\n",
+        "num": 235,
         "lc": 150,
         "slug": "evaluate-reverse-polish-notation",
         "url": "https://leetcode.com/problems/evaluate-reverse-polish-notation/",
@@ -39435,7 +40666,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "asteroid-collision",
-        "num": 232,
+        "starter": "def asteroid_collision(asteroids):\n    pass\n",
+        "num": 236,
         "lc": 735,
         "slug": "asteroid-collision",
         "url": "https://leetcode.com/problems/asteroid-collision/",
@@ -39519,7 +40751,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "daily-temperatures",
-        "num": 233,
+        "starter": "def daily_temperatures(temps):\n    pass\n",
+        "num": 237,
         "lc": 739,
         "slug": "daily-temperatures",
         "url": "https://leetcode.com/problems/daily-temperatures/",
@@ -39605,7 +40838,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "online-stock-span",
-        "num": 234,
+        "starter": "class StockSpanner:\n\n    def __init__(self):\n        pass\n\n    def next(self, price):\n        pass\n",
+        "num": 238,
         "lc": 901,
         "slug": "online-stock-span",
         "url": "https://leetcode.com/problems/online-stock-span/",
@@ -39675,7 +40909,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "car-fleet",
-        "num": 235,
+        "starter": "def car_fleet(target, position, speed):\n    pass\n",
+        "num": 239,
         "lc": 853,
         "slug": "car-fleet",
         "url": "https://leetcode.com/problems/car-fleet/",
@@ -39762,7 +40997,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "simplify-path",
-        "num": 236,
+        "starter": "def simplify_path(path):\n    pass\n",
+        "num": 240,
         "lc": 71,
         "slug": "simplify-path",
         "url": "https://leetcode.com/problems/simplify-path/",
@@ -39838,7 +41074,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "decode-string",
-        "num": 237,
+        "starter": "def decode_string(s):\n    pass\n",
+        "num": 241,
         "lc": 394,
         "slug": "decode-string",
         "url": "https://leetcode.com/problems/decode-string/",
@@ -39916,7 +41153,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "maximum-frequency-stack",
-        "num": 238,
+        "starter": "class FreqStack:\n\n    def __init__(self):\n        pass\n\n    def push(self, val):\n        pass\n\n    def pop(self):\n        pass\n",
+        "num": 242,
         "lc": 895,
         "slug": "maximum-frequency-stack",
         "url": "https://leetcode.com/problems/maximum-frequency-stack/",
@@ -39998,7 +41236,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "largest-rectangle-histogram",
-        "num": 239,
+        "starter": "def largest_rectangle_area(heights):\n    pass\n",
+        "num": 243,
         "lc": 84,
         "slug": "largest-rectangle-in-histogram",
         "url": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
@@ -40100,6 +41339,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import bisect\nimport math\nimport random\nfrom collections import defaultdict",
     "sections": [
       {
         "id": "binary-search",
@@ -40112,7 +41352,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "binary-search",
-            "num": 240,
+            "starter": "def search(nums, target):\n    pass\n",
+            "num": 244,
             "lc": 704,
             "slug": "binary-search",
             "url": "https://leetcode.com/problems/binary-search/",
@@ -40197,7 +41438,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "search-insert-position",
-            "num": 241,
+            "starter": "def search_insert(nums, target):\n    pass\n",
+            "num": 245,
             "lc": 35,
             "slug": "search-insert-position",
             "url": "https://leetcode.com/problems/search-insert-position/",
@@ -40272,7 +41514,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "guess-number",
-            "num": 242,
+            "starter": "def guess_number(n):\n    pass\n",
+            "num": 246,
             "lc": 374,
             "slug": "guess-number-higher-or-lower",
             "url": "https://leetcode.com/problems/guess-number-higher-or-lower/",
@@ -40347,7 +41590,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "sqrt-x",
-            "num": 243,
+            "starter": "def my_sqrt(x):\n    pass\n",
+            "num": 247,
             "lc": 69,
             "slug": "sqrtx",
             "url": "https://leetcode.com/problems/sqrtx/",
@@ -40430,7 +41674,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "search-2d-matrix",
-            "num": 244,
+            "starter": "def search_matrix(matrix, target):\n    pass\n",
+            "num": 248,
             "lc": 74,
             "slug": "search-a-2d-matrix",
             "url": "https://leetcode.com/problems/search-a-2d-matrix/",
@@ -40526,7 +41771,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "koko-eating-bananas",
-            "num": 245,
+            "starter": "def min_eating_speed(piles, h):\n    pass\n",
+            "num": 249,
             "lc": 875,
             "slug": "koko-eating-bananas",
             "url": "https://leetcode.com/problems/koko-eating-bananas/",
@@ -40602,7 +41848,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "ship-within-days",
-            "num": 246,
+            "starter": "def ship_within_days(weights, days):\n    pass\n",
+            "num": 250,
             "lc": 1011,
             "slug": "capacity-to-ship-packages-within-d-days",
             "url": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/",
@@ -40678,7 +41925,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "find-min-rotated",
-            "num": 247,
+            "starter": "def find_min(nums):\n    pass\n",
+            "num": 251,
             "lc": 153,
             "slug": "find-minimum-in-rotated-sorted-array",
             "url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
@@ -40759,7 +42007,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "search-rotated",
-            "num": 248,
+            "starter": "def search_rotated(nums, target):\n    pass\n",
+            "num": 252,
             "lc": 33,
             "slug": "search-in-rotated-sorted-array",
             "url": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
@@ -40848,7 +42097,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "search-rotated-ii",
-            "num": 249,
+            "starter": "def search_rotated_ii(nums, target):\n    pass\n",
+            "num": 253,
             "lc": 81,
             "slug": "search-in-rotated-sorted-array-ii",
             "url": "https://leetcode.com/problems/search-in-rotated-sorted-array-ii/",
@@ -40921,7 +42171,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "time-based-kv-store",
-            "num": 250,
+            "starter": "class TimeMap:\n\n    def __init__(self):\n        pass\n\n    def set(self, key, value, timestamp):\n        pass\n\n    def get(self, key, timestamp):\n        pass\n",
+            "num": 254,
             "lc": 981,
             "slug": "time-based-key-value-store",
             "url": "https://leetcode.com/problems/time-based-key-value-store/",
@@ -40992,7 +42243,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "split-array-largest-sum",
-            "num": 251,
+            "starter": "def split_array(nums, k):\n    pass\n",
+            "num": 255,
             "lc": 410,
             "slug": "split-array-largest-sum",
             "url": "https://leetcode.com/problems/split-array-largest-sum/",
@@ -41080,7 +42332,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "median-two-sorted-arrays",
-            "num": 252,
+            "starter": "def find_median_sorted_arrays(a, b):\n    pass\n",
+            "num": 256,
             "lc": 4,
             "slug": "median-of-two-sorted-arrays",
             "url": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
@@ -41168,7 +42421,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "find-in-mountain-array",
-            "num": 253,
+            "starter": "def find_in_mountain_array(target, mountain):\n    pass\n",
+            "num": 257,
             "lc": 1095,
             "slug": "find-in-mountain-array",
             "url": "https://leetcode.com/problems/find-in-mountain-array/",
@@ -41249,7 +42503,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "binary-search",
-        "num": 240,
+        "starter": "def search(nums, target):\n    pass\n",
+        "num": 244,
         "lc": 704,
         "slug": "binary-search",
         "url": "https://leetcode.com/problems/binary-search/",
@@ -41334,7 +42589,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "search-insert-position",
-        "num": 241,
+        "starter": "def search_insert(nums, target):\n    pass\n",
+        "num": 245,
         "lc": 35,
         "slug": "search-insert-position",
         "url": "https://leetcode.com/problems/search-insert-position/",
@@ -41409,7 +42665,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "guess-number",
-        "num": 242,
+        "starter": "def guess_number(n):\n    pass\n",
+        "num": 246,
         "lc": 374,
         "slug": "guess-number-higher-or-lower",
         "url": "https://leetcode.com/problems/guess-number-higher-or-lower/",
@@ -41484,7 +42741,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sqrt-x",
-        "num": 243,
+        "starter": "def my_sqrt(x):\n    pass\n",
+        "num": 247,
         "lc": 69,
         "slug": "sqrtx",
         "url": "https://leetcode.com/problems/sqrtx/",
@@ -41567,7 +42825,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "search-2d-matrix",
-        "num": 244,
+        "starter": "def search_matrix(matrix, target):\n    pass\n",
+        "num": 248,
         "lc": 74,
         "slug": "search-a-2d-matrix",
         "url": "https://leetcode.com/problems/search-a-2d-matrix/",
@@ -41663,7 +42922,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "koko-eating-bananas",
-        "num": 245,
+        "starter": "def min_eating_speed(piles, h):\n    pass\n",
+        "num": 249,
         "lc": 875,
         "slug": "koko-eating-bananas",
         "url": "https://leetcode.com/problems/koko-eating-bananas/",
@@ -41739,7 +42999,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "ship-within-days",
-        "num": 246,
+        "starter": "def ship_within_days(weights, days):\n    pass\n",
+        "num": 250,
         "lc": 1011,
         "slug": "capacity-to-ship-packages-within-d-days",
         "url": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/",
@@ -41815,7 +43076,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "find-min-rotated",
-        "num": 247,
+        "starter": "def find_min(nums):\n    pass\n",
+        "num": 251,
         "lc": 153,
         "slug": "find-minimum-in-rotated-sorted-array",
         "url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
@@ -41896,7 +43158,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "search-rotated",
-        "num": 248,
+        "starter": "def search_rotated(nums, target):\n    pass\n",
+        "num": 252,
         "lc": 33,
         "slug": "search-in-rotated-sorted-array",
         "url": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
@@ -41985,7 +43248,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "search-rotated-ii",
-        "num": 249,
+        "starter": "def search_rotated_ii(nums, target):\n    pass\n",
+        "num": 253,
         "lc": 81,
         "slug": "search-in-rotated-sorted-array-ii",
         "url": "https://leetcode.com/problems/search-in-rotated-sorted-array-ii/",
@@ -42058,7 +43322,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "time-based-kv-store",
-        "num": 250,
+        "starter": "class TimeMap:\n\n    def __init__(self):\n        pass\n\n    def set(self, key, value, timestamp):\n        pass\n\n    def get(self, key, timestamp):\n        pass\n",
+        "num": 254,
         "lc": 981,
         "slug": "time-based-key-value-store",
         "url": "https://leetcode.com/problems/time-based-key-value-store/",
@@ -42129,7 +43394,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "split-array-largest-sum",
-        "num": 251,
+        "starter": "def split_array(nums, k):\n    pass\n",
+        "num": 255,
         "lc": 410,
         "slug": "split-array-largest-sum",
         "url": "https://leetcode.com/problems/split-array-largest-sum/",
@@ -42217,7 +43483,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "median-two-sorted-arrays",
-        "num": 252,
+        "starter": "def find_median_sorted_arrays(a, b):\n    pass\n",
+        "num": 256,
         "lc": 4,
         "slug": "median-of-two-sorted-arrays",
         "url": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
@@ -42305,7 +43572,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "find-in-mountain-array",
-        "num": 253,
+        "starter": "def find_in_mountain_array(target, mountain):\n    pass\n",
+        "num": 257,
         "lc": 1095,
         "slug": "find-in-mountain-array",
         "url": "https://leetcode.com/problems/find-in-mountain-array/",
@@ -42389,6 +43657,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import random\nfrom collections import Counter, OrderedDict, defaultdict\n\n\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(values):\n    dummy = tail = ListNode()\n    for v in values:\n        tail.next = ListNode(v)\n        tail = tail.next\n    return dummy.next\n\n\ndef to_list(head, limit=10 ** 5):\n    out = []\n    while head and len(out) < limit:\n        out.append(head.val)\n        head = head.next\n    return out",
     "sections": [
       {
         "id": "linked-lists",
@@ -42400,7 +43669,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "reverse-linked-list",
-            "num": 254,
+            "starter": "def reverse_list(head):\n    pass\n",
+            "num": 258,
             "lc": 206,
             "slug": "reverse-linked-list",
             "url": "https://leetcode.com/problems/reverse-linked-list/",
@@ -42484,7 +43754,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "merge-two-sorted-lists",
-            "num": 255,
+            "starter": "def merge_two_lists(a, b):\n    pass\n",
+            "num": 259,
             "lc": 21,
             "slug": "merge-two-sorted-lists",
             "url": "https://leetcode.com/problems/merge-two-sorted-lists/",
@@ -42571,7 +43842,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "linked-list-cycle",
-            "num": 256,
+            "starter": "def has_cycle(head):\n    pass\n",
+            "num": 260,
             "lc": 141,
             "slug": "linked-list-cycle",
             "url": "https://leetcode.com/problems/linked-list-cycle/",
@@ -42651,7 +43923,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "reorder-list",
-            "num": 257,
+            "starter": "def reorder_list(head):\n    pass\n",
+            "num": 261,
             "lc": 143,
             "slug": "reorder-list",
             "url": "https://leetcode.com/problems/reorder-list/",
@@ -42721,7 +43994,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "remove-nth-from-end",
-            "num": 258,
+            "starter": "def remove_nth_from_end(head, n):\n    pass\n",
+            "num": 262,
             "lc": 19,
             "slug": "remove-nth-node-from-end-of-list",
             "url": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
@@ -42806,7 +44080,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "copy-list-random-pointer",
-            "num": 259,
+            "starter": "def copy_random_list(head):\n    pass\n",
+            "num": 263,
             "lc": 138,
             "slug": "copy-list-with-random-pointer",
             "url": "https://leetcode.com/problems/copy-list-with-random-pointer/",
@@ -42896,7 +44171,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "add-two-numbers",
-            "num": 260,
+            "starter": "def add_two_numbers(l1, l2):\n    pass\n",
+            "num": 264,
             "lc": 2,
             "slug": "add-two-numbers",
             "url": "https://leetcode.com/problems/add-two-numbers/",
@@ -42972,7 +44248,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "find-duplicate-number",
-            "num": 261,
+            "starter": "def find_duplicate(nums):\n    pass\n",
+            "num": 265,
             "lc": 287,
             "slug": "find-the-duplicate-number",
             "url": "https://leetcode.com/problems/find-the-duplicate-number/",
@@ -43078,7 +44355,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "reverse-linked-list-ii",
-            "num": 262,
+            "starter": "def reverse_between(head, left, right):\n    pass\n",
+            "num": 266,
             "lc": 92,
             "slug": "reverse-linked-list-ii",
             "url": "https://leetcode.com/problems/reverse-linked-list-ii/",
@@ -43147,7 +44425,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "design-circular-queue",
-            "num": 263,
+            "starter": "class MyCircularQueue:\n\n    def __init__(self, k):\n        pass\n\n    def enQueue(self, value):\n        pass\n\n    def deQueue(self):\n        pass\n\n    def Front(self):\n        pass\n\n    def Rear(self):\n        pass\n\n    def isEmpty(self):\n        pass\n\n    def isFull(self):\n        pass\n",
+            "num": 267,
             "lc": 622,
             "slug": "design-circular-queue",
             "url": "https://leetcode.com/problems/design-circular-queue/",
@@ -43229,7 +44508,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "lru-cache",
-            "num": 264,
+            "starter": "class LRUCache:\n\n    def __init__(self, capacity):\n        pass\n\n    def get(self, key):\n        pass\n\n    def put(self, key, value):\n        pass\n",
+            "num": 268,
             "lc": 146,
             "slug": "lru-cache",
             "url": "https://leetcode.com/problems/lru-cache/",
@@ -43312,7 +44592,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "lfu-cache",
-            "num": 265,
+            "starter": "class LFUCache:\n\n    def __init__(self, capacity):\n        pass\n\n    def get(self, key):\n        pass\n\n    def put(self, key, value):\n        pass\n",
+            "num": 269,
             "lc": 460,
             "slug": "lfu-cache",
             "url": "https://leetcode.com/problems/lfu-cache/",
@@ -43385,7 +44666,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "reverse-nodes-k-group",
-            "num": 266,
+            "starter": "def reverse_k_group(head, k):\n    pass\n",
+            "num": 270,
             "lc": 25,
             "slug": "reverse-nodes-in-k-group",
             "url": "https://leetcode.com/problems/reverse-nodes-in-k-group/",
@@ -43471,7 +44753,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "reverse-linked-list",
-        "num": 254,
+        "starter": "def reverse_list(head):\n    pass\n",
+        "num": 258,
         "lc": 206,
         "slug": "reverse-linked-list",
         "url": "https://leetcode.com/problems/reverse-linked-list/",
@@ -43555,7 +44838,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "merge-two-sorted-lists",
-        "num": 255,
+        "starter": "def merge_two_lists(a, b):\n    pass\n",
+        "num": 259,
         "lc": 21,
         "slug": "merge-two-sorted-lists",
         "url": "https://leetcode.com/problems/merge-two-sorted-lists/",
@@ -43642,7 +44926,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "linked-list-cycle",
-        "num": 256,
+        "starter": "def has_cycle(head):\n    pass\n",
+        "num": 260,
         "lc": 141,
         "slug": "linked-list-cycle",
         "url": "https://leetcode.com/problems/linked-list-cycle/",
@@ -43722,7 +45007,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "reorder-list",
-        "num": 257,
+        "starter": "def reorder_list(head):\n    pass\n",
+        "num": 261,
         "lc": 143,
         "slug": "reorder-list",
         "url": "https://leetcode.com/problems/reorder-list/",
@@ -43792,7 +45078,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "remove-nth-from-end",
-        "num": 258,
+        "starter": "def remove_nth_from_end(head, n):\n    pass\n",
+        "num": 262,
         "lc": 19,
         "slug": "remove-nth-node-from-end-of-list",
         "url": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
@@ -43877,7 +45164,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "copy-list-random-pointer",
-        "num": 259,
+        "starter": "def copy_random_list(head):\n    pass\n",
+        "num": 263,
         "lc": 138,
         "slug": "copy-list-with-random-pointer",
         "url": "https://leetcode.com/problems/copy-list-with-random-pointer/",
@@ -43967,7 +45255,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "add-two-numbers",
-        "num": 260,
+        "starter": "def add_two_numbers(l1, l2):\n    pass\n",
+        "num": 264,
         "lc": 2,
         "slug": "add-two-numbers",
         "url": "https://leetcode.com/problems/add-two-numbers/",
@@ -44043,7 +45332,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "find-duplicate-number",
-        "num": 261,
+        "starter": "def find_duplicate(nums):\n    pass\n",
+        "num": 265,
         "lc": 287,
         "slug": "find-the-duplicate-number",
         "url": "https://leetcode.com/problems/find-the-duplicate-number/",
@@ -44149,7 +45439,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "reverse-linked-list-ii",
-        "num": 262,
+        "starter": "def reverse_between(head, left, right):\n    pass\n",
+        "num": 266,
         "lc": 92,
         "slug": "reverse-linked-list-ii",
         "url": "https://leetcode.com/problems/reverse-linked-list-ii/",
@@ -44218,7 +45509,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "design-circular-queue",
-        "num": 263,
+        "starter": "class MyCircularQueue:\n\n    def __init__(self, k):\n        pass\n\n    def enQueue(self, value):\n        pass\n\n    def deQueue(self):\n        pass\n\n    def Front(self):\n        pass\n\n    def Rear(self):\n        pass\n\n    def isEmpty(self):\n        pass\n\n    def isFull(self):\n        pass\n",
+        "num": 267,
         "lc": 622,
         "slug": "design-circular-queue",
         "url": "https://leetcode.com/problems/design-circular-queue/",
@@ -44300,7 +45592,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "lru-cache",
-        "num": 264,
+        "starter": "class LRUCache:\n\n    def __init__(self, capacity):\n        pass\n\n    def get(self, key):\n        pass\n\n    def put(self, key, value):\n        pass\n",
+        "num": 268,
         "lc": 146,
         "slug": "lru-cache",
         "url": "https://leetcode.com/problems/lru-cache/",
@@ -44383,7 +45676,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "lfu-cache",
-        "num": 265,
+        "starter": "class LFUCache:\n\n    def __init__(self, capacity):\n        pass\n\n    def get(self, key):\n        pass\n\n    def put(self, key, value):\n        pass\n",
+        "num": 269,
         "lc": 460,
         "slug": "lfu-cache",
         "url": "https://leetcode.com/problems/lfu-cache/",
@@ -44456,7 +45750,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "reverse-nodes-k-group",
-        "num": 266,
+        "starter": "def reverse_k_group(head, k):\n    pass\n",
+        "num": 270,
         "lc": 25,
         "slug": "reverse-nodes-in-k-group",
         "url": "https://leetcode.com/problems/reverse-nodes-in-k-group/",
@@ -44545,6 +45840,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import random\nfrom functools import cache",
     "sections": [
       {
         "id": "tries",
@@ -44556,7 +45852,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "implement-trie",
-            "num": 267,
+            "starter": "class Trie:\n\n    def __init__(self):\n        pass\n\n    def insert(self, word):\n        pass\n\n    def search(self, word):\n        pass\n\n    def startsWith(self, prefix):\n        pass\n",
+            "num": 271,
             "lc": 208,
             "slug": "implement-trie-prefix-tree",
             "url": "https://leetcode.com/problems/implement-trie-prefix-tree/",
@@ -44638,7 +45935,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "add-search-words",
-            "num": 268,
+            "starter": "class WordDictionary:\n\n    def __init__(self):\n        pass\n\n    def addWord(self, word):\n        pass\n\n    def search(self, word):\n        pass\n",
+            "num": 272,
             "lc": 211,
             "slug": "design-add-and-search-words-data-structure",
             "url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
@@ -44710,7 +46008,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "extra-characters-string",
-            "num": 269,
+            "starter": "def min_extra_char(s, dictionary):\n    pass\n",
+            "num": 273,
             "lc": 2707,
             "slug": "extra-characters-in-a-string",
             "url": "https://leetcode.com/problems/extra-characters-in-a-string/",
@@ -44803,7 +46102,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "implement-trie",
-        "num": 267,
+        "starter": "class Trie:\n\n    def __init__(self):\n        pass\n\n    def insert(self, word):\n        pass\n\n    def search(self, word):\n        pass\n\n    def startsWith(self, prefix):\n        pass\n",
+        "num": 271,
         "lc": 208,
         "slug": "implement-trie-prefix-tree",
         "url": "https://leetcode.com/problems/implement-trie-prefix-tree/",
@@ -44885,7 +46185,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "add-search-words",
-        "num": 268,
+        "starter": "class WordDictionary:\n\n    def __init__(self):\n        pass\n\n    def addWord(self, word):\n        pass\n\n    def search(self, word):\n        pass\n",
+        "num": 272,
         "lc": 211,
         "slug": "design-add-and-search-words-data-structure",
         "url": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
@@ -44957,7 +46258,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "extra-characters-string",
-        "num": 269,
+        "starter": "def min_extra_char(s, dictionary):\n    pass\n",
+        "num": 273,
         "lc": 2707,
         "slug": "extra-characters-in-a-string",
         "url": "https://leetcode.com/problems/extra-characters-in-a-string/",
@@ -45053,6 +46355,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import math\nimport random\nfrom collections import defaultdict, deque",
     "sections": [
       {
         "id": "union-find",
@@ -45065,7 +46368,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "count-connected-components",
-            "num": 270,
+            "starter": "def count_components(n, edges):\n    pass\n",
+            "num": 274,
             "lc": 323,
             "slug": "number-of-connected-components-in-an-undirected-graph",
             "url": "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/",
@@ -45136,7 +46440,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "graph-valid-tree",
-            "num": 271,
+            "starter": "def valid_tree(n, edges):\n    pass\n",
+            "num": 275,
             "lc": 261,
             "slug": "graph-valid-tree",
             "url": "https://leetcode.com/problems/graph-valid-tree/",
@@ -45207,7 +46512,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "redundant-connection",
-            "num": 272,
+            "starter": "def find_redundant_connection(edges):\n    pass\n",
+            "num": 276,
             "lc": 684,
             "slug": "redundant-connection",
             "url": "https://leetcode.com/problems/redundant-connection/",
@@ -45296,7 +46602,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "accounts-merge",
-            "num": 273,
+            "starter": "def accounts_merge(accounts):\n    pass\n",
+            "num": 277,
             "lc": 721,
             "slug": "accounts-merge",
             "url": "https://leetcode.com/problems/accounts-merge/",
@@ -45374,7 +46681,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "gcd-traversal",
-            "num": 274,
+            "starter": "def can_traverse_all_pairs(nums):\n    pass\n",
+            "num": 278,
             "lc": 2709,
             "slug": "greatest-common-divisor-traversal",
             "url": "https://leetcode.com/problems/greatest-common-divisor-traversal/",
@@ -45472,7 +46780,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "count-connected-components",
-        "num": 270,
+        "starter": "def count_components(n, edges):\n    pass\n",
+        "num": 274,
         "lc": 323,
         "slug": "number-of-connected-components-in-an-undirected-graph",
         "url": "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/",
@@ -45543,7 +46852,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "graph-valid-tree",
-        "num": 271,
+        "starter": "def valid_tree(n, edges):\n    pass\n",
+        "num": 275,
         "lc": 261,
         "slug": "graph-valid-tree",
         "url": "https://leetcode.com/problems/graph-valid-tree/",
@@ -45614,7 +46924,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "redundant-connection",
-        "num": 272,
+        "starter": "def find_redundant_connection(edges):\n    pass\n",
+        "num": 276,
         "lc": 684,
         "slug": "redundant-connection",
         "url": "https://leetcode.com/problems/redundant-connection/",
@@ -45703,7 +47014,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "accounts-merge",
-        "num": 273,
+        "starter": "def accounts_merge(accounts):\n    pass\n",
+        "num": 277,
         "lc": 721,
         "slug": "accounts-merge",
         "url": "https://leetcode.com/problems/accounts-merge/",
@@ -45781,7 +47093,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "gcd-traversal",
-        "num": 274,
+        "starter": "def can_traverse_all_pairs(nums):\n    pass\n",
+        "num": 278,
         "lc": 2709,
         "slug": "greatest-common-divisor-traversal",
         "url": "https://leetcode.com/problems/greatest-common-divisor-traversal/",
@@ -45882,6 +47195,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import random\nfrom collections import Counter",
     "sections": [
       {
         "id": "bits",
@@ -45894,7 +47208,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "single-number",
-            "num": 275,
+            "starter": "def single_number(nums):\n    pass\n",
+            "num": 279,
             "lc": 136,
             "slug": "single-number",
             "url": "https://leetcode.com/problems/single-number/",
@@ -45979,7 +47294,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "number-of-1-bits",
-            "num": 276,
+            "starter": "def hamming_weight(n):\n    pass\n",
+            "num": 280,
             "lc": 191,
             "slug": "number-of-1-bits",
             "url": "https://leetcode.com/problems/number-of-1-bits/",
@@ -46064,7 +47380,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "counting-bits",
-            "num": 277,
+            "starter": "def count_bits(n):\n    pass\n",
+            "num": 281,
             "lc": 338,
             "slug": "counting-bits",
             "url": "https://leetcode.com/problems/counting-bits/",
@@ -46145,7 +47462,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "add-binary",
-            "num": 278,
+            "starter": "def add_binary(a, b):\n    pass\n",
+            "num": 282,
             "lc": 67,
             "slug": "add-binary",
             "url": "https://leetcode.com/problems/add-binary/",
@@ -46215,7 +47533,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "reverse-bits",
-            "num": 279,
+            "starter": "def reverse_bits(n):\n    pass\n",
+            "num": 283,
             "lc": 190,
             "slug": "reverse-bits",
             "url": "https://leetcode.com/problems/reverse-bits/",
@@ -46296,7 +47615,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "missing-number",
-            "num": 280,
+            "starter": "def missing_number(nums):\n    pass\n",
+            "num": 284,
             "lc": 268,
             "slug": "missing-number",
             "url": "https://leetcode.com/problems/missing-number/",
@@ -46400,7 +47720,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "sum-of-two-integers",
-            "num": 281,
+            "starter": "def get_sum(a, b):\n    pass\n",
+            "num": 285,
             "lc": 371,
             "slug": "sum-of-two-integers",
             "url": "https://leetcode.com/problems/sum-of-two-integers/",
@@ -46467,7 +47788,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "reverse-integer",
-            "num": 282,
+            "starter": "def reverse(x):\n    pass\n",
+            "num": 286,
             "lc": 7,
             "slug": "reverse-integer",
             "url": "https://leetcode.com/problems/reverse-integer/",
@@ -46538,7 +47860,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "bitwise-and-range",
-            "num": 283,
+            "starter": "def range_bitwise_and(left, right):\n    pass\n",
+            "num": 287,
             "lc": 201,
             "slug": "bitwise-and-of-numbers-range",
             "url": "https://leetcode.com/problems/bitwise-and-of-numbers-range/",
@@ -46619,7 +47942,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "minimum-array-end",
-            "num": 284,
+            "starter": "def min_end(n, x):\n    pass\n",
+            "num": 288,
             "lc": 3133,
             "slug": "minimum-array-end",
             "url": "https://leetcode.com/problems/minimum-array-end/",
@@ -46692,7 +48016,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "single-number",
-        "num": 275,
+        "starter": "def single_number(nums):\n    pass\n",
+        "num": 279,
         "lc": 136,
         "slug": "single-number",
         "url": "https://leetcode.com/problems/single-number/",
@@ -46777,7 +48102,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "number-of-1-bits",
-        "num": 276,
+        "starter": "def hamming_weight(n):\n    pass\n",
+        "num": 280,
         "lc": 191,
         "slug": "number-of-1-bits",
         "url": "https://leetcode.com/problems/number-of-1-bits/",
@@ -46862,7 +48188,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "counting-bits",
-        "num": 277,
+        "starter": "def count_bits(n):\n    pass\n",
+        "num": 281,
         "lc": 338,
         "slug": "counting-bits",
         "url": "https://leetcode.com/problems/counting-bits/",
@@ -46943,7 +48270,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "add-binary",
-        "num": 278,
+        "starter": "def add_binary(a, b):\n    pass\n",
+        "num": 282,
         "lc": 67,
         "slug": "add-binary",
         "url": "https://leetcode.com/problems/add-binary/",
@@ -47013,7 +48341,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "reverse-bits",
-        "num": 279,
+        "starter": "def reverse_bits(n):\n    pass\n",
+        "num": 283,
         "lc": 190,
         "slug": "reverse-bits",
         "url": "https://leetcode.com/problems/reverse-bits/",
@@ -47094,7 +48423,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "missing-number",
-        "num": 280,
+        "starter": "def missing_number(nums):\n    pass\n",
+        "num": 284,
         "lc": 268,
         "slug": "missing-number",
         "url": "https://leetcode.com/problems/missing-number/",
@@ -47198,7 +48528,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "sum-of-two-integers",
-        "num": 281,
+        "starter": "def get_sum(a, b):\n    pass\n",
+        "num": 285,
         "lc": 371,
         "slug": "sum-of-two-integers",
         "url": "https://leetcode.com/problems/sum-of-two-integers/",
@@ -47265,7 +48596,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "reverse-integer",
-        "num": 282,
+        "starter": "def reverse(x):\n    pass\n",
+        "num": 286,
         "lc": 7,
         "slug": "reverse-integer",
         "url": "https://leetcode.com/problems/reverse-integer/",
@@ -47336,7 +48668,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "bitwise-and-range",
-        "num": 283,
+        "starter": "def range_bitwise_and(left, right):\n    pass\n",
+        "num": 287,
         "lc": 201,
         "slug": "bitwise-and-of-numbers-range",
         "url": "https://leetcode.com/problems/bitwise-and-of-numbers-range/",
@@ -47417,7 +48750,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "minimum-array-end",
-        "num": 284,
+        "starter": "def min_end(n, x):\n    pass\n",
+        "num": 288,
         "lc": 3133,
         "slug": "minimum-array-end",
         "url": "https://leetcode.com/problems/minimum-array-end/",
@@ -47493,6 +48827,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import heapq\nimport itertools\nimport random\nfrom collections import Counter, deque\nfrom functools import cache",
     "sections": [
       {
         "id": "greedy",
@@ -47504,7 +48839,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "lemonade-change",
-            "num": 285,
+            "starter": "def lemonade_change(bills):\n    pass\n",
+            "num": 289,
             "lc": 860,
             "slug": "lemonade-change",
             "url": "https://leetcode.com/problems/lemonade-change/",
@@ -47576,7 +48912,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "max-circular-subarray",
-            "num": 286,
+            "starter": "def max_subarray_sum_circular(nums):\n    pass\n",
+            "num": 290,
             "lc": 918,
             "slug": "maximum-sum-circular-subarray",
             "url": "https://leetcode.com/problems/maximum-sum-circular-subarray/",
@@ -47668,7 +49005,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "longest-turbulent-subarray",
-            "num": 287,
+            "starter": "def max_turbulence_size(arr):\n    pass\n",
+            "num": 291,
             "lc": 978,
             "slug": "longest-turbulent-subarray",
             "url": "https://leetcode.com/problems/longest-turbulent-subarray/",
@@ -47745,7 +49083,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "jump-game",
-            "num": 288,
+            "starter": "def can_jump(nums):\n    pass\n",
+            "num": 292,
             "lc": 55,
             "slug": "jump-game",
             "url": "https://leetcode.com/problems/jump-game/",
@@ -47840,7 +49179,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "jump-game-ii",
-            "num": 289,
+            "starter": "def jump(nums):\n    pass\n",
+            "num": 293,
             "lc": 45,
             "slug": "jump-game-ii",
             "url": "https://leetcode.com/problems/jump-game-ii/",
@@ -47913,7 +49253,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "jump-game-vii",
-            "num": 290,
+            "starter": "def can_reach(s, min_jump, max_jump):\n    pass\n",
+            "num": 294,
             "lc": 1871,
             "slug": "jump-game-vii",
             "url": "https://leetcode.com/problems/jump-game-vii/",
@@ -47999,7 +49340,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "gas-station",
-            "num": 291,
+            "starter": "def can_complete_circuit(gas, cost):\n    pass\n",
+            "num": 295,
             "lc": 134,
             "slug": "gas-station",
             "url": "https://leetcode.com/problems/gas-station/",
@@ -48073,7 +49415,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "hand-of-straights",
-            "num": 292,
+            "starter": "def is_n_straight_hand(hand, k):\n    pass\n",
+            "num": 296,
             "lc": 846,
             "slug": "hand-of-straights",
             "url": "https://leetcode.com/problems/hand-of-straights/",
@@ -48146,7 +49489,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "dota2-senate",
-            "num": 293,
+            "starter": "def predict_party_victory(senate):\n    pass\n",
+            "num": 297,
             "lc": 649,
             "slug": "dota2-senate",
             "url": "https://leetcode.com/problems/dota2-senate/",
@@ -48222,7 +49566,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "merge-triplets",
-            "num": 294,
+            "starter": "def merge_triplets(triplets, target):\n    pass\n",
+            "num": 298,
             "lc": 1899,
             "slug": "merge-triplets-to-form-target-triplet",
             "url": "https://leetcode.com/problems/merge-triplets-to-form-target-triplet/",
@@ -48299,7 +49644,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "partition-labels",
-            "num": 295,
+            "starter": "def partition_labels(s):\n    pass\n",
+            "num": 299,
             "lc": 763,
             "slug": "partition-labels",
             "url": "https://leetcode.com/problems/partition-labels/",
@@ -48372,7 +49718,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "valid-parenthesis-string",
-            "num": 296,
+            "starter": "def check_valid_string(s):\n    pass\n",
+            "num": 300,
             "lc": 678,
             "slug": "valid-parenthesis-string",
             "url": "https://leetcode.com/problems/valid-parenthesis-string/",
@@ -48477,7 +49824,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "candy",
-            "num": 297,
+            "starter": "def candy(ratings):\n    pass\n",
+            "num": 301,
             "lc": 135,
             "slug": "candy",
             "url": "https://leetcode.com/problems/candy/",
@@ -48566,7 +49914,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "lemonade-change",
-        "num": 285,
+        "starter": "def lemonade_change(bills):\n    pass\n",
+        "num": 289,
         "lc": 860,
         "slug": "lemonade-change",
         "url": "https://leetcode.com/problems/lemonade-change/",
@@ -48638,7 +49987,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "max-circular-subarray",
-        "num": 286,
+        "starter": "def max_subarray_sum_circular(nums):\n    pass\n",
+        "num": 290,
         "lc": 918,
         "slug": "maximum-sum-circular-subarray",
         "url": "https://leetcode.com/problems/maximum-sum-circular-subarray/",
@@ -48730,7 +50080,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "longest-turbulent-subarray",
-        "num": 287,
+        "starter": "def max_turbulence_size(arr):\n    pass\n",
+        "num": 291,
         "lc": 978,
         "slug": "longest-turbulent-subarray",
         "url": "https://leetcode.com/problems/longest-turbulent-subarray/",
@@ -48807,7 +50158,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "jump-game",
-        "num": 288,
+        "starter": "def can_jump(nums):\n    pass\n",
+        "num": 292,
         "lc": 55,
         "slug": "jump-game",
         "url": "https://leetcode.com/problems/jump-game/",
@@ -48902,7 +50254,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "jump-game-ii",
-        "num": 289,
+        "starter": "def jump(nums):\n    pass\n",
+        "num": 293,
         "lc": 45,
         "slug": "jump-game-ii",
         "url": "https://leetcode.com/problems/jump-game-ii/",
@@ -48975,7 +50328,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "jump-game-vii",
-        "num": 290,
+        "starter": "def can_reach(s, min_jump, max_jump):\n    pass\n",
+        "num": 294,
         "lc": 1871,
         "slug": "jump-game-vii",
         "url": "https://leetcode.com/problems/jump-game-vii/",
@@ -49061,7 +50415,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "gas-station",
-        "num": 291,
+        "starter": "def can_complete_circuit(gas, cost):\n    pass\n",
+        "num": 295,
         "lc": 134,
         "slug": "gas-station",
         "url": "https://leetcode.com/problems/gas-station/",
@@ -49135,7 +50490,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "hand-of-straights",
-        "num": 292,
+        "starter": "def is_n_straight_hand(hand, k):\n    pass\n",
+        "num": 296,
         "lc": 846,
         "slug": "hand-of-straights",
         "url": "https://leetcode.com/problems/hand-of-straights/",
@@ -49208,7 +50564,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "dota2-senate",
-        "num": 293,
+        "starter": "def predict_party_victory(senate):\n    pass\n",
+        "num": 297,
         "lc": 649,
         "slug": "dota2-senate",
         "url": "https://leetcode.com/problems/dota2-senate/",
@@ -49284,7 +50641,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "merge-triplets",
-        "num": 294,
+        "starter": "def merge_triplets(triplets, target):\n    pass\n",
+        "num": 298,
         "lc": 1899,
         "slug": "merge-triplets-to-form-target-triplet",
         "url": "https://leetcode.com/problems/merge-triplets-to-form-target-triplet/",
@@ -49361,7 +50719,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "partition-labels",
-        "num": 295,
+        "starter": "def partition_labels(s):\n    pass\n",
+        "num": 299,
         "lc": 763,
         "slug": "partition-labels",
         "url": "https://leetcode.com/problems/partition-labels/",
@@ -49434,7 +50793,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "valid-parenthesis-string",
-        "num": 296,
+        "starter": "def check_valid_string(s):\n    pass\n",
+        "num": 300,
         "lc": 678,
         "slug": "valid-parenthesis-string",
         "url": "https://leetcode.com/problems/valid-parenthesis-string/",
@@ -49539,7 +50899,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "candy",
-        "num": 297,
+        "starter": "def candy(ratings):\n    pass\n",
+        "num": 301,
         "lc": 135,
         "slug": "candy",
         "url": "https://leetcode.com/problems/candy/",
@@ -49631,6 +50992,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import math\nimport random\nfrom collections import Counter, defaultdict\n\n\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\n\ndef build_list(values):\n    dummy = tail = ListNode()\n    for v in values:\n        tail.next = ListNode(v)\n        tail = tail.next\n    return dummy.next\n\n\ndef to_list(head):\n    out = []\n    while head:\n        out.append(head.val)\n        head = head.next\n    return out",
     "sections": [
       {
         "id": "math-geometry",
@@ -49642,7 +51004,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "excel-column-title",
-            "num": 298,
+            "starter": "def convert_to_title(n):\n    pass\n",
+            "num": 302,
             "lc": 168,
             "slug": "excel-sheet-column-title",
             "url": "https://leetcode.com/problems/excel-sheet-column-title/",
@@ -49713,7 +51076,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "gcd-of-strings",
-            "num": 299,
+            "starter": "def gcd_of_strings(str1, str2):\n    pass\n",
+            "num": 303,
             "lc": 1071,
             "slug": "greatest-common-divisor-of-strings",
             "url": "https://leetcode.com/problems/greatest-common-divisor-of-strings/",
@@ -49791,7 +51155,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "insert-gcd-linked-list",
-            "num": 300,
+            "starter": "def insert_greatest_common_divisors(head):\n    pass\n",
+            "num": 304,
             "lc": 2807,
             "slug": "insert-greatest-common-divisors-in-linked-list",
             "url": "https://leetcode.com/problems/insert-greatest-common-divisors-in-linked-list/",
@@ -49864,7 +51229,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "transpose-matrix",
-            "num": 301,
+            "starter": "def transpose(matrix):\n    pass\n",
+            "num": 305,
             "lc": 867,
             "slug": "transpose-matrix",
             "url": "https://leetcode.com/problems/transpose-matrix/",
@@ -49936,7 +51302,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "rotate-image",
-            "num": 302,
+            "starter": "def rotate(matrix):\n    pass\n",
+            "num": 306,
             "lc": 48,
             "slug": "rotate-image",
             "url": "https://leetcode.com/problems/rotate-image/",
@@ -50018,7 +51385,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "spiral-matrix",
-            "num": 303,
+            "starter": "def spiral_order(matrix):\n    pass\n",
+            "num": 307,
             "lc": 54,
             "slug": "spiral-matrix",
             "url": "https://leetcode.com/problems/spiral-matrix/",
@@ -50088,7 +51456,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "set-matrix-zeroes",
-            "num": 304,
+            "starter": "def set_zeroes(matrix):\n    pass\n",
+            "num": 308,
             "lc": 73,
             "slug": "set-matrix-zeroes",
             "url": "https://leetcode.com/problems/set-matrix-zeroes/",
@@ -50172,7 +51541,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "happy-number",
-            "num": 305,
+            "starter": "def is_happy(n):\n    pass\n",
+            "num": 309,
             "lc": 202,
             "slug": "happy-number",
             "url": "https://leetcode.com/problems/happy-number/",
@@ -50243,7 +51613,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "plus-one",
-            "num": 306,
+            "starter": "def plus_one(digits):\n    pass\n",
+            "num": 310,
             "lc": 66,
             "slug": "plus-one",
             "url": "https://leetcode.com/problems/plus-one/",
@@ -50320,7 +51691,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "roman-to-integer",
-            "num": 307,
+            "starter": "def roman_to_int(s):\n    pass\n",
+            "num": 311,
             "lc": 13,
             "slug": "roman-to-integer",
             "url": "https://leetcode.com/problems/roman-to-integer/",
@@ -50396,7 +51768,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "pow-x-n",
-            "num": 308,
+            "starter": "def my_pow(x, n):\n    pass\n",
+            "num": 312,
             "lc": 50,
             "slug": "powx-n",
             "url": "https://leetcode.com/problems/powx-n/",
@@ -50483,7 +51856,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "multiply-strings",
-            "num": 309,
+            "starter": "def multiply(num1, num2):\n    pass\n",
+            "num": 313,
             "lc": 43,
             "slug": "multiply-strings",
             "url": "https://leetcode.com/problems/multiply-strings/",
@@ -50554,7 +51928,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "detect-squares",
-            "num": 310,
+            "starter": "class DetectSquares:\n\n    def __init__(self):\n        pass\n\n    def add(self, point):\n        pass\n\n    def count(self, point):\n        pass\n",
+            "num": 314,
             "lc": 2013,
             "slug": "detect-squares",
             "url": "https://leetcode.com/problems/detect-squares/",
@@ -50630,7 +52005,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "excel-column-title",
-        "num": 298,
+        "starter": "def convert_to_title(n):\n    pass\n",
+        "num": 302,
         "lc": 168,
         "slug": "excel-sheet-column-title",
         "url": "https://leetcode.com/problems/excel-sheet-column-title/",
@@ -50701,7 +52077,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "gcd-of-strings",
-        "num": 299,
+        "starter": "def gcd_of_strings(str1, str2):\n    pass\n",
+        "num": 303,
         "lc": 1071,
         "slug": "greatest-common-divisor-of-strings",
         "url": "https://leetcode.com/problems/greatest-common-divisor-of-strings/",
@@ -50779,7 +52156,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "insert-gcd-linked-list",
-        "num": 300,
+        "starter": "def insert_greatest_common_divisors(head):\n    pass\n",
+        "num": 304,
         "lc": 2807,
         "slug": "insert-greatest-common-divisors-in-linked-list",
         "url": "https://leetcode.com/problems/insert-greatest-common-divisors-in-linked-list/",
@@ -50852,7 +52230,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "transpose-matrix",
-        "num": 301,
+        "starter": "def transpose(matrix):\n    pass\n",
+        "num": 305,
         "lc": 867,
         "slug": "transpose-matrix",
         "url": "https://leetcode.com/problems/transpose-matrix/",
@@ -50924,7 +52303,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "rotate-image",
-        "num": 302,
+        "starter": "def rotate(matrix):\n    pass\n",
+        "num": 306,
         "lc": 48,
         "slug": "rotate-image",
         "url": "https://leetcode.com/problems/rotate-image/",
@@ -51006,7 +52386,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "spiral-matrix",
-        "num": 303,
+        "starter": "def spiral_order(matrix):\n    pass\n",
+        "num": 307,
         "lc": 54,
         "slug": "spiral-matrix",
         "url": "https://leetcode.com/problems/spiral-matrix/",
@@ -51076,7 +52457,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "set-matrix-zeroes",
-        "num": 304,
+        "starter": "def set_zeroes(matrix):\n    pass\n",
+        "num": 308,
         "lc": 73,
         "slug": "set-matrix-zeroes",
         "url": "https://leetcode.com/problems/set-matrix-zeroes/",
@@ -51160,7 +52542,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "happy-number",
-        "num": 305,
+        "starter": "def is_happy(n):\n    pass\n",
+        "num": 309,
         "lc": 202,
         "slug": "happy-number",
         "url": "https://leetcode.com/problems/happy-number/",
@@ -51231,7 +52614,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "plus-one",
-        "num": 306,
+        "starter": "def plus_one(digits):\n    pass\n",
+        "num": 310,
         "lc": 66,
         "slug": "plus-one",
         "url": "https://leetcode.com/problems/plus-one/",
@@ -51308,7 +52692,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "roman-to-integer",
-        "num": 307,
+        "starter": "def roman_to_int(s):\n    pass\n",
+        "num": 311,
         "lc": 13,
         "slug": "roman-to-integer",
         "url": "https://leetcode.com/problems/roman-to-integer/",
@@ -51384,7 +52769,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "pow-x-n",
-        "num": 308,
+        "starter": "def my_pow(x, n):\n    pass\n",
+        "num": 312,
         "lc": 50,
         "slug": "powx-n",
         "url": "https://leetcode.com/problems/powx-n/",
@@ -51471,7 +52857,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "multiply-strings",
-        "num": 309,
+        "starter": "def multiply(num1, num2):\n    pass\n",
+        "num": 313,
         "lc": 43,
         "slug": "multiply-strings",
         "url": "https://leetcode.com/problems/multiply-strings/",
@@ -51542,7 +52929,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "detect-squares",
-        "num": 310,
+        "starter": "class DetectSquares:\n\n    def __init__(self):\n        pass\n\n    def add(self, point):\n        pass\n\n    def count(self, point):\n        pass\n",
+        "num": 314,
         "lc": 2013,
         "slug": "detect-squares",
         "url": "https://leetcode.com/problems/detect-squares/",
@@ -51621,6 +53009,7 @@ window.GRAIL_DSA = [
     "status": "ready",
     "target": null,
     "layout": "flat",
+    "prelude": "import bisect\nimport heapq\nimport itertools\nimport math\nimport random\nfrom collections import Counter, defaultdict, deque\nfrom functools import cache",
     "sections": [
       {
         "id": "traversal",
@@ -51632,7 +53021,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "island-perimeter",
-            "num": 311,
+            "starter": "def island_perimeter(grid):\n    pass\n",
+            "num": 315,
             "lc": 463,
             "slug": "island-perimeter",
             "url": "https://leetcode.com/problems/island-perimeter/",
@@ -51711,7 +53101,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "verify-alien-dictionary",
-            "num": 312,
+            "starter": "def is_alien_sorted(words, order):\n    pass\n",
+            "num": 316,
             "lc": 953,
             "slug": "verifying-an-alien-dictionary",
             "url": "https://leetcode.com/problems/verifying-an-alien-dictionary/",
@@ -51789,7 +53180,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "find-town-judge",
-            "num": 313,
+            "starter": "def find_judge(n, trust):\n    pass\n",
+            "num": 317,
             "lc": 997,
             "slug": "find-the-town-judge",
             "url": "https://leetcode.com/problems/find-the-town-judge/",
@@ -51880,7 +53272,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "number-of-islands",
-            "num": 314,
+            "starter": "def num_islands(grid):\n    pass\n",
+            "num": 318,
             "lc": 200,
             "slug": "number-of-islands",
             "url": "https://leetcode.com/problems/number-of-islands/",
@@ -51965,7 +53358,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "max-area-of-island",
-            "num": 315,
+            "starter": "def max_area_of_island(grid):\n    pass\n",
+            "num": 319,
             "lc": 695,
             "slug": "max-area-of-island",
             "url": "https://leetcode.com/problems/max-area-of-island/",
@@ -52040,7 +53434,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "clone-graph",
-            "num": 316,
+            "starter": "def clone_graph(node):\n    pass\n",
+            "num": 320,
             "lc": 133,
             "slug": "clone-graph",
             "url": "https://leetcode.com/problems/clone-graph/",
@@ -52121,7 +53516,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "walls-and-gates",
-            "num": 317,
+            "starter": "def walls_and_gates(rooms):\n    pass\n",
+            "num": 321,
             "lc": 286,
             "slug": "walls-and-gates",
             "url": "https://leetcode.com/problems/walls-and-gates/",
@@ -52186,7 +53582,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "rotting-oranges",
-            "num": 318,
+            "starter": "def oranges_rotting(grid):\n    pass\n",
+            "num": 322,
             "lc": 994,
             "slug": "rotting-oranges",
             "url": "https://leetcode.com/problems/rotting-oranges/",
@@ -52264,7 +53661,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "pacific-atlantic",
-            "num": 319,
+            "starter": "def pacific_atlantic(heights):\n    pass\n",
+            "num": 323,
             "lc": 417,
             "slug": "pacific-atlantic-water-flow",
             "url": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
@@ -52340,7 +53738,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "surrounded-regions",
-            "num": 320,
+            "starter": "def solve(board):\n    pass\n",
+            "num": 324,
             "lc": 130,
             "slug": "surrounded-regions",
             "url": "https://leetcode.com/problems/surrounded-regions/",
@@ -52414,7 +53813,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "open-the-lock",
-            "num": 321,
+            "starter": "def open_lock(deadends, target):\n    pass\n",
+            "num": 325,
             "lc": 752,
             "slug": "open-the-lock",
             "url": "https://leetcode.com/problems/open-the-lock/",
@@ -52507,7 +53907,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "course-schedule",
-            "num": 322,
+            "starter": "def can_finish(num_courses, prerequisites):\n    pass\n",
+            "num": 326,
             "lc": 207,
             "slug": "course-schedule",
             "url": "https://leetcode.com/problems/course-schedule/",
@@ -52585,7 +53986,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "course-schedule-ii",
-            "num": 323,
+            "starter": "def find_order(num_courses, prerequisites):\n    pass\n",
+            "num": 327,
             "lc": 210,
             "slug": "course-schedule-ii",
             "url": "https://leetcode.com/problems/course-schedule-ii/",
@@ -52665,7 +54067,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "course-schedule-iv",
-            "num": 324,
+            "starter": "def check_if_prerequisite(n, prerequisites, queries):\n    pass\n",
+            "num": 328,
             "lc": 1462,
             "slug": "course-schedule-iv",
             "url": "https://leetcode.com/problems/course-schedule-iv/",
@@ -52763,7 +54166,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "evaluate-division",
-            "num": 325,
+            "starter": "def calc_equation(equations, values, queries):\n    pass\n",
+            "num": 329,
             "lc": 399,
             "slug": "evaluate-division",
             "url": "https://leetcode.com/problems/evaluate-division/",
@@ -52854,7 +54258,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "minimum-height-trees",
-            "num": 326,
+            "starter": "def find_min_height_trees(n, edges):\n    pass\n",
+            "num": 330,
             "lc": 310,
             "slug": "minimum-height-trees",
             "url": "https://leetcode.com/problems/minimum-height-trees/",
@@ -52932,7 +54337,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "word-ladder",
-            "num": 327,
+            "starter": "def ladder_length(begin, end, word_list):\n    pass\n",
+            "num": 331,
             "lc": 127,
             "slug": "word-ladder",
             "url": "https://leetcode.com/problems/word-ladder/",
@@ -53032,7 +54438,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "network-delay-time",
-            "num": 328,
+            "starter": "def network_delay_time(times, n, k):\n    pass\n",
+            "num": 332,
             "lc": 743,
             "slug": "network-delay-time",
             "url": "https://leetcode.com/problems/network-delay-time/",
@@ -53125,7 +54532,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "path-minimum-effort",
-            "num": 329,
+            "starter": "def minimum_effort_path(heights):\n    pass\n",
+            "num": 333,
             "lc": 1631,
             "slug": "path-with-minimum-effort",
             "url": "https://leetcode.com/problems/path-with-minimum-effort/",
@@ -53221,7 +54629,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "swim-rising-water",
-            "num": 330,
+            "starter": "def swim_in_water(grid):\n    pass\n",
+            "num": 334,
             "lc": 778,
             "slug": "swim-in-rising-water",
             "url": "https://leetcode.com/problems/swim-in-rising-water/",
@@ -53315,7 +54724,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "cheapest-flights-k-stops",
-            "num": 331,
+            "starter": "def find_cheapest_price(n, flights, src, dst, k):\n    pass\n",
+            "num": 335,
             "lc": 787,
             "slug": "cheapest-flights-within-k-stops",
             "url": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
@@ -53424,7 +54834,8 @@ window.GRAIL_DSA = [
         "problems": [
           {
             "id": "reconstruct-itinerary",
-            "num": 332,
+            "starter": "def find_itinerary(tickets):\n    pass\n",
+            "num": 336,
             "lc": 332,
             "slug": "reconstruct-itinerary",
             "url": "https://leetcode.com/problems/reconstruct-itinerary/",
@@ -53506,7 +54917,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "min-cost-connect-points",
-            "num": 333,
+            "starter": "def min_cost_connect_points(points):\n    pass\n",
+            "num": 337,
             "lc": 1584,
             "slug": "min-cost-to-connect-all-points",
             "url": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
@@ -53594,7 +55006,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "alien-dictionary",
-            "num": 334,
+            "starter": "def alien_order(words):\n    pass\n",
+            "num": 338,
             "lc": 269,
             "slug": "alien-dictionary",
             "url": "https://leetcode.com/problems/alien-dictionary/",
@@ -53671,7 +55084,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "critical-pseudo-critical-edges",
-            "num": 335,
+            "starter": "def find_critical_and_pseudo_critical_edges(n, edges):\n    pass\n",
+            "num": 339,
             "lc": 1489,
             "slug": "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
             "url": "https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/",
@@ -53741,7 +55155,8 @@ window.GRAIL_DSA = [
           },
           {
             "id": "build-matrix-conditions",
-            "num": 336,
+            "starter": "def build_matrix(k, row_conditions, col_conditions):\n    pass\n",
+            "num": 340,
             "lc": 2392,
             "slug": "build-a-matrix-with-conditions",
             "url": "https://leetcode.com/problems/build-a-matrix-with-conditions/",
@@ -53825,7 +55240,8 @@ window.GRAIL_DSA = [
     "problems": [
       {
         "id": "island-perimeter",
-        "num": 311,
+        "starter": "def island_perimeter(grid):\n    pass\n",
+        "num": 315,
         "lc": 463,
         "slug": "island-perimeter",
         "url": "https://leetcode.com/problems/island-perimeter/",
@@ -53904,7 +55320,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "verify-alien-dictionary",
-        "num": 312,
+        "starter": "def is_alien_sorted(words, order):\n    pass\n",
+        "num": 316,
         "lc": 953,
         "slug": "verifying-an-alien-dictionary",
         "url": "https://leetcode.com/problems/verifying-an-alien-dictionary/",
@@ -53982,7 +55399,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "find-town-judge",
-        "num": 313,
+        "starter": "def find_judge(n, trust):\n    pass\n",
+        "num": 317,
         "lc": 997,
         "slug": "find-the-town-judge",
         "url": "https://leetcode.com/problems/find-the-town-judge/",
@@ -54073,7 +55491,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "number-of-islands",
-        "num": 314,
+        "starter": "def num_islands(grid):\n    pass\n",
+        "num": 318,
         "lc": 200,
         "slug": "number-of-islands",
         "url": "https://leetcode.com/problems/number-of-islands/",
@@ -54158,7 +55577,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "max-area-of-island",
-        "num": 315,
+        "starter": "def max_area_of_island(grid):\n    pass\n",
+        "num": 319,
         "lc": 695,
         "slug": "max-area-of-island",
         "url": "https://leetcode.com/problems/max-area-of-island/",
@@ -54233,7 +55653,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "clone-graph",
-        "num": 316,
+        "starter": "def clone_graph(node):\n    pass\n",
+        "num": 320,
         "lc": 133,
         "slug": "clone-graph",
         "url": "https://leetcode.com/problems/clone-graph/",
@@ -54314,7 +55735,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "walls-and-gates",
-        "num": 317,
+        "starter": "def walls_and_gates(rooms):\n    pass\n",
+        "num": 321,
         "lc": 286,
         "slug": "walls-and-gates",
         "url": "https://leetcode.com/problems/walls-and-gates/",
@@ -54379,7 +55801,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "rotting-oranges",
-        "num": 318,
+        "starter": "def oranges_rotting(grid):\n    pass\n",
+        "num": 322,
         "lc": 994,
         "slug": "rotting-oranges",
         "url": "https://leetcode.com/problems/rotting-oranges/",
@@ -54457,7 +55880,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "pacific-atlantic",
-        "num": 319,
+        "starter": "def pacific_atlantic(heights):\n    pass\n",
+        "num": 323,
         "lc": 417,
         "slug": "pacific-atlantic-water-flow",
         "url": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
@@ -54533,7 +55957,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "surrounded-regions",
-        "num": 320,
+        "starter": "def solve(board):\n    pass\n",
+        "num": 324,
         "lc": 130,
         "slug": "surrounded-regions",
         "url": "https://leetcode.com/problems/surrounded-regions/",
@@ -54607,7 +56032,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "open-the-lock",
-        "num": 321,
+        "starter": "def open_lock(deadends, target):\n    pass\n",
+        "num": 325,
         "lc": 752,
         "slug": "open-the-lock",
         "url": "https://leetcode.com/problems/open-the-lock/",
@@ -54690,7 +56116,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "course-schedule",
-        "num": 322,
+        "starter": "def can_finish(num_courses, prerequisites):\n    pass\n",
+        "num": 326,
         "lc": 207,
         "slug": "course-schedule",
         "url": "https://leetcode.com/problems/course-schedule/",
@@ -54768,7 +56195,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "course-schedule-ii",
-        "num": 323,
+        "starter": "def find_order(num_courses, prerequisites):\n    pass\n",
+        "num": 327,
         "lc": 210,
         "slug": "course-schedule-ii",
         "url": "https://leetcode.com/problems/course-schedule-ii/",
@@ -54848,7 +56276,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "course-schedule-iv",
-        "num": 324,
+        "starter": "def check_if_prerequisite(n, prerequisites, queries):\n    pass\n",
+        "num": 328,
         "lc": 1462,
         "slug": "course-schedule-iv",
         "url": "https://leetcode.com/problems/course-schedule-iv/",
@@ -54946,7 +56375,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "evaluate-division",
-        "num": 325,
+        "starter": "def calc_equation(equations, values, queries):\n    pass\n",
+        "num": 329,
         "lc": 399,
         "slug": "evaluate-division",
         "url": "https://leetcode.com/problems/evaluate-division/",
@@ -55037,7 +56467,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "minimum-height-trees",
-        "num": 326,
+        "starter": "def find_min_height_trees(n, edges):\n    pass\n",
+        "num": 330,
         "lc": 310,
         "slug": "minimum-height-trees",
         "url": "https://leetcode.com/problems/minimum-height-trees/",
@@ -55115,7 +56546,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "word-ladder",
-        "num": 327,
+        "starter": "def ladder_length(begin, end, word_list):\n    pass\n",
+        "num": 331,
         "lc": 127,
         "slug": "word-ladder",
         "url": "https://leetcode.com/problems/word-ladder/",
@@ -55205,7 +56637,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "network-delay-time",
-        "num": 328,
+        "starter": "def network_delay_time(times, n, k):\n    pass\n",
+        "num": 332,
         "lc": 743,
         "slug": "network-delay-time",
         "url": "https://leetcode.com/problems/network-delay-time/",
@@ -55298,7 +56731,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "path-minimum-effort",
-        "num": 329,
+        "starter": "def minimum_effort_path(heights):\n    pass\n",
+        "num": 333,
         "lc": 1631,
         "slug": "path-with-minimum-effort",
         "url": "https://leetcode.com/problems/path-with-minimum-effort/",
@@ -55394,7 +56828,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "swim-rising-water",
-        "num": 330,
+        "starter": "def swim_in_water(grid):\n    pass\n",
+        "num": 334,
         "lc": 778,
         "slug": "swim-in-rising-water",
         "url": "https://leetcode.com/problems/swim-in-rising-water/",
@@ -55488,7 +56923,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "cheapest-flights-k-stops",
-        "num": 331,
+        "starter": "def find_cheapest_price(n, flights, src, dst, k):\n    pass\n",
+        "num": 335,
         "lc": 787,
         "slug": "cheapest-flights-within-k-stops",
         "url": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
@@ -55587,7 +57023,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "reconstruct-itinerary",
-        "num": 332,
+        "starter": "def find_itinerary(tickets):\n    pass\n",
+        "num": 336,
         "lc": 332,
         "slug": "reconstruct-itinerary",
         "url": "https://leetcode.com/problems/reconstruct-itinerary/",
@@ -55669,7 +57106,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "min-cost-connect-points",
-        "num": 333,
+        "starter": "def min_cost_connect_points(points):\n    pass\n",
+        "num": 337,
         "lc": 1584,
         "slug": "min-cost-to-connect-all-points",
         "url": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
@@ -55757,7 +57195,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "alien-dictionary",
-        "num": 334,
+        "starter": "def alien_order(words):\n    pass\n",
+        "num": 338,
         "lc": 269,
         "slug": "alien-dictionary",
         "url": "https://leetcode.com/problems/alien-dictionary/",
@@ -55834,7 +57273,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "critical-pseudo-critical-edges",
-        "num": 335,
+        "starter": "def find_critical_and_pseudo_critical_edges(n, edges):\n    pass\n",
+        "num": 339,
         "lc": 1489,
         "slug": "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
         "url": "https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/",
@@ -55904,7 +57344,8 @@ window.GRAIL_DSA = [
       },
       {
         "id": "build-matrix-conditions",
-        "num": 336,
+        "starter": "def build_matrix(k, row_conditions, col_conditions):\n    pass\n",
+        "num": 340,
         "lc": 2392,
         "slug": "build-a-matrix-with-conditions",
         "url": "https://leetcode.com/problems/build-a-matrix-with-conditions/",
@@ -55984,5 +57425,2826 @@ window.GRAIL_DSA = [
       }
     ],
     "count": 26
+  },
+  {
+    "id": "range-query",
+    "title": "Segment Trees and Fenwick Trees",
+    "status": "ready",
+    "target": null,
+    "layout": "flat",
+    "prelude": "import bisect\nimport random\nfrom itertools import accumulate",
+    "sections": [
+      {
+        "id": "fenwick",
+        "title": "Prefix sums and the Fenwick tree",
+        "summary": "",
+        "idea": [
+          "A <strong>Fenwick tree</strong> (binary indexed tree) stores, at index <code>i</code>, the sum of a block of the array that ends at <code>i</code> and whose length is the lowest set bit of <code>i</code>. Index 12 (<code>1100</code>) covers 4 elements, index 13 (<code>1101</code>) covers 1, index 16 covers 16.",
+          "To get a prefix sum, add the block at <code>i</code> and jump to <code>i - (i &amp; -i)</code>, which strips the lowest set bit. To update, add to the block at <code>i</code> and jump to <code>i + (i &amp; -i)</code>, the next block that also contains position <code>i</code>. Both loops touch at most one block per bit: O(log n).",
+          "It is ten lines, needs no tree nodes, and covers anything that is an invertible sum (sums, counts, XOR). When you need min/max or range updates, reach for a segment tree instead."
+        ],
+        "problems": [
+          {
+            "id": "range-sum-query-immutable",
+            "starter": "class NumArray:\n\n    def __init__(self, nums):\n        pass\n\n    def sumRange(self, left, right):\n        pass\n",
+            "num": 341,
+            "lc": 303,
+            "slug": "range-sum-query-immutable",
+            "url": "https://leetcode.com/problems/range-sum-query-immutable/",
+            "premium": false,
+            "name": "Range Sum Query - Immutable",
+            "difficulty": "easy",
+            "tags": [
+              "Array",
+              "Design",
+              "Prefix Sum"
+            ],
+            "statement": [
+              "Given an integer array <code>nums</code>, handle multiple queries of the following type:",
+              "<ol>\n <li>Calculate the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> where <code>left &lt;= right</code>.</li>\n</ol>\n\nImplement the <code>NumArray</code> class:",
+              "<ul>\n <li><code>NumArray(int[] nums)</code> Initializes the object with the integer array <code>nums</code>.</li>\n <li><code>int sumRange(int left, int right)</code> Returns the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> (i.e. <code>nums[left] + nums[left + 1] + ... + nums[right]</code>).</li>\n</ul>"
+            ],
+            "examples": [
+              {
+                "input": "[\"NumArray\", \"sumRange\", \"sumRange\", \"sumRange\"] [[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]",
+                "output": "[null, 1, -1, -3]",
+                "explanation": "NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]); numArray.sumRange(0, 2); // return (-2) + 0 + 3 = 1 numArray.sumRange(2, 5); // return 3 + (-5) + 2 + (-1) = -1 numArray.sumRange(0, 5); // return (-2) + 0 + 3 + (-5) + 2 + (-1) = -3"
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code>",
+              "<code>-10<sup>5</sup> &lt;= nums[i] &lt;= 10<sup>5</sup></code>",
+              "<code>0 &lt;= left &lt;= right &lt; nums.length</code>",
+              "At most <code>10<sup>4</sup></code> calls will be made to <code>sumRange</code>."
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Sum the slice on every query",
+                "time": "O(n) per query",
+                "space": "O(1)",
+                "why": [
+                  "Correct and obvious. With q queries it costs O(n&middot;q), which is what the follow-up questions are designed to punish."
+                ],
+                "code": "class NumArray:\n    def __init__(self, nums):\n        self.nums = nums\n\n    def sumRange(self, left, right):\n        return sum(self.nums[left:right + 1])",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Prefix sums",
+                "time": "O(n) build, O(1) per query",
+                "space": "O(n)",
+                "why": [
+                  "<code>pre[i]</code> is the sum of the first <code>i</code> elements, with <code>pre[0] = 0</code>. Then <code>sum(l..r) = pre[r+1] - pre[l]</code>.",
+                  "The leading zero removes the special case for <code>l = 0</code>. Off-by-one errors in this formula are the usual bug, so say the definition of <code>pre[i]</code> out loud before writing the subtraction."
+                ],
+                "code": "class NumArray:\n    def __init__(self, nums):\n        self.pre = [0] + list(accumulate(nums))\n\n    def sumRange(self, left, right):\n        return self.pre[right + 1] - self.pre[left]",
+                "best": true,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "a = NumArray([-2, 0, 3, -5, 2, -1])\nassert a.sumRange(0, 2) == 1\nassert a.sumRange(2, 5) == -1\nassert a.sumRange(0, 5) == -3\n\nrng = random.Random(1)\nfor _ in range(50):\n    nums = [rng.randint(-50, 50) for _ in range(rng.randint(1, 30))]\n    obj = NumArray(nums)\n    for _ in range(20):\n        l = rng.randrange(len(nums)); r = rng.randrange(l, len(nums))\n        assert obj.sumRange(l, r) == sum(nums[l:r + 1])",
+            "smallTests": "",
+            "topic": "range-query",
+            "topicTitle": "Segment Trees and Fenwick Trees",
+            "section": "fenwick",
+            "sectionTitle": "Prefix sums and the Fenwick tree",
+            "ref": null
+          },
+          {
+            "id": "range-sum-query-mutable",
+            "starter": "class NumArray:\n\n    def __init__(self, nums):\n        pass\n\n    def update(self, index, val):\n        pass\n\n    def sumRange(self, left, right):\n        pass\n",
+            "num": 342,
+            "lc": 307,
+            "slug": "range-sum-query-mutable",
+            "url": "https://leetcode.com/problems/range-sum-query-mutable/",
+            "premium": false,
+            "name": "Range Sum Query - Mutable",
+            "difficulty": "medium",
+            "tags": [
+              "Array",
+              "Divide and Conquer",
+              "Design",
+              "Binary Indexed Tree",
+              "Segment Tree",
+              "Sqrt Decomposition"
+            ],
+            "statement": [
+              "Given an integer array <code>nums</code>, handle multiple queries of the following types:",
+              "<ol>\n <li><strong>Update</strong> the value of an element in <code>nums</code>.</li>\n <li>Calculate the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> where <code>left &lt;= right</code>.</li>\n</ol>\n\nImplement the <code>NumArray</code> class:",
+              "<ul>\n <li><code>NumArray(int[] nums)</code> Initializes the object with the integer array <code>nums</code>.</li>\n <li><code>void update(int index, int val)</code> <strong>Updates</strong> the value of <code>nums[index]</code> to be <code>val</code>.</li>\n <li><code>int sumRange(int left, int right)</code> Returns the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> (i.e. <code>nums[left] + nums[left + 1] + ... + nums[right]</code>).</li>\n</ul>"
+            ],
+            "examples": [
+              {
+                "input": "[\"NumArray\", \"sumRange\", \"update\", \"sumRange\"] [[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]",
+                "output": "[null, 9, null, 8]",
+                "explanation": "NumArray numArray = new NumArray([1, 3, 5]); numArray.sumRange(0, 2); // return 1 + 3 + 5 = 9 numArray.update(1, 2); // nums = [1, 2, 5] numArray.sumRange(0, 2); // return 1 + 2 + 5 = 8"
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= nums.length &lt;= 3 * 10<sup>4</sup></code>",
+              "<code>-100 &lt;= nums[i] &lt;= 100</code>",
+              "<code>0 &lt;= index &lt; nums.length</code>",
+              "<code>-100 &lt;= val &lt;= 100</code>",
+              "<code>0 &lt;= left &lt;= right &lt; nums.length</code>",
+              "At most <code>3 * 10<sup>4</sup></code> calls will be made to <code>update</code> and <code>sumRange</code>."
+            ],
+            "note": "",
+            "pitfall": "Fenwick indices are 1-based. Calling the update loop with <code>i = 0</code> never terminates, because <code>0 &amp; -0</code> is 0 and the index never moves.",
+            "approaches": [
+              {
+                "name": "Plain array",
+                "time": "O(1) update, O(n) query",
+                "space": "O(1)",
+                "why": [
+                  "Updates are trivial and every query re-sums the slice. Fine when queries are rare."
+                ],
+                "code": "class NumArray:\n    def __init__(self, nums):\n        self.nums = list(nums)\n\n    def update(self, index, val):\n        self.nums[index] = val\n\n    def sumRange(self, left, right):\n        return sum(self.nums[left:right + 1])",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Square-root decomposition",
+                "time": "O(1) update, O(&radic;n) query",
+                "space": "O(&radic;n)",
+                "why": [
+                  "Cut the array into blocks of size about &radic;n and keep each block's sum. An update fixes one element and one block sum. A query adds whole blocks in the middle and single elements at the two ragged ends: at most 2&radic;n + &radic;n steps.",
+                  "Worth knowing as the stepping stone: it is the same idea as a segment tree with only one level of blocks."
+                ],
+                "code": "class NumArray:\n    def __init__(self, nums):\n        self.nums = list(nums)\n        self.size = max(1, int(len(nums) ** 0.5))\n        self.blocks = [0] * (len(nums) // self.size + 1)\n        for i, x in enumerate(nums):\n            self.blocks[i // self.size] += x\n\n    def update(self, index, val):\n        self.blocks[index // self.size] += val - self.nums[index]\n        self.nums[index] = val\n\n    def sumRange(self, left, right):\n        s, b = 0, self.size\n        while left <= right and left % b:          # ragged start\n            s += self.nums[left]; left += 1\n        while left + b - 1 <= right:               # whole blocks\n            s += self.blocks[left // b]; left += b\n        while left <= right:                       # ragged end\n            s += self.nums[left]; left += 1\n        return s",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Fenwick tree",
+                "time": "O(log n) update and query",
+                "space": "O(n)",
+                "why": [
+                  "Store point <em>deltas</em>: an update adds <code>val - nums[i]</code> at position <code>i</code>. A range sum is the difference of two prefix sums.",
+                  "Building by calling <code>add</code> n times is O(n log n). The loop below is the O(n) build: each index pushes its total up to its parent block <code>i + (i &amp; -i)</code> once."
+                ],
+                "code": "class NumArray:\n    def __init__(self, nums):\n        self.n = len(nums)\n        self.nums = list(nums)\n        self.tree = [0] + list(nums)               # 1-indexed\n        for i in range(1, self.n + 1):             # O(n) build\n            parent = i + (i & -i)\n            if parent <= self.n:\n                self.tree[parent] += self.tree[i]\n\n    def _prefix(self, i):                          # sum of nums[0:i]\n        s = 0\n        while i > 0:\n            s += self.tree[i]\n            i -= i & -i                            # drop the lowest set bit\n        return s\n\n    def update(self, index, val):\n        delta, self.nums[index] = val - self.nums[index], val\n        i = index + 1\n        while i <= self.n:\n            self.tree[i] += delta\n            i += i & -i                            # next block covering index\n\n    def sumRange(self, left, right):\n        return self._prefix(right + 1) - self._prefix(left)",
+                "best": true,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Segment tree (iterative, bottom-up)",
+                "time": "O(log n) update and query",
+                "space": "O(n)",
+                "why": [
+                  "Leaves live at <code>tree[n..2n-1]</code>; node <code>i</code> is the sum of children <code>2i</code> and <code>2i+1</code>. An update rewrites a leaf and walks up, recomputing parents.",
+                  "A query walks two pointers up from both ends of the half-open range <code>[l, r)</code>. When the left pointer is a right child its node is entirely inside the range, so take it and step past; symmetrically on the right.",
+                  "More code than the Fenwick tree, but swap <code>+</code> for <code>min</code> or <code>max</code> and it still works &mdash; the Fenwick tree does not."
+                ],
+                "code": "class NumArray:\n    def __init__(self, nums):\n        self.n = n = len(nums)\n        self.tree = [0] * n + list(nums)\n        for i in range(n - 1, 0, -1):\n            self.tree[i] = self.tree[2 * i] + self.tree[2 * i + 1]\n\n    def update(self, index, val):\n        i = index + self.n\n        self.tree[i] = val\n        while i > 1:\n            i //= 2\n            self.tree[i] = self.tree[2 * i] + self.tree[2 * i + 1]\n\n    def sumRange(self, left, right):\n        s, l, r = 0, left + self.n, right + self.n + 1\n        while l < r:\n            if l & 1:                  # l is a right child: take it, move right\n                s += self.tree[l]; l += 1\n            if r & 1:                  # r-1 is a left child's sibling: take it\n                r -= 1; s += self.tree[r]\n            l //= 2; r //= 2\n        return s",
+                "best": false,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "a = NumArray([1, 3, 5])\nassert a.sumRange(0, 2) == 9\na.update(1, 2)\nassert a.sumRange(0, 2) == 8\n\nrng = random.Random(7)\nfor _ in range(60):\n    nums = [rng.randint(-100, 100) for _ in range(rng.randint(1, 40))]\n    obj, ref = NumArray(nums), list(nums)\n    for _ in range(60):\n        if rng.random() < 0.5:\n            i, v = rng.randrange(len(ref)), rng.randint(-100, 100)\n            obj.update(i, v); ref[i] = v\n        else:\n            l = rng.randrange(len(ref)); r = rng.randrange(l, len(ref))\n            assert obj.sumRange(l, r) == sum(ref[l:r + 1])",
+            "smallTests": "",
+            "topic": "range-query",
+            "topicTitle": "Segment Trees and Fenwick Trees",
+            "section": "fenwick",
+            "sectionTitle": "Prefix sums and the Fenwick tree",
+            "ref": null
+          },
+          {
+            "id": "count-of-smaller-numbers-after-self",
+            "starter": "def count_smaller(nums):\n    pass\n",
+            "num": 343,
+            "lc": 315,
+            "slug": "count-of-smaller-numbers-after-self",
+            "url": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/",
+            "premium": false,
+            "name": "Count of Smaller Numbers After Self",
+            "difficulty": "hard",
+            "tags": [
+              "Array",
+              "Binary Search",
+              "Divide and Conquer",
+              "Binary Indexed Tree",
+              "Segment Tree",
+              "Merge Sort",
+              "Ordered Set",
+              "Treap"
+            ],
+            "statement": [
+              "Given an integer array <code>nums</code>, return<em> an integer array </em><code>counts</code><em> where </em><code>counts[i]</code><em> is the number of smaller elements to the right of </em><code>nums[i]</code>."
+            ],
+            "examples": [
+              {
+                "input": "nums = [5,2,6,1] Output: [2,1,1,0]",
+                "output": "[2,1,1,0]",
+                "explanation": "To the right of 5 there are 2 smaller elements (2 and 1). To the right of 2 there is only 1 smaller element (1). To the right of 6 there is 1 smaller element (1). To the right of 1 there is 0 smaller element."
+              },
+              {
+                "input": "nums = [-1] Output: [0]",
+                "output": "[0]"
+              },
+              {
+                "input": "nums = [-1,-1] Output: [0,0]",
+                "output": "[0,0]"
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+              "<code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code>"
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Compare every pair",
+                "time": "O(n&sup2;)",
+                "space": "O(1)",
+                "why": [
+                  "For each <code>i</code>, scan everything to its right. Times out at n = 10<sup>5</sup>."
+                ],
+                "code": "def count_smaller(nums):\n    return [sum(1 for y in nums[i + 1:] if y < x) for i, x in enumerate(nums)]",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Sorted list + bisect",
+                "time": "O(n&sup2;) worst case, fast in practice",
+                "space": "O(n)",
+                "why": [
+                  "Scan right to left, keep a sorted list of seen values, and <code>bisect_left</code> gives the count below x. The search is O(log n) but <code>insort</code> shifts elements, so each insert is O(n).",
+                  "In CPython that shift is a fast <code>memmove</code>, so this often passes. Say why it is not O(n log n) if you use it."
+                ],
+                "code": "def count_smaller(nums):\n    seen, out = [], []\n    for x in reversed(nums):\n        out.append(bisect.bisect_left(seen, x))\n        bisect.insort(seen, x)\n    return out[::-1]",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Merge sort, counting right-to-left jumps",
+                "time": "O(n log n)",
+                "space": "O(n)",
+                "why": [
+                  "Sort indices by value with merge sort. When an element from the left half is placed, every element from the right half already placed before it is smaller and was originally to its right. Add that count to its answer.",
+                  "The same counting-during-merge idea solves inversion counts and Reverse Pairs below."
+                ],
+                "code": "def count_smaller(nums):\n    res = [0] * len(nums)\n\n    def sort(idx):\n        if len(idx) <= 1:\n            return idx\n        mid = len(idx) // 2\n        left, right = sort(idx[:mid]), sort(idx[mid:])\n        merged, j = [], 0\n        for i in left:\n            while j < len(right) and nums[right[j]] < nums[i]:\n                merged.append(right[j]); j += 1\n            res[i] += j                 # right-half elements smaller than nums[i]\n            merged.append(i)\n        merged.extend(right[j:])\n        return merged\n\n    sort(list(range(len(nums))))\n    return res",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Fenwick tree over value ranks",
+                "time": "O(n log n)",
+                "space": "O(n)",
+                "why": [
+                  "Compress values to ranks 1..k. Scan right to left: the answer for x is the prefix count of ranks below rank(x); then add 1 at rank(x).",
+                  "Every operation is O(log k), k &le; n. This is the reusable template: <strong>sort out the coordinates, then count with a BIT while you scan</strong>."
+                ],
+                "code": "def count_smaller(nums):\n    rank = {v: i + 1 for i, v in enumerate(sorted(set(nums)))}\n    tree = [0] * (len(rank) + 1)\n\n    def add(i):\n        while i < len(tree):\n            tree[i] += 1\n            i += i & -i\n\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]\n            i -= i & -i\n        return s\n\n    out = []\n    for x in reversed(nums):\n        out.append(prefix(rank[x] - 1))    # seen values strictly smaller\n        add(rank[x])\n    return out[::-1]",
+                "best": true,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert count_smaller([5, 2, 6, 1]) == [2, 1, 1, 0]\nassert count_smaller([-1]) == [0]\nassert count_smaller([-1, -1]) == [0, 0]\n\ndef brute(a):\n    return [sum(1 for y in a[i + 1:] if y < x) for i, x in enumerate(a)]\n\nrng = random.Random(3)\nfor _ in range(200):\n    a = [rng.randint(-20, 20) for _ in range(rng.randint(1, 40))]\n    assert count_smaller(a) == brute(a)",
+            "smallTests": "",
+            "topic": "range-query",
+            "topicTitle": "Segment Trees and Fenwick Trees",
+            "section": "fenwick",
+            "sectionTitle": "Prefix sums and the Fenwick tree",
+            "ref": null
+          },
+          {
+            "id": "create-sorted-array-through-instructions",
+            "starter": "def create_sorted_array(instructions):\n    pass\n",
+            "num": 344,
+            "lc": 1649,
+            "slug": "create-sorted-array-through-instructions",
+            "url": "https://leetcode.com/problems/create-sorted-array-through-instructions/",
+            "premium": false,
+            "name": "Create Sorted Array through Instructions",
+            "difficulty": "hard",
+            "tags": [
+              "Array",
+              "Binary Search",
+              "Divide and Conquer",
+              "Binary Indexed Tree",
+              "Segment Tree",
+              "Merge Sort",
+              "Ordered Set"
+            ],
+            "statement": [
+              "Given an integer array <code>instructions</code>, you are asked to create a sorted array from the elements in <code>instructions</code>. You start with an empty container <code>nums</code>. For each element from <strong>left to right</strong> in <code>instructions</code>, insert it into <code>nums</code>. The <strong>cost</strong> of each insertion is the <b>minimum</b> of the following:",
+              "<ul>\r\n <li>The number of elements currently in <code>nums</code> that are <strong>strictly less than</strong> <code>instructions[i]</code>.</li>\r\n <li>The number of elements currently in <code>nums</code> that are <strong>strictly greater than</strong> <code>instructions[i]</code>.</li>\r\n</ul>\r\n\r\nFor example, if inserting element <code>3</code> into <code>nums = [1,2,3,5]</code>, the <strong>cost</strong> of insertion is <code>min(2, 1)</code> (elements <code>1</code> and <code>2</code> are less than <code>3</code>, element <code>5</code> is greater than <code>3</code>) and <code>nums</code> will become <code>[1,2,3,3,5]</code>.",
+              "Return <em>the <strong>total cost</strong> to insert all elements from </em><code>instructions</code><em> into </em><code>nums</code>. Since the answer may be large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>"
+            ],
+            "examples": [
+              {
+                "input": "instructions = [1,5,6,2] Output: 1 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 5 with cost min(1, 0) = 0, now nums = [1,5]. Insert 6 with cost min(2, 0) = 0, now nums = [1,5,6]. Insert 2 with cost min(1, 2) = 1, now nums = [1,2,5,6]. The total cost is 0 + 0 + 0 + 1 = 1.",
+                "output": "1 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 5 with cost min(1, 0) = 0, now nums = [1,5]. Insert 6 with cost min(2, 0) = 0, now nums = [1,5,6]. Insert 2 with cost min(1, 2) = 1, now nums = [1,2,5,6]. The total cost is 0 + 0 + 0 + 1 = 1.",
+                "explanation": "Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 5 with cost min(1, 0) = 0, now nums = [1,5]. Insert 6 with cost min(2, 0) = 0, now nums = [1,5,6]. Insert 2 with cost min(1, 2) = 1, now nums = [1,2,5,6]. The total cost is 0 + 0 + 0 + 1 = 1."
+              },
+              {
+                "input": "instructions = [1,2,3,6,5,4] Output: 3 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 2 with cost min(1, 0) = 0, now nums = [1,2]. Insert 3 with cost min(2, 0) = 0, now nums = [1,2,3]. Insert 6 with cost min(3, 0) = 0, now nums = [1,2,3,6]. Insert 5 with cost min(3, 1) = 1, now nums = [1,2,3,5,6]. Insert 4 with cost min(3, 2) = 2, now nums = [1,2,3,4,5,6]. The total cost is 0 + 0 + 0 + 0 + 1 + 2 = 3.",
+                "output": "3 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 2 with cost min(1, 0) = 0, now nums = [1,2]. Insert 3 with cost min(2, 0) = 0, now nums = [1,2,3]. Insert 6 with cost min(3, 0) = 0, now nums = [1,2,3,6]. Insert 5 with cost min(3, 1) = 1, now nums = [1,2,3,5,6]. Insert 4 with cost min(3, 2) = 2, now nums = [1,2,3,4,5,6]. The total cost is 0 + 0 + 0 + 0 + 1 + 2 = 3.",
+                "explanation": "Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 2 with cost min(1, 0) = 0, now nums = [1,2]. Insert 3 with cost min(2, 0) = 0, now nums = [1,2,3]. Insert 6 with cost min(3, 0) = 0, now nums = [1,2,3,6]. Insert 5 with cost min(3, 1) = 1, now nums = [1,2,3,5,6]. Insert 4 with cost min(3, 2) = 2, now nums = [1,2,3,4,5,6]. The total cost is 0 + 0 + 0 + 0 + 1 + 2 = 3."
+              },
+              {
+                "input": "instructions = [1,3,3,3,2,4,2,1,2] Output: 4 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3,3]. Insert 2 with cost min(1, 3) = 1, now nums = [1,2,3,3,3]. Insert 4 with cost min(5, 0) = 0, now nums = [1,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(1, 4) = 1, now nums = [1,2,2,3,3,3,4]. ​​​​​​​Insert 1 with cost min(0, 6) = 0, now nums = [1,1,2,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(2, 4) = 2, now nums = [1,1,2,2,2,3,3,3,4]. The total cost is 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4.",
+                "output": "4 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3,3]. Insert 2 with cost min(1, 3) = 1, now nums = [1,2,3,3,3]. Insert 4 with cost min(5, 0) = 0, now nums = [1,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(1, 4) = 1, now nums = [1,2,2,3,3,3,4]. ​​​​​​​Insert 1 with cost min(0, 6) = 0, now nums = [1,1,2,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(2, 4) = 2, now nums = [1,1,2,2,2,3,3,3,4]. The total cost is 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4.",
+                "explanation": "Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3,3]. Insert 2 with cost min(1, 3) = 1, now nums = [1,2,3,3,3]. Insert 4 with cost min(5, 0) = 0, now nums = [1,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(1, 4) = 1, now nums = [1,2,2,3,3,3,4]. ​​​​​​​Insert 1 with cost min(0, 6) = 0, now nums = [1,1,2,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(2, 4) = 2, now nums = [1,1,2,2,2,3,3,3,4]. The total cost is 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4."
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= instructions.length &lt;= 10<sup>5</sup></code>",
+              "<code>1 &lt;= instructions[i] &lt;= 10<sup>5</sup></code>"
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Sorted list + bisect",
+                "time": "O(n&sup2;) worst case",
+                "space": "O(n)",
+                "why": [
+                  "<code>bisect_left</code> gives the count of smaller values, <code>len - bisect_right</code> the count of greater. Insertion shifts, so the worst case is quadratic."
+                ],
+                "code": "def create_sorted_array(instructions):\n    seen, cost = [], 0\n    for x in instructions:\n        less = bisect.bisect_left(seen, x)\n        greater = len(seen) - bisect.bisect_right(seen, x)\n        cost += min(less, greater)\n        bisect.insort(seen, x)\n    return cost % (10**9 + 7)",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Fenwick tree over values",
+                "time": "O(n log m)",
+                "space": "O(m)",
+                "why": [
+                  "<code>m</code> is the largest value. Strictly smaller is <code>prefix(x - 1)</code>; strictly greater is <code>i - prefix(x)</code>, where <code>i</code> is how many values are already inserted.",
+                  "Two queries and one update per value, each O(log m)."
+                ],
+                "code": "def create_sorted_array(instructions):\n    m = max(instructions)\n    tree = [0] * (m + 1)\n\n    def add(i):\n        while i <= m:\n            tree[i] += 1\n            i += i & -i\n\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]\n            i -= i & -i\n        return s\n\n    cost = 0\n    for i, x in enumerate(instructions):\n        cost += min(prefix(x - 1), i - prefix(x))\n        add(x)\n    return cost % (10**9 + 7)",
+                "best": true,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert create_sorted_array([1, 5, 6, 2]) == 1\nassert create_sorted_array([1, 2, 3, 6, 5, 4]) == 3\nassert create_sorted_array([1, 3, 3, 3, 2, 4, 2, 1, 2]) == 4\n\ndef brute(a):\n    cost = 0\n    for i, x in enumerate(a):\n        cost += min(sum(y < x for y in a[:i]), sum(y > x for y in a[:i]))\n    return cost\n\nrng = random.Random(5)\nfor _ in range(150):\n    a = [rng.randint(1, 15) for _ in range(rng.randint(1, 40))]\n    assert create_sorted_array(a) == brute(a)",
+            "smallTests": "",
+            "topic": "range-query",
+            "topicTitle": "Segment Trees and Fenwick Trees",
+            "section": "fenwick",
+            "sectionTitle": "Prefix sums and the Fenwick tree",
+            "ref": null
+          }
+        ]
+      },
+      {
+        "id": "segment-tree",
+        "title": "Counting pairs and segment trees",
+        "summary": "",
+        "idea": [
+          "A <strong>segment tree</strong> stores an aggregate (sum, min, max, gcd&hellip;) for every node of a balanced binary split of the index range. Any range <code>[l, r]</code> decomposes into O(log n) nodes, so a query combines O(log n) stored answers, and a point update fixes the O(log n) nodes on one root-to-leaf path.",
+          "The pair-counting problems below all have the shape \"count <code>i &lt; j</code> with some inequality between <code>a[i]</code> and <code>a[j]</code>\". Scan <code>j</code> left to right and ask a tree how many earlier values satisfy the inequality: a range-count over <em>values</em>. Merge sort solves the same problems by counting across halves while merging.",
+          "When values matter rather than positions, the tree is indexed by value rank. Compress first with <code>sorted(set(...))</code> and <code>bisect</code>."
+        ],
+        "problems": [
+          {
+            "id": "reverse-pairs",
+            "starter": "def reverse_pairs(nums):\n    pass\n",
+            "num": 345,
+            "lc": 493,
+            "slug": "reverse-pairs",
+            "url": "https://leetcode.com/problems/reverse-pairs/",
+            "premium": false,
+            "name": "Reverse Pairs",
+            "difficulty": "hard",
+            "tags": [
+              "Array",
+              "Binary Search",
+              "Divide and Conquer",
+              "Binary Indexed Tree",
+              "Segment Tree",
+              "Merge Sort",
+              "Ordered Set",
+              "Treap"
+            ],
+            "statement": [
+              "Given an integer array <code>nums</code>, return <em>the number of <strong>reverse pairs</strong> in the array</em>.",
+              "A <strong>reverse pair</strong> is a pair <code>(i, j)</code> where:",
+              "<ul>\n <li><code>0 &lt;= i &lt; j &lt; nums.length</code> and</li>\n <li><code>nums[i] &gt; 2 * nums[j]</code>.</li>\n</ul>"
+            ],
+            "examples": [
+              {
+                "input": "nums = [1,3,2,3,1] Output: 2 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1",
+                "output": "2 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1",
+                "explanation": "The reverse pairs are: (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1"
+              },
+              {
+                "input": "nums = [2,4,3,5,1] Output: 3 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1 (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1",
+                "output": "3 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1 (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1",
+                "explanation": "The reverse pairs are: (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1 (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1"
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= nums.length &lt;= 5 * 10<sup>4</sup></code>",
+              "<code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code>"
+            ],
+            "note": "",
+            "pitfall": "Negative numbers: <code>-5 &gt; 2 &middot; -5</code> is true. Do not \"optimise\" with <code>x // 2</code> comparisons, which round the wrong way for negatives.",
+            "approaches": [
+              {
+                "name": "Every pair",
+                "time": "O(n&sup2;)",
+                "space": "O(1)",
+                "why": [
+                  "The definition, checked directly."
+                ],
+                "code": "def reverse_pairs(nums):\n    n = len(nums)\n    return sum(1 for i in range(n) for j in range(i + 1, n) if nums[i] > 2 * nums[j])",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Merge sort with a separate counting pass",
+                "time": "O(n log n)",
+                "space": "O(n)",
+                "why": [
+                  "Both halves are sorted after the recursive calls. For each <code>x</code> in the left half, the right-half values with <code>x &gt; 2y</code> form a prefix of the right half, and that prefix only grows as <code>x</code> grows: a two-pointer sweep counts them in O(n).",
+                  "Then merge normally. <code>sorted(left + right)</code> is used for brevity; Timsort spots the two sorted runs and merges them in linear time."
+                ],
+                "code": "def reverse_pairs(nums):\n    def sort(a):\n        if len(a) <= 1:\n            return a, 0\n        mid = len(a) // 2\n        left, cl = sort(a[:mid])\n        right, cr = sort(a[mid:])\n        count, j = cl + cr, 0\n        for x in left:\n            while j < len(right) and x > 2 * right[j]:\n                j += 1\n            count += j\n        return sorted(left + right), count\n\n    return sort(nums)[1]",
+                "best": true,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Fenwick tree over compressed values",
+                "time": "O(n log n)",
+                "space": "O(n)",
+                "why": [
+                  "Scan <code>j</code> left to right. Count earlier values strictly greater than <code>2 &middot; nums[j]</code>: that is <code>inserted - prefix(rank of 2&middot;nums[j])</code>. Then insert <code>nums[j]</code>.",
+                  "Compress only the values that get inserted; <code>bisect_right</code> on that sorted list finds how many of them are &le; 2&middot;nums[j] without needing 2&middot;nums[j] in the table."
+                ],
+                "code": "def reverse_pairs(nums):\n    vals = sorted(set(nums))\n    tree = [0] * (len(vals) + 1)\n\n    def add(i):\n        while i < len(tree):\n            tree[i] += 1\n            i += i & -i\n\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]\n            i -= i & -i\n        return s\n\n    count = 0\n    for seen, y in enumerate(nums):\n        at_most = bisect.bisect_right(vals, 2 * y)   # ranks with value <= 2y\n        count += seen - prefix(at_most)\n        add(bisect.bisect_left(vals, y) + 1)\n    return count",
+                "best": false,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert reverse_pairs([1, 3, 2, 3, 1]) == 2\nassert reverse_pairs([2, 4, 3, 5, 1]) == 3\nassert reverse_pairs([]) == 0\nassert reverse_pairs([2147483647] * 5) == 0\nassert reverse_pairs([-5, -5]) == 1\n\ndef brute(a):\n    return sum(1 for i in range(len(a)) for j in range(i + 1, len(a)) if a[i] > 2 * a[j])\n\nrng = random.Random(11)\nfor _ in range(200):\n    a = [rng.randint(-30, 30) for _ in range(rng.randint(0, 40))]\n    assert reverse_pairs(a) == brute(a)",
+            "smallTests": "",
+            "topic": "range-query",
+            "topicTitle": "Segment Trees and Fenwick Trees",
+            "section": "segment-tree",
+            "sectionTitle": "Counting pairs and segment trees",
+            "ref": null
+          },
+          {
+            "id": "count-of-range-sum",
+            "starter": "def count_range_sum(nums, lower, upper):\n    pass\n",
+            "num": 346,
+            "lc": 327,
+            "slug": "count-of-range-sum",
+            "url": "https://leetcode.com/problems/count-of-range-sum/",
+            "premium": false,
+            "name": "Count of Range Sum",
+            "difficulty": "hard",
+            "tags": [
+              "Array",
+              "Binary Search",
+              "Divide and Conquer",
+              "Binary Indexed Tree",
+              "Segment Tree",
+              "Merge Sort",
+              "Ordered Set",
+              "Treap"
+            ],
+            "statement": [
+              "Given an integer array <code>nums</code> and two integers <code>lower</code> and <code>upper</code>, return <em>the number of range sums that lie in</em> <code>[lower, upper]</code> <em>inclusive</em>.",
+              "Range sum <code>S(i, j)</code> is defined as the sum of the elements in <code>nums</code> between indices <code>i</code> and <code>j</code> inclusive, where <code>i &lt;= j</code>."
+            ],
+            "examples": [
+              {
+                "input": "nums = [-2,5,-1], lower = -2, upper = 2 Output: 3 Explanation: The three ranges are: [0,0], [2,2], and [0,2] and their respective sums are: -2, -1, 2.",
+                "output": "3 Explanation: The three ranges are: [0,0], [2,2], and [0,2] and their respective sums are: -2, -1, 2.",
+                "explanation": "The three ranges are: [0,0], [2,2], and [0,2] and their respective sums are: -2, -1, 2."
+              },
+              {
+                "input": "nums = [0], lower = 0, upper = 0 Output: 1",
+                "output": "1"
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+              "<code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code>",
+              "<code>-10<sup>5</sup> &lt;= lower &lt;= upper &lt;= 10<sup>5</sup></code>",
+              "The answer is <strong>guaranteed</strong> to fit in a <strong>32-bit</strong> integer."
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Every subarray via prefix sums",
+                "time": "O(n&sup2;)",
+                "space": "O(n)",
+                "why": [
+                  "Prefix sums make each subarray sum O(1), but there are n&sup2;/2 subarrays."
+                ],
+                "code": "def count_range_sum(nums, lower, upper):\n    P = [0] + list(accumulate(nums))\n    return sum(1 for j in range(1, len(P)) for i in range(j)\n               if lower <= P[j] - P[i] <= upper)",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Fenwick tree over prefix sums",
+                "time": "O(n log n)",
+                "space": "O(n)",
+                "why": [
+                  "Compress all prefix sums. Before handling <code>P[j]</code>, the tree holds <code>P[0..j-1]</code>. The count with value in <code>[P[j]-upper, P[j]-lower]</code> is two <code>bisect</code>s into the compressed list and two prefix queries.",
+                  "Insert <code>P[0] = 0</code> first, so subarrays starting at index 0 are counted."
+                ],
+                "code": "def count_range_sum(nums, lower, upper):\n    P = [0] + list(accumulate(nums))\n    vals = sorted(set(P))\n    tree = [0] * (len(vals) + 1)\n\n    def add(i):\n        while i < len(tree):\n            tree[i] += 1\n            i += i & -i\n\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]\n            i -= i & -i\n        return s\n\n    count = 0\n    for p in P:\n        lo = bisect.bisect_left(vals, p - upper)       # ranks before the window\n        hi = bisect.bisect_right(vals, p - lower)      # ranks up to window end\n        count += prefix(hi) - prefix(lo)\n        add(bisect.bisect_left(vals, p) + 1)\n    return count",
+                "best": true,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Merge sort on prefix sums",
+                "time": "O(n log n)",
+                "space": "O(n)",
+                "why": [
+                  "Sort the prefix sums with merge sort. For each <code>P[i]</code> in the left half, the right-half values within <code>[P[i]+lower, P[i]+upper]</code> form a contiguous run, and its two ends only move right as <code>P[i]</code> grows."
+                ],
+                "code": "def count_range_sum(nums, lower, upper):\n    def sort(a):\n        if len(a) <= 1:\n            return a, 0\n        mid = len(a) // 2\n        left, cl = sort(a[:mid])\n        right, cr = sort(a[mid:])\n        count, lo, hi = cl + cr, 0, 0\n        for x in left:\n            while lo < len(right) and right[lo] - x < lower:\n                lo += 1\n            while hi < len(right) and right[hi] - x <= upper:\n                hi += 1\n            count += hi - lo\n        return sorted(left + right), count\n\n    return sort([0] + list(accumulate(nums)))[1]",
+                "best": false,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert count_range_sum([-2, 5, -1], -2, 2) == 3\nassert count_range_sum([0], 0, 0) == 1\n\ndef brute(a, lo, hi):\n    return sum(1 for i in range(len(a)) for j in range(i, len(a)) if lo <= sum(a[i:j + 1]) <= hi)\n\nrng = random.Random(13)\nfor _ in range(200):\n    a = [rng.randint(-10, 10) for _ in range(rng.randint(1, 25))]\n    lo = rng.randint(-15, 10); hi = lo + rng.randint(0, 15)\n    assert count_range_sum(a, lo, hi) == brute(a, lo, hi)",
+            "smallTests": "",
+            "topic": "range-query",
+            "topicTitle": "Segment Trees and Fenwick Trees",
+            "section": "segment-tree",
+            "sectionTitle": "Counting pairs and segment trees",
+            "ref": null
+          },
+          {
+            "id": "longest-increasing-subsequence-ii",
+            "starter": "def length_of_lis(nums, k):\n    pass\n",
+            "num": 347,
+            "lc": 2407,
+            "slug": "longest-increasing-subsequence-ii",
+            "url": "https://leetcode.com/problems/longest-increasing-subsequence-ii/",
+            "premium": false,
+            "name": "Longest Increasing Subsequence II",
+            "difficulty": "hard",
+            "tags": [
+              "Array",
+              "Divide and Conquer",
+              "Dynamic Programming",
+              "Binary Indexed Tree",
+              "Segment Tree",
+              "Queue",
+              "Monotonic Queue"
+            ],
+            "statement": [
+              "You are given an integer array <code>nums</code> and an integer <code>k</code>.",
+              "Find the longest subsequence of <code>nums</code> that meets the following requirements:",
+              "<ul>\n <li>The subsequence is <strong>strictly increasing</strong> and</li>\n <li>The difference between adjacent elements in the subsequence is <strong>at most</strong> <code>k</code>.</li>\n</ul>\n\nReturn<em> the length of the <strong>longest</strong> <strong>subsequence</strong> that meets the requirements.</em>",
+              "A <strong>subsequence</strong> is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements."
+            ],
+            "examples": [
+              {
+                "input": "nums = [4,2,1,4,3,4,5,8,15], k = 3 Output: 5",
+                "output": "5",
+                "explanation": "The longest subsequence that meets the requirements is [1,3,4,5,8]. The subsequence has a length of 5, so we return 5. Note that the subsequence [1,3,4,5,8,15] does not meet the requirements because 15 - 8 = 7 is larger than 3."
+              },
+              {
+                "input": "nums = [7,4,5,1,8,12,4,7], k = 5 Output: 4",
+                "output": "4",
+                "explanation": "The longest subsequence that meets the requirements is [4,5,8,12]. The subsequence has a length of 4, so we return 4."
+              },
+              {
+                "input": "nums = [1,5], k = 1 Output: 1",
+                "output": "1",
+                "explanation": "The longest subsequence that meets the requirements is [1]. The subsequence has a length of 1, so we return 1."
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+              "<code>1 &lt;= nums[i], k &lt;= 10<sup>5</sup></code>"
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "DP with a scan over the value window",
+                "time": "O(n&middot;k)",
+                "space": "O(m)",
+                "why": [
+                  "<code>m</code> is the largest value. For each <code>x</code>, scan the k values below it. Correct, but k and n are both up to 10<sup>5</sup>."
+                ],
+                "code": "def length_of_lis(nums, k):\n    best = [0] * (max(nums) + 1)\n    for x in nums:\n        lo = max(0, x - k)\n        best[x] = 1 + max(best[lo:x], default=0)\n    return max(best)",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Segment tree for range max",
+                "time": "O(n log m)",
+                "space": "O(m)",
+                "why": [
+                  "Index the tree by value. For each <code>x</code>, query the max over values <code>[x-k, x-1]</code>, then set position <code>x</code> to that plus one.",
+                  "The iterative bottom-up tree from Range Sum Query - Mutable works unchanged with <code>max</code> in place of <code>+</code>. Since best[x] only ever grows, the update can take the max with the old leaf."
+                ],
+                "code": "def length_of_lis(nums, k):\n    size = max(nums) + 1\n    tree = [0] * (2 * size)\n\n    def update(i, val):\n        i += size\n        tree[i] = max(tree[i], val)\n        while i > 1:\n            i //= 2\n            tree[i] = max(tree[2 * i], tree[2 * i + 1])\n\n    def query(l, r):                       # max over [l, r)\n        res, l, r = 0, l + size, r + size\n        while l < r:\n            if l & 1:\n                res = max(res, tree[l]); l += 1\n            if r & 1:\n                r -= 1; res = max(res, tree[r])\n            l //= 2; r //= 2\n        return res\n\n    for x in nums:\n        update(x, query(max(0, x - k), x) + 1)\n    return tree[1]",
+                "best": true,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert length_of_lis([4, 2, 1, 4, 3, 4, 5, 8, 15], 3) == 5\nassert length_of_lis([7, 4, 5, 1, 8, 12, 4, 7], 5) == 4\nassert length_of_lis([1, 5], 1) == 1\n\ndef brute(a, k):\n    best = [1] * len(a)\n    for j in range(len(a)):\n        for i in range(j):\n            if a[i] < a[j] <= a[i] + k:\n                best[j] = max(best[j], best[i] + 1)\n    return max(best)\n\nrng = random.Random(17)\nfor _ in range(200):\n    a = [rng.randint(1, 30) for _ in range(rng.randint(1, 30))]\n    k = rng.randint(1, 8)\n    assert length_of_lis(a, k) == brute(a, k)",
+            "smallTests": "",
+            "topic": "range-query",
+            "topicTitle": "Segment Trees and Fenwick Trees",
+            "section": "segment-tree",
+            "sectionTitle": "Counting pairs and segment trees",
+            "ref": null
+          },
+          {
+            "id": "falling-squares",
+            "starter": "def falling_squares(positions):\n    pass\n",
+            "num": 348,
+            "lc": 699,
+            "slug": "falling-squares",
+            "url": "https://leetcode.com/problems/falling-squares/",
+            "premium": false,
+            "name": "Falling Squares",
+            "difficulty": "hard",
+            "tags": [
+              "Array",
+              "Segment Tree",
+              "Ordered Set"
+            ],
+            "statement": [
+              "There are several squares being dropped onto the X-axis of a 2D plane.",
+              "You are given a 2D integer array <code>positions</code> where <code>positions[i] = [left<sub>i</sub>, sideLength<sub>i</sub>]</code> represents the <code>i<sup>th</sup></code> square with a side length of <code>sideLength<sub>i</sub></code> that is dropped with its left edge aligned with X-coordinate <code>left<sub>i</sub></code>.",
+              "Each square is dropped one at a time from a height above any landed squares. It then falls downward (negative Y direction) until it either lands <strong>on the top side of another square</strong> or <strong>on the X-axis</strong>. A square brushing the left/right side of another square does not count as landing on it. Once it lands, it freezes in place and cannot be moved.",
+              "After each square is dropped, you must record the <strong>height of the current tallest stack of squares</strong>.",
+              "Return <em>an integer array </em><code>ans</code><em> where </em><code>ans[i]</code><em> represents the height described above after dropping the </em><code>i<sup>th</sup></code><em> square</em>."
+            ],
+            "examples": [
+              {
+                "input": "positions = [[1,2],[2,3],[6,1]] Output: [2,5,5]",
+                "output": "[2,5,5]",
+                "explanation": "After the first drop, the tallest stack is square 1 with a height of 2. After the second drop, the tallest stack is squares 1 and 2 with a height of 5. After the third drop, the tallest stack is still squares 1 and 2 with a height of 5. Thus, we return an answer of [2, 5, 5]."
+              },
+              {
+                "input": "positions = [[100,100],[200,100]] Output: [100,100]",
+                "output": "[100,100]",
+                "explanation": "After the first drop, the tallest stack is square 1 with a height of 100. After the second drop, the tallest stack is either square 1 or square 2, both with heights of 100. Thus, we return an answer of [100, 100]. Note that square 2 only brushes the right side of square 1, which does not count as landing on it."
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= positions.length &lt;= 1000</code>",
+              "<code>1 &lt;= left<sub>i</sub> &lt;= 10<sup>8</sup></code>",
+              "<code>1 &lt;= sideLength<sub>i</sub> &lt;= 10<sup>6</sup></code>"
+            ],
+            "note": "",
+            "pitfall": "Squares that only touch at an edge do not stack: <code>[1, 2]</code> covers <code>[1, 3)</code> and <code>[3, 1]</code> covers <code>[3, 4)</code>. Half-open ranges make that fall out naturally.",
+            "approaches": [
+              {
+                "name": "Compare against every earlier square",
+                "time": "O(n&sup2;)",
+                "space": "O(n)",
+                "why": [
+                  "A new square lands on the tallest earlier square that overlaps it. Keep each square's final top and check all previous ones. With n &le; 1000 this is accepted, and it is the version to write first."
+                ],
+                "code": "def falling_squares(positions):\n    tops, out, best = [], [], 0\n    for i, (left, side) in enumerate(positions):\n        right, base = left + side, 0\n        for j, (l2, s2) in enumerate(positions[:i]):\n            if l2 < right and left < l2 + s2:          # half-open overlap\n                base = max(base, tops[j])\n        tops.append(base + side)\n        best = max(best, base + side)\n        out.append(best)\n    return out",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Lazy segment tree over compressed coordinates",
+                "time": "O(n log n)",
+                "space": "O(n)",
+                "why": [
+                  "Compress the endpoints to indices; a square covers the half-open index range <code>[idx(left), idx(left + side))</code>.",
+                  "Each node keeps the max of its range and a pending \"assign\" tag. A range assignment that fully covers a node just sets its max and tag and stops; the tag is pushed to the children only when a later operation needs to go below that node. That is what keeps range updates at O(log n).",
+                  "Assignment (not max-with) is correct here because the new height is higher than everything currently in the range."
+                ],
+                "code": "def falling_squares(positions):\n    coords = sorted({p for l, s in positions for p in (l, l + s)})\n    idx = {c: i for i, c in enumerate(coords)}\n    n = len(coords)\n    mx, lazy = [0] * (4 * n), [None] * (4 * n)\n\n    def push(node):\n        if lazy[node] is not None:\n            for ch in (2 * node, 2 * node + 1):\n                mx[ch] = lazy[ch] = lazy[node]\n            lazy[node] = None\n\n    def query(node, lo, hi, l, r):                 # max over [l, r)\n        if r <= lo or hi <= l:\n            return 0\n        if l <= lo and hi <= r:\n            return mx[node]\n        push(node)\n        mid = (lo + hi) // 2\n        return max(query(2 * node, lo, mid, l, r), query(2 * node + 1, mid, hi, l, r))\n\n    def assign(node, lo, hi, l, r, val):           # set [l, r) to val\n        if r <= lo or hi <= l:\n            return\n        if l <= lo and hi <= r:\n            mx[node] = lazy[node] = val\n            return\n        push(node)\n        mid = (lo + hi) // 2\n        assign(2 * node, lo, mid, l, r, val)\n        assign(2 * node + 1, mid, hi, l, r, val)\n        mx[node] = max(mx[2 * node], mx[2 * node + 1])\n\n    out = []\n    for left, side in positions:\n        l, r = idx[left], idx[left + side]\n        top = query(1, 0, n, l, r) + side\n        assign(1, 0, n, l, r, top)\n        out.append(mx[1])\n    return out",
+                "best": true,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert falling_squares([[1, 2], [2, 3], [6, 1]]) == [2, 5, 5]\nassert falling_squares([[100, 100], [200, 100]]) == [100, 100]\nassert falling_squares([[1, 5], [2, 2], [7, 5]]) == [5, 7, 7]\n\ndef brute(pos):\n    height, out = {}, []\n    for l, s in pos:\n        base = max((height.get(x, 0) for x in range(l, l + s)), default=0)\n        for x in range(l, l + s):\n            height[x] = base + s\n        out.append(max(height.values()))\n    return out\n\nrng = random.Random(19)\nfor _ in range(200):\n    pos = [[rng.randint(1, 20), rng.randint(1, 6)] for _ in range(rng.randint(1, 15))]\n    assert falling_squares(pos) == brute(pos)",
+            "smallTests": "",
+            "topic": "range-query",
+            "topicTitle": "Segment Trees and Fenwick Trees",
+            "section": "segment-tree",
+            "sectionTitle": "Counting pairs and segment trees",
+            "ref": null
+          }
+        ]
+      }
+    ],
+    "problems": [
+      {
+        "id": "range-sum-query-immutable",
+        "starter": "class NumArray:\n\n    def __init__(self, nums):\n        pass\n\n    def sumRange(self, left, right):\n        pass\n",
+        "num": 341,
+        "lc": 303,
+        "slug": "range-sum-query-immutable",
+        "url": "https://leetcode.com/problems/range-sum-query-immutable/",
+        "premium": false,
+        "name": "Range Sum Query - Immutable",
+        "difficulty": "easy",
+        "tags": [
+          "Array",
+          "Design",
+          "Prefix Sum"
+        ],
+        "statement": [
+          "Given an integer array <code>nums</code>, handle multiple queries of the following type:",
+          "<ol>\n <li>Calculate the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> where <code>left &lt;= right</code>.</li>\n</ol>\n\nImplement the <code>NumArray</code> class:",
+          "<ul>\n <li><code>NumArray(int[] nums)</code> Initializes the object with the integer array <code>nums</code>.</li>\n <li><code>int sumRange(int left, int right)</code> Returns the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> (i.e. <code>nums[left] + nums[left + 1] + ... + nums[right]</code>).</li>\n</ul>"
+        ],
+        "examples": [
+          {
+            "input": "[\"NumArray\", \"sumRange\", \"sumRange\", \"sumRange\"] [[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]",
+            "output": "[null, 1, -1, -3]",
+            "explanation": "NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]); numArray.sumRange(0, 2); // return (-2) + 0 + 3 = 1 numArray.sumRange(2, 5); // return 3 + (-5) + 2 + (-1) = -1 numArray.sumRange(0, 5); // return (-2) + 0 + 3 + (-5) + 2 + (-1) = -3"
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code>",
+          "<code>-10<sup>5</sup> &lt;= nums[i] &lt;= 10<sup>5</sup></code>",
+          "<code>0 &lt;= left &lt;= right &lt; nums.length</code>",
+          "At most <code>10<sup>4</sup></code> calls will be made to <code>sumRange</code>."
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Sum the slice on every query",
+            "time": "O(n) per query",
+            "space": "O(1)",
+            "why": [
+              "Correct and obvious. With q queries it costs O(n&middot;q), which is what the follow-up questions are designed to punish."
+            ],
+            "code": "class NumArray:\n    def __init__(self, nums):\n        self.nums = nums\n\n    def sumRange(self, left, right):\n        return sum(self.nums[left:right + 1])",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Prefix sums",
+            "time": "O(n) build, O(1) per query",
+            "space": "O(n)",
+            "why": [
+              "<code>pre[i]</code> is the sum of the first <code>i</code> elements, with <code>pre[0] = 0</code>. Then <code>sum(l..r) = pre[r+1] - pre[l]</code>.",
+              "The leading zero removes the special case for <code>l = 0</code>. Off-by-one errors in this formula are the usual bug, so say the definition of <code>pre[i]</code> out loud before writing the subtraction."
+            ],
+            "code": "class NumArray:\n    def __init__(self, nums):\n        self.pre = [0] + list(accumulate(nums))\n\n    def sumRange(self, left, right):\n        return self.pre[right + 1] - self.pre[left]",
+            "best": true,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "a = NumArray([-2, 0, 3, -5, 2, -1])\nassert a.sumRange(0, 2) == 1\nassert a.sumRange(2, 5) == -1\nassert a.sumRange(0, 5) == -3\n\nrng = random.Random(1)\nfor _ in range(50):\n    nums = [rng.randint(-50, 50) for _ in range(rng.randint(1, 30))]\n    obj = NumArray(nums)\n    for _ in range(20):\n        l = rng.randrange(len(nums)); r = rng.randrange(l, len(nums))\n        assert obj.sumRange(l, r) == sum(nums[l:r + 1])",
+        "smallTests": "",
+        "topic": "range-query",
+        "topicTitle": "Segment Trees and Fenwick Trees",
+        "section": "fenwick",
+        "sectionTitle": "Prefix sums and the Fenwick tree",
+        "ref": null
+      },
+      {
+        "id": "range-sum-query-mutable",
+        "starter": "class NumArray:\n\n    def __init__(self, nums):\n        pass\n\n    def update(self, index, val):\n        pass\n\n    def sumRange(self, left, right):\n        pass\n",
+        "num": 342,
+        "lc": 307,
+        "slug": "range-sum-query-mutable",
+        "url": "https://leetcode.com/problems/range-sum-query-mutable/",
+        "premium": false,
+        "name": "Range Sum Query - Mutable",
+        "difficulty": "medium",
+        "tags": [
+          "Array",
+          "Divide and Conquer",
+          "Design",
+          "Binary Indexed Tree",
+          "Segment Tree",
+          "Sqrt Decomposition"
+        ],
+        "statement": [
+          "Given an integer array <code>nums</code>, handle multiple queries of the following types:",
+          "<ol>\n <li><strong>Update</strong> the value of an element in <code>nums</code>.</li>\n <li>Calculate the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> where <code>left &lt;= right</code>.</li>\n</ol>\n\nImplement the <code>NumArray</code> class:",
+          "<ul>\n <li><code>NumArray(int[] nums)</code> Initializes the object with the integer array <code>nums</code>.</li>\n <li><code>void update(int index, int val)</code> <strong>Updates</strong> the value of <code>nums[index]</code> to be <code>val</code>.</li>\n <li><code>int sumRange(int left, int right)</code> Returns the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> (i.e. <code>nums[left] + nums[left + 1] + ... + nums[right]</code>).</li>\n</ul>"
+        ],
+        "examples": [
+          {
+            "input": "[\"NumArray\", \"sumRange\", \"update\", \"sumRange\"] [[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]",
+            "output": "[null, 9, null, 8]",
+            "explanation": "NumArray numArray = new NumArray([1, 3, 5]); numArray.sumRange(0, 2); // return 1 + 3 + 5 = 9 numArray.update(1, 2); // nums = [1, 2, 5] numArray.sumRange(0, 2); // return 1 + 2 + 5 = 8"
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= nums.length &lt;= 3 * 10<sup>4</sup></code>",
+          "<code>-100 &lt;= nums[i] &lt;= 100</code>",
+          "<code>0 &lt;= index &lt; nums.length</code>",
+          "<code>-100 &lt;= val &lt;= 100</code>",
+          "<code>0 &lt;= left &lt;= right &lt; nums.length</code>",
+          "At most <code>3 * 10<sup>4</sup></code> calls will be made to <code>update</code> and <code>sumRange</code>."
+        ],
+        "note": "",
+        "pitfall": "Fenwick indices are 1-based. Calling the update loop with <code>i = 0</code> never terminates, because <code>0 &amp; -0</code> is 0 and the index never moves.",
+        "approaches": [
+          {
+            "name": "Plain array",
+            "time": "O(1) update, O(n) query",
+            "space": "O(1)",
+            "why": [
+              "Updates are trivial and every query re-sums the slice. Fine when queries are rare."
+            ],
+            "code": "class NumArray:\n    def __init__(self, nums):\n        self.nums = list(nums)\n\n    def update(self, index, val):\n        self.nums[index] = val\n\n    def sumRange(self, left, right):\n        return sum(self.nums[left:right + 1])",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Square-root decomposition",
+            "time": "O(1) update, O(&radic;n) query",
+            "space": "O(&radic;n)",
+            "why": [
+              "Cut the array into blocks of size about &radic;n and keep each block's sum. An update fixes one element and one block sum. A query adds whole blocks in the middle and single elements at the two ragged ends: at most 2&radic;n + &radic;n steps.",
+              "Worth knowing as the stepping stone: it is the same idea as a segment tree with only one level of blocks."
+            ],
+            "code": "class NumArray:\n    def __init__(self, nums):\n        self.nums = list(nums)\n        self.size = max(1, int(len(nums) ** 0.5))\n        self.blocks = [0] * (len(nums) // self.size + 1)\n        for i, x in enumerate(nums):\n            self.blocks[i // self.size] += x\n\n    def update(self, index, val):\n        self.blocks[index // self.size] += val - self.nums[index]\n        self.nums[index] = val\n\n    def sumRange(self, left, right):\n        s, b = 0, self.size\n        while left <= right and left % b:          # ragged start\n            s += self.nums[left]; left += 1\n        while left + b - 1 <= right:               # whole blocks\n            s += self.blocks[left // b]; left += b\n        while left <= right:                       # ragged end\n            s += self.nums[left]; left += 1\n        return s",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Fenwick tree",
+            "time": "O(log n) update and query",
+            "space": "O(n)",
+            "why": [
+              "Store point <em>deltas</em>: an update adds <code>val - nums[i]</code> at position <code>i</code>. A range sum is the difference of two prefix sums.",
+              "Building by calling <code>add</code> n times is O(n log n). The loop below is the O(n) build: each index pushes its total up to its parent block <code>i + (i &amp; -i)</code> once."
+            ],
+            "code": "class NumArray:\n    def __init__(self, nums):\n        self.n = len(nums)\n        self.nums = list(nums)\n        self.tree = [0] + list(nums)               # 1-indexed\n        for i in range(1, self.n + 1):             # O(n) build\n            parent = i + (i & -i)\n            if parent <= self.n:\n                self.tree[parent] += self.tree[i]\n\n    def _prefix(self, i):                          # sum of nums[0:i]\n        s = 0\n        while i > 0:\n            s += self.tree[i]\n            i -= i & -i                            # drop the lowest set bit\n        return s\n\n    def update(self, index, val):\n        delta, self.nums[index] = val - self.nums[index], val\n        i = index + 1\n        while i <= self.n:\n            self.tree[i] += delta\n            i += i & -i                            # next block covering index\n\n    def sumRange(self, left, right):\n        return self._prefix(right + 1) - self._prefix(left)",
+            "best": true,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Segment tree (iterative, bottom-up)",
+            "time": "O(log n) update and query",
+            "space": "O(n)",
+            "why": [
+              "Leaves live at <code>tree[n..2n-1]</code>; node <code>i</code> is the sum of children <code>2i</code> and <code>2i+1</code>. An update rewrites a leaf and walks up, recomputing parents.",
+              "A query walks two pointers up from both ends of the half-open range <code>[l, r)</code>. When the left pointer is a right child its node is entirely inside the range, so take it and step past; symmetrically on the right.",
+              "More code than the Fenwick tree, but swap <code>+</code> for <code>min</code> or <code>max</code> and it still works &mdash; the Fenwick tree does not."
+            ],
+            "code": "class NumArray:\n    def __init__(self, nums):\n        self.n = n = len(nums)\n        self.tree = [0] * n + list(nums)\n        for i in range(n - 1, 0, -1):\n            self.tree[i] = self.tree[2 * i] + self.tree[2 * i + 1]\n\n    def update(self, index, val):\n        i = index + self.n\n        self.tree[i] = val\n        while i > 1:\n            i //= 2\n            self.tree[i] = self.tree[2 * i] + self.tree[2 * i + 1]\n\n    def sumRange(self, left, right):\n        s, l, r = 0, left + self.n, right + self.n + 1\n        while l < r:\n            if l & 1:                  # l is a right child: take it, move right\n                s += self.tree[l]; l += 1\n            if r & 1:                  # r-1 is a left child's sibling: take it\n                r -= 1; s += self.tree[r]\n            l //= 2; r //= 2\n        return s",
+            "best": false,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "a = NumArray([1, 3, 5])\nassert a.sumRange(0, 2) == 9\na.update(1, 2)\nassert a.sumRange(0, 2) == 8\n\nrng = random.Random(7)\nfor _ in range(60):\n    nums = [rng.randint(-100, 100) for _ in range(rng.randint(1, 40))]\n    obj, ref = NumArray(nums), list(nums)\n    for _ in range(60):\n        if rng.random() < 0.5:\n            i, v = rng.randrange(len(ref)), rng.randint(-100, 100)\n            obj.update(i, v); ref[i] = v\n        else:\n            l = rng.randrange(len(ref)); r = rng.randrange(l, len(ref))\n            assert obj.sumRange(l, r) == sum(ref[l:r + 1])",
+        "smallTests": "",
+        "topic": "range-query",
+        "topicTitle": "Segment Trees and Fenwick Trees",
+        "section": "fenwick",
+        "sectionTitle": "Prefix sums and the Fenwick tree",
+        "ref": null
+      },
+      {
+        "id": "count-of-smaller-numbers-after-self",
+        "starter": "def count_smaller(nums):\n    pass\n",
+        "num": 343,
+        "lc": 315,
+        "slug": "count-of-smaller-numbers-after-self",
+        "url": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/",
+        "premium": false,
+        "name": "Count of Smaller Numbers After Self",
+        "difficulty": "hard",
+        "tags": [
+          "Array",
+          "Binary Search",
+          "Divide and Conquer",
+          "Binary Indexed Tree",
+          "Segment Tree",
+          "Merge Sort",
+          "Ordered Set",
+          "Treap"
+        ],
+        "statement": [
+          "Given an integer array <code>nums</code>, return<em> an integer array </em><code>counts</code><em> where </em><code>counts[i]</code><em> is the number of smaller elements to the right of </em><code>nums[i]</code>."
+        ],
+        "examples": [
+          {
+            "input": "nums = [5,2,6,1] Output: [2,1,1,0]",
+            "output": "[2,1,1,0]",
+            "explanation": "To the right of 5 there are 2 smaller elements (2 and 1). To the right of 2 there is only 1 smaller element (1). To the right of 6 there is 1 smaller element (1). To the right of 1 there is 0 smaller element."
+          },
+          {
+            "input": "nums = [-1] Output: [0]",
+            "output": "[0]"
+          },
+          {
+            "input": "nums = [-1,-1] Output: [0,0]",
+            "output": "[0,0]"
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+          "<code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code>"
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Compare every pair",
+            "time": "O(n&sup2;)",
+            "space": "O(1)",
+            "why": [
+              "For each <code>i</code>, scan everything to its right. Times out at n = 10<sup>5</sup>."
+            ],
+            "code": "def count_smaller(nums):\n    return [sum(1 for y in nums[i + 1:] if y < x) for i, x in enumerate(nums)]",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Sorted list + bisect",
+            "time": "O(n&sup2;) worst case, fast in practice",
+            "space": "O(n)",
+            "why": [
+              "Scan right to left, keep a sorted list of seen values, and <code>bisect_left</code> gives the count below x. The search is O(log n) but <code>insort</code> shifts elements, so each insert is O(n).",
+              "In CPython that shift is a fast <code>memmove</code>, so this often passes. Say why it is not O(n log n) if you use it."
+            ],
+            "code": "def count_smaller(nums):\n    seen, out = [], []\n    for x in reversed(nums):\n        out.append(bisect.bisect_left(seen, x))\n        bisect.insort(seen, x)\n    return out[::-1]",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Merge sort, counting right-to-left jumps",
+            "time": "O(n log n)",
+            "space": "O(n)",
+            "why": [
+              "Sort indices by value with merge sort. When an element from the left half is placed, every element from the right half already placed before it is smaller and was originally to its right. Add that count to its answer.",
+              "The same counting-during-merge idea solves inversion counts and Reverse Pairs below."
+            ],
+            "code": "def count_smaller(nums):\n    res = [0] * len(nums)\n\n    def sort(idx):\n        if len(idx) <= 1:\n            return idx\n        mid = len(idx) // 2\n        left, right = sort(idx[:mid]), sort(idx[mid:])\n        merged, j = [], 0\n        for i in left:\n            while j < len(right) and nums[right[j]] < nums[i]:\n                merged.append(right[j]); j += 1\n            res[i] += j                 # right-half elements smaller than nums[i]\n            merged.append(i)\n        merged.extend(right[j:])\n        return merged\n\n    sort(list(range(len(nums))))\n    return res",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Fenwick tree over value ranks",
+            "time": "O(n log n)",
+            "space": "O(n)",
+            "why": [
+              "Compress values to ranks 1..k. Scan right to left: the answer for x is the prefix count of ranks below rank(x); then add 1 at rank(x).",
+              "Every operation is O(log k), k &le; n. This is the reusable template: <strong>sort out the coordinates, then count with a BIT while you scan</strong>."
+            ],
+            "code": "def count_smaller(nums):\n    rank = {v: i + 1 for i, v in enumerate(sorted(set(nums)))}\n    tree = [0] * (len(rank) + 1)\n\n    def add(i):\n        while i < len(tree):\n            tree[i] += 1\n            i += i & -i\n\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]\n            i -= i & -i\n        return s\n\n    out = []\n    for x in reversed(nums):\n        out.append(prefix(rank[x] - 1))    # seen values strictly smaller\n        add(rank[x])\n    return out[::-1]",
+            "best": true,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert count_smaller([5, 2, 6, 1]) == [2, 1, 1, 0]\nassert count_smaller([-1]) == [0]\nassert count_smaller([-1, -1]) == [0, 0]\n\ndef brute(a):\n    return [sum(1 for y in a[i + 1:] if y < x) for i, x in enumerate(a)]\n\nrng = random.Random(3)\nfor _ in range(200):\n    a = [rng.randint(-20, 20) for _ in range(rng.randint(1, 40))]\n    assert count_smaller(a) == brute(a)",
+        "smallTests": "",
+        "topic": "range-query",
+        "topicTitle": "Segment Trees and Fenwick Trees",
+        "section": "fenwick",
+        "sectionTitle": "Prefix sums and the Fenwick tree",
+        "ref": null
+      },
+      {
+        "id": "create-sorted-array-through-instructions",
+        "starter": "def create_sorted_array(instructions):\n    pass\n",
+        "num": 344,
+        "lc": 1649,
+        "slug": "create-sorted-array-through-instructions",
+        "url": "https://leetcode.com/problems/create-sorted-array-through-instructions/",
+        "premium": false,
+        "name": "Create Sorted Array through Instructions",
+        "difficulty": "hard",
+        "tags": [
+          "Array",
+          "Binary Search",
+          "Divide and Conquer",
+          "Binary Indexed Tree",
+          "Segment Tree",
+          "Merge Sort",
+          "Ordered Set"
+        ],
+        "statement": [
+          "Given an integer array <code>instructions</code>, you are asked to create a sorted array from the elements in <code>instructions</code>. You start with an empty container <code>nums</code>. For each element from <strong>left to right</strong> in <code>instructions</code>, insert it into <code>nums</code>. The <strong>cost</strong> of each insertion is the <b>minimum</b> of the following:",
+          "<ul>\r\n <li>The number of elements currently in <code>nums</code> that are <strong>strictly less than</strong> <code>instructions[i]</code>.</li>\r\n <li>The number of elements currently in <code>nums</code> that are <strong>strictly greater than</strong> <code>instructions[i]</code>.</li>\r\n</ul>\r\n\r\nFor example, if inserting element <code>3</code> into <code>nums = [1,2,3,5]</code>, the <strong>cost</strong> of insertion is <code>min(2, 1)</code> (elements <code>1</code> and <code>2</code> are less than <code>3</code>, element <code>5</code> is greater than <code>3</code>) and <code>nums</code> will become <code>[1,2,3,3,5]</code>.",
+          "Return <em>the <strong>total cost</strong> to insert all elements from </em><code>instructions</code><em> into </em><code>nums</code>. Since the answer may be large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>"
+        ],
+        "examples": [
+          {
+            "input": "instructions = [1,5,6,2] Output: 1 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 5 with cost min(1, 0) = 0, now nums = [1,5]. Insert 6 with cost min(2, 0) = 0, now nums = [1,5,6]. Insert 2 with cost min(1, 2) = 1, now nums = [1,2,5,6]. The total cost is 0 + 0 + 0 + 1 = 1.",
+            "output": "1 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 5 with cost min(1, 0) = 0, now nums = [1,5]. Insert 6 with cost min(2, 0) = 0, now nums = [1,5,6]. Insert 2 with cost min(1, 2) = 1, now nums = [1,2,5,6]. The total cost is 0 + 0 + 0 + 1 = 1.",
+            "explanation": "Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 5 with cost min(1, 0) = 0, now nums = [1,5]. Insert 6 with cost min(2, 0) = 0, now nums = [1,5,6]. Insert 2 with cost min(1, 2) = 1, now nums = [1,2,5,6]. The total cost is 0 + 0 + 0 + 1 = 1."
+          },
+          {
+            "input": "instructions = [1,2,3,6,5,4] Output: 3 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 2 with cost min(1, 0) = 0, now nums = [1,2]. Insert 3 with cost min(2, 0) = 0, now nums = [1,2,3]. Insert 6 with cost min(3, 0) = 0, now nums = [1,2,3,6]. Insert 5 with cost min(3, 1) = 1, now nums = [1,2,3,5,6]. Insert 4 with cost min(3, 2) = 2, now nums = [1,2,3,4,5,6]. The total cost is 0 + 0 + 0 + 0 + 1 + 2 = 3.",
+            "output": "3 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 2 with cost min(1, 0) = 0, now nums = [1,2]. Insert 3 with cost min(2, 0) = 0, now nums = [1,2,3]. Insert 6 with cost min(3, 0) = 0, now nums = [1,2,3,6]. Insert 5 with cost min(3, 1) = 1, now nums = [1,2,3,5,6]. Insert 4 with cost min(3, 2) = 2, now nums = [1,2,3,4,5,6]. The total cost is 0 + 0 + 0 + 0 + 1 + 2 = 3.",
+            "explanation": "Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 2 with cost min(1, 0) = 0, now nums = [1,2]. Insert 3 with cost min(2, 0) = 0, now nums = [1,2,3]. Insert 6 with cost min(3, 0) = 0, now nums = [1,2,3,6]. Insert 5 with cost min(3, 1) = 1, now nums = [1,2,3,5,6]. Insert 4 with cost min(3, 2) = 2, now nums = [1,2,3,4,5,6]. The total cost is 0 + 0 + 0 + 0 + 1 + 2 = 3."
+          },
+          {
+            "input": "instructions = [1,3,3,3,2,4,2,1,2] Output: 4 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3,3]. Insert 2 with cost min(1, 3) = 1, now nums = [1,2,3,3,3]. Insert 4 with cost min(5, 0) = 0, now nums = [1,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(1, 4) = 1, now nums = [1,2,2,3,3,3,4]. ​​​​​​​Insert 1 with cost min(0, 6) = 0, now nums = [1,1,2,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(2, 4) = 2, now nums = [1,1,2,2,2,3,3,3,4]. The total cost is 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4.",
+            "output": "4 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3,3]. Insert 2 with cost min(1, 3) = 1, now nums = [1,2,3,3,3]. Insert 4 with cost min(5, 0) = 0, now nums = [1,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(1, 4) = 1, now nums = [1,2,2,3,3,3,4]. ​​​​​​​Insert 1 with cost min(0, 6) = 0, now nums = [1,1,2,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(2, 4) = 2, now nums = [1,1,2,2,2,3,3,3,4]. The total cost is 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4.",
+            "explanation": "Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3,3]. Insert 2 with cost min(1, 3) = 1, now nums = [1,2,3,3,3]. Insert 4 with cost min(5, 0) = 0, now nums = [1,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(1, 4) = 1, now nums = [1,2,2,3,3,3,4]. ​​​​​​​Insert 1 with cost min(0, 6) = 0, now nums = [1,1,2,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(2, 4) = 2, now nums = [1,1,2,2,2,3,3,3,4]. The total cost is 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4."
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= instructions.length &lt;= 10<sup>5</sup></code>",
+          "<code>1 &lt;= instructions[i] &lt;= 10<sup>5</sup></code>"
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Sorted list + bisect",
+            "time": "O(n&sup2;) worst case",
+            "space": "O(n)",
+            "why": [
+              "<code>bisect_left</code> gives the count of smaller values, <code>len - bisect_right</code> the count of greater. Insertion shifts, so the worst case is quadratic."
+            ],
+            "code": "def create_sorted_array(instructions):\n    seen, cost = [], 0\n    for x in instructions:\n        less = bisect.bisect_left(seen, x)\n        greater = len(seen) - bisect.bisect_right(seen, x)\n        cost += min(less, greater)\n        bisect.insort(seen, x)\n    return cost % (10**9 + 7)",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Fenwick tree over values",
+            "time": "O(n log m)",
+            "space": "O(m)",
+            "why": [
+              "<code>m</code> is the largest value. Strictly smaller is <code>prefix(x - 1)</code>; strictly greater is <code>i - prefix(x)</code>, where <code>i</code> is how many values are already inserted.",
+              "Two queries and one update per value, each O(log m)."
+            ],
+            "code": "def create_sorted_array(instructions):\n    m = max(instructions)\n    tree = [0] * (m + 1)\n\n    def add(i):\n        while i <= m:\n            tree[i] += 1\n            i += i & -i\n\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]\n            i -= i & -i\n        return s\n\n    cost = 0\n    for i, x in enumerate(instructions):\n        cost += min(prefix(x - 1), i - prefix(x))\n        add(x)\n    return cost % (10**9 + 7)",
+            "best": true,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert create_sorted_array([1, 5, 6, 2]) == 1\nassert create_sorted_array([1, 2, 3, 6, 5, 4]) == 3\nassert create_sorted_array([1, 3, 3, 3, 2, 4, 2, 1, 2]) == 4\n\ndef brute(a):\n    cost = 0\n    for i, x in enumerate(a):\n        cost += min(sum(y < x for y in a[:i]), sum(y > x for y in a[:i]))\n    return cost\n\nrng = random.Random(5)\nfor _ in range(150):\n    a = [rng.randint(1, 15) for _ in range(rng.randint(1, 40))]\n    assert create_sorted_array(a) == brute(a)",
+        "smallTests": "",
+        "topic": "range-query",
+        "topicTitle": "Segment Trees and Fenwick Trees",
+        "section": "fenwick",
+        "sectionTitle": "Prefix sums and the Fenwick tree",
+        "ref": null
+      },
+      {
+        "id": "reverse-pairs",
+        "starter": "def reverse_pairs(nums):\n    pass\n",
+        "num": 345,
+        "lc": 493,
+        "slug": "reverse-pairs",
+        "url": "https://leetcode.com/problems/reverse-pairs/",
+        "premium": false,
+        "name": "Reverse Pairs",
+        "difficulty": "hard",
+        "tags": [
+          "Array",
+          "Binary Search",
+          "Divide and Conquer",
+          "Binary Indexed Tree",
+          "Segment Tree",
+          "Merge Sort",
+          "Ordered Set",
+          "Treap"
+        ],
+        "statement": [
+          "Given an integer array <code>nums</code>, return <em>the number of <strong>reverse pairs</strong> in the array</em>.",
+          "A <strong>reverse pair</strong> is a pair <code>(i, j)</code> where:",
+          "<ul>\n <li><code>0 &lt;= i &lt; j &lt; nums.length</code> and</li>\n <li><code>nums[i] &gt; 2 * nums[j]</code>.</li>\n</ul>"
+        ],
+        "examples": [
+          {
+            "input": "nums = [1,3,2,3,1] Output: 2 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1",
+            "output": "2 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1",
+            "explanation": "The reverse pairs are: (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1"
+          },
+          {
+            "input": "nums = [2,4,3,5,1] Output: 3 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1 (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1",
+            "output": "3 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1 (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1",
+            "explanation": "The reverse pairs are: (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1 (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1"
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= nums.length &lt;= 5 * 10<sup>4</sup></code>",
+          "<code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code>"
+        ],
+        "note": "",
+        "pitfall": "Negative numbers: <code>-5 &gt; 2 &middot; -5</code> is true. Do not \"optimise\" with <code>x // 2</code> comparisons, which round the wrong way for negatives.",
+        "approaches": [
+          {
+            "name": "Every pair",
+            "time": "O(n&sup2;)",
+            "space": "O(1)",
+            "why": [
+              "The definition, checked directly."
+            ],
+            "code": "def reverse_pairs(nums):\n    n = len(nums)\n    return sum(1 for i in range(n) for j in range(i + 1, n) if nums[i] > 2 * nums[j])",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Merge sort with a separate counting pass",
+            "time": "O(n log n)",
+            "space": "O(n)",
+            "why": [
+              "Both halves are sorted after the recursive calls. For each <code>x</code> in the left half, the right-half values with <code>x &gt; 2y</code> form a prefix of the right half, and that prefix only grows as <code>x</code> grows: a two-pointer sweep counts them in O(n).",
+              "Then merge normally. <code>sorted(left + right)</code> is used for brevity; Timsort spots the two sorted runs and merges them in linear time."
+            ],
+            "code": "def reverse_pairs(nums):\n    def sort(a):\n        if len(a) <= 1:\n            return a, 0\n        mid = len(a) // 2\n        left, cl = sort(a[:mid])\n        right, cr = sort(a[mid:])\n        count, j = cl + cr, 0\n        for x in left:\n            while j < len(right) and x > 2 * right[j]:\n                j += 1\n            count += j\n        return sorted(left + right), count\n\n    return sort(nums)[1]",
+            "best": true,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Fenwick tree over compressed values",
+            "time": "O(n log n)",
+            "space": "O(n)",
+            "why": [
+              "Scan <code>j</code> left to right. Count earlier values strictly greater than <code>2 &middot; nums[j]</code>: that is <code>inserted - prefix(rank of 2&middot;nums[j])</code>. Then insert <code>nums[j]</code>.",
+              "Compress only the values that get inserted; <code>bisect_right</code> on that sorted list finds how many of them are &le; 2&middot;nums[j] without needing 2&middot;nums[j] in the table."
+            ],
+            "code": "def reverse_pairs(nums):\n    vals = sorted(set(nums))\n    tree = [0] * (len(vals) + 1)\n\n    def add(i):\n        while i < len(tree):\n            tree[i] += 1\n            i += i & -i\n\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]\n            i -= i & -i\n        return s\n\n    count = 0\n    for seen, y in enumerate(nums):\n        at_most = bisect.bisect_right(vals, 2 * y)   # ranks with value <= 2y\n        count += seen - prefix(at_most)\n        add(bisect.bisect_left(vals, y) + 1)\n    return count",
+            "best": false,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert reverse_pairs([1, 3, 2, 3, 1]) == 2\nassert reverse_pairs([2, 4, 3, 5, 1]) == 3\nassert reverse_pairs([]) == 0\nassert reverse_pairs([2147483647] * 5) == 0\nassert reverse_pairs([-5, -5]) == 1\n\ndef brute(a):\n    return sum(1 for i in range(len(a)) for j in range(i + 1, len(a)) if a[i] > 2 * a[j])\n\nrng = random.Random(11)\nfor _ in range(200):\n    a = [rng.randint(-30, 30) for _ in range(rng.randint(0, 40))]\n    assert reverse_pairs(a) == brute(a)",
+        "smallTests": "",
+        "topic": "range-query",
+        "topicTitle": "Segment Trees and Fenwick Trees",
+        "section": "segment-tree",
+        "sectionTitle": "Counting pairs and segment trees",
+        "ref": null
+      },
+      {
+        "id": "count-of-range-sum",
+        "starter": "def count_range_sum(nums, lower, upper):\n    pass\n",
+        "num": 346,
+        "lc": 327,
+        "slug": "count-of-range-sum",
+        "url": "https://leetcode.com/problems/count-of-range-sum/",
+        "premium": false,
+        "name": "Count of Range Sum",
+        "difficulty": "hard",
+        "tags": [
+          "Array",
+          "Binary Search",
+          "Divide and Conquer",
+          "Binary Indexed Tree",
+          "Segment Tree",
+          "Merge Sort",
+          "Ordered Set",
+          "Treap"
+        ],
+        "statement": [
+          "Given an integer array <code>nums</code> and two integers <code>lower</code> and <code>upper</code>, return <em>the number of range sums that lie in</em> <code>[lower, upper]</code> <em>inclusive</em>.",
+          "Range sum <code>S(i, j)</code> is defined as the sum of the elements in <code>nums</code> between indices <code>i</code> and <code>j</code> inclusive, where <code>i &lt;= j</code>."
+        ],
+        "examples": [
+          {
+            "input": "nums = [-2,5,-1], lower = -2, upper = 2 Output: 3 Explanation: The three ranges are: [0,0], [2,2], and [0,2] and their respective sums are: -2, -1, 2.",
+            "output": "3 Explanation: The three ranges are: [0,0], [2,2], and [0,2] and their respective sums are: -2, -1, 2.",
+            "explanation": "The three ranges are: [0,0], [2,2], and [0,2] and their respective sums are: -2, -1, 2."
+          },
+          {
+            "input": "nums = [0], lower = 0, upper = 0 Output: 1",
+            "output": "1"
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+          "<code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code>",
+          "<code>-10<sup>5</sup> &lt;= lower &lt;= upper &lt;= 10<sup>5</sup></code>",
+          "The answer is <strong>guaranteed</strong> to fit in a <strong>32-bit</strong> integer."
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Every subarray via prefix sums",
+            "time": "O(n&sup2;)",
+            "space": "O(n)",
+            "why": [
+              "Prefix sums make each subarray sum O(1), but there are n&sup2;/2 subarrays."
+            ],
+            "code": "def count_range_sum(nums, lower, upper):\n    P = [0] + list(accumulate(nums))\n    return sum(1 for j in range(1, len(P)) for i in range(j)\n               if lower <= P[j] - P[i] <= upper)",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Fenwick tree over prefix sums",
+            "time": "O(n log n)",
+            "space": "O(n)",
+            "why": [
+              "Compress all prefix sums. Before handling <code>P[j]</code>, the tree holds <code>P[0..j-1]</code>. The count with value in <code>[P[j]-upper, P[j]-lower]</code> is two <code>bisect</code>s into the compressed list and two prefix queries.",
+              "Insert <code>P[0] = 0</code> first, so subarrays starting at index 0 are counted."
+            ],
+            "code": "def count_range_sum(nums, lower, upper):\n    P = [0] + list(accumulate(nums))\n    vals = sorted(set(P))\n    tree = [0] * (len(vals) + 1)\n\n    def add(i):\n        while i < len(tree):\n            tree[i] += 1\n            i += i & -i\n\n    def prefix(i):\n        s = 0\n        while i > 0:\n            s += tree[i]\n            i -= i & -i\n        return s\n\n    count = 0\n    for p in P:\n        lo = bisect.bisect_left(vals, p - upper)       # ranks before the window\n        hi = bisect.bisect_right(vals, p - lower)      # ranks up to window end\n        count += prefix(hi) - prefix(lo)\n        add(bisect.bisect_left(vals, p) + 1)\n    return count",
+            "best": true,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Merge sort on prefix sums",
+            "time": "O(n log n)",
+            "space": "O(n)",
+            "why": [
+              "Sort the prefix sums with merge sort. For each <code>P[i]</code> in the left half, the right-half values within <code>[P[i]+lower, P[i]+upper]</code> form a contiguous run, and its two ends only move right as <code>P[i]</code> grows."
+            ],
+            "code": "def count_range_sum(nums, lower, upper):\n    def sort(a):\n        if len(a) <= 1:\n            return a, 0\n        mid = len(a) // 2\n        left, cl = sort(a[:mid])\n        right, cr = sort(a[mid:])\n        count, lo, hi = cl + cr, 0, 0\n        for x in left:\n            while lo < len(right) and right[lo] - x < lower:\n                lo += 1\n            while hi < len(right) and right[hi] - x <= upper:\n                hi += 1\n            count += hi - lo\n        return sorted(left + right), count\n\n    return sort([0] + list(accumulate(nums)))[1]",
+            "best": false,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert count_range_sum([-2, 5, -1], -2, 2) == 3\nassert count_range_sum([0], 0, 0) == 1\n\ndef brute(a, lo, hi):\n    return sum(1 for i in range(len(a)) for j in range(i, len(a)) if lo <= sum(a[i:j + 1]) <= hi)\n\nrng = random.Random(13)\nfor _ in range(200):\n    a = [rng.randint(-10, 10) for _ in range(rng.randint(1, 25))]\n    lo = rng.randint(-15, 10); hi = lo + rng.randint(0, 15)\n    assert count_range_sum(a, lo, hi) == brute(a, lo, hi)",
+        "smallTests": "",
+        "topic": "range-query",
+        "topicTitle": "Segment Trees and Fenwick Trees",
+        "section": "segment-tree",
+        "sectionTitle": "Counting pairs and segment trees",
+        "ref": null
+      },
+      {
+        "id": "longest-increasing-subsequence-ii",
+        "starter": "def length_of_lis(nums, k):\n    pass\n",
+        "num": 347,
+        "lc": 2407,
+        "slug": "longest-increasing-subsequence-ii",
+        "url": "https://leetcode.com/problems/longest-increasing-subsequence-ii/",
+        "premium": false,
+        "name": "Longest Increasing Subsequence II",
+        "difficulty": "hard",
+        "tags": [
+          "Array",
+          "Divide and Conquer",
+          "Dynamic Programming",
+          "Binary Indexed Tree",
+          "Segment Tree",
+          "Queue",
+          "Monotonic Queue"
+        ],
+        "statement": [
+          "You are given an integer array <code>nums</code> and an integer <code>k</code>.",
+          "Find the longest subsequence of <code>nums</code> that meets the following requirements:",
+          "<ul>\n <li>The subsequence is <strong>strictly increasing</strong> and</li>\n <li>The difference between adjacent elements in the subsequence is <strong>at most</strong> <code>k</code>.</li>\n</ul>\n\nReturn<em> the length of the <strong>longest</strong> <strong>subsequence</strong> that meets the requirements.</em>",
+          "A <strong>subsequence</strong> is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements."
+        ],
+        "examples": [
+          {
+            "input": "nums = [4,2,1,4,3,4,5,8,15], k = 3 Output: 5",
+            "output": "5",
+            "explanation": "The longest subsequence that meets the requirements is [1,3,4,5,8]. The subsequence has a length of 5, so we return 5. Note that the subsequence [1,3,4,5,8,15] does not meet the requirements because 15 - 8 = 7 is larger than 3."
+          },
+          {
+            "input": "nums = [7,4,5,1,8,12,4,7], k = 5 Output: 4",
+            "output": "4",
+            "explanation": "The longest subsequence that meets the requirements is [4,5,8,12]. The subsequence has a length of 4, so we return 4."
+          },
+          {
+            "input": "nums = [1,5], k = 1 Output: 1",
+            "output": "1",
+            "explanation": "The longest subsequence that meets the requirements is [1]. The subsequence has a length of 1, so we return 1."
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+          "<code>1 &lt;= nums[i], k &lt;= 10<sup>5</sup></code>"
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "DP with a scan over the value window",
+            "time": "O(n&middot;k)",
+            "space": "O(m)",
+            "why": [
+              "<code>m</code> is the largest value. For each <code>x</code>, scan the k values below it. Correct, but k and n are both up to 10<sup>5</sup>."
+            ],
+            "code": "def length_of_lis(nums, k):\n    best = [0] * (max(nums) + 1)\n    for x in nums:\n        lo = max(0, x - k)\n        best[x] = 1 + max(best[lo:x], default=0)\n    return max(best)",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Segment tree for range max",
+            "time": "O(n log m)",
+            "space": "O(m)",
+            "why": [
+              "Index the tree by value. For each <code>x</code>, query the max over values <code>[x-k, x-1]</code>, then set position <code>x</code> to that plus one.",
+              "The iterative bottom-up tree from Range Sum Query - Mutable works unchanged with <code>max</code> in place of <code>+</code>. Since best[x] only ever grows, the update can take the max with the old leaf."
+            ],
+            "code": "def length_of_lis(nums, k):\n    size = max(nums) + 1\n    tree = [0] * (2 * size)\n\n    def update(i, val):\n        i += size\n        tree[i] = max(tree[i], val)\n        while i > 1:\n            i //= 2\n            tree[i] = max(tree[2 * i], tree[2 * i + 1])\n\n    def query(l, r):                       # max over [l, r)\n        res, l, r = 0, l + size, r + size\n        while l < r:\n            if l & 1:\n                res = max(res, tree[l]); l += 1\n            if r & 1:\n                r -= 1; res = max(res, tree[r])\n            l //= 2; r //= 2\n        return res\n\n    for x in nums:\n        update(x, query(max(0, x - k), x) + 1)\n    return tree[1]",
+            "best": true,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert length_of_lis([4, 2, 1, 4, 3, 4, 5, 8, 15], 3) == 5\nassert length_of_lis([7, 4, 5, 1, 8, 12, 4, 7], 5) == 4\nassert length_of_lis([1, 5], 1) == 1\n\ndef brute(a, k):\n    best = [1] * len(a)\n    for j in range(len(a)):\n        for i in range(j):\n            if a[i] < a[j] <= a[i] + k:\n                best[j] = max(best[j], best[i] + 1)\n    return max(best)\n\nrng = random.Random(17)\nfor _ in range(200):\n    a = [rng.randint(1, 30) for _ in range(rng.randint(1, 30))]\n    k = rng.randint(1, 8)\n    assert length_of_lis(a, k) == brute(a, k)",
+        "smallTests": "",
+        "topic": "range-query",
+        "topicTitle": "Segment Trees and Fenwick Trees",
+        "section": "segment-tree",
+        "sectionTitle": "Counting pairs and segment trees",
+        "ref": null
+      },
+      {
+        "id": "falling-squares",
+        "starter": "def falling_squares(positions):\n    pass\n",
+        "num": 348,
+        "lc": 699,
+        "slug": "falling-squares",
+        "url": "https://leetcode.com/problems/falling-squares/",
+        "premium": false,
+        "name": "Falling Squares",
+        "difficulty": "hard",
+        "tags": [
+          "Array",
+          "Segment Tree",
+          "Ordered Set"
+        ],
+        "statement": [
+          "There are several squares being dropped onto the X-axis of a 2D plane.",
+          "You are given a 2D integer array <code>positions</code> where <code>positions[i] = [left<sub>i</sub>, sideLength<sub>i</sub>]</code> represents the <code>i<sup>th</sup></code> square with a side length of <code>sideLength<sub>i</sub></code> that is dropped with its left edge aligned with X-coordinate <code>left<sub>i</sub></code>.",
+          "Each square is dropped one at a time from a height above any landed squares. It then falls downward (negative Y direction) until it either lands <strong>on the top side of another square</strong> or <strong>on the X-axis</strong>. A square brushing the left/right side of another square does not count as landing on it. Once it lands, it freezes in place and cannot be moved.",
+          "After each square is dropped, you must record the <strong>height of the current tallest stack of squares</strong>.",
+          "Return <em>an integer array </em><code>ans</code><em> where </em><code>ans[i]</code><em> represents the height described above after dropping the </em><code>i<sup>th</sup></code><em> square</em>."
+        ],
+        "examples": [
+          {
+            "input": "positions = [[1,2],[2,3],[6,1]] Output: [2,5,5]",
+            "output": "[2,5,5]",
+            "explanation": "After the first drop, the tallest stack is square 1 with a height of 2. After the second drop, the tallest stack is squares 1 and 2 with a height of 5. After the third drop, the tallest stack is still squares 1 and 2 with a height of 5. Thus, we return an answer of [2, 5, 5]."
+          },
+          {
+            "input": "positions = [[100,100],[200,100]] Output: [100,100]",
+            "output": "[100,100]",
+            "explanation": "After the first drop, the tallest stack is square 1 with a height of 100. After the second drop, the tallest stack is either square 1 or square 2, both with heights of 100. Thus, we return an answer of [100, 100]. Note that square 2 only brushes the right side of square 1, which does not count as landing on it."
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= positions.length &lt;= 1000</code>",
+          "<code>1 &lt;= left<sub>i</sub> &lt;= 10<sup>8</sup></code>",
+          "<code>1 &lt;= sideLength<sub>i</sub> &lt;= 10<sup>6</sup></code>"
+        ],
+        "note": "",
+        "pitfall": "Squares that only touch at an edge do not stack: <code>[1, 2]</code> covers <code>[1, 3)</code> and <code>[3, 1]</code> covers <code>[3, 4)</code>. Half-open ranges make that fall out naturally.",
+        "approaches": [
+          {
+            "name": "Compare against every earlier square",
+            "time": "O(n&sup2;)",
+            "space": "O(n)",
+            "why": [
+              "A new square lands on the tallest earlier square that overlaps it. Keep each square's final top and check all previous ones. With n &le; 1000 this is accepted, and it is the version to write first."
+            ],
+            "code": "def falling_squares(positions):\n    tops, out, best = [], [], 0\n    for i, (left, side) in enumerate(positions):\n        right, base = left + side, 0\n        for j, (l2, s2) in enumerate(positions[:i]):\n            if l2 < right and left < l2 + s2:          # half-open overlap\n                base = max(base, tops[j])\n        tops.append(base + side)\n        best = max(best, base + side)\n        out.append(best)\n    return out",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Lazy segment tree over compressed coordinates",
+            "time": "O(n log n)",
+            "space": "O(n)",
+            "why": [
+              "Compress the endpoints to indices; a square covers the half-open index range <code>[idx(left), idx(left + side))</code>.",
+              "Each node keeps the max of its range and a pending \"assign\" tag. A range assignment that fully covers a node just sets its max and tag and stops; the tag is pushed to the children only when a later operation needs to go below that node. That is what keeps range updates at O(log n).",
+              "Assignment (not max-with) is correct here because the new height is higher than everything currently in the range."
+            ],
+            "code": "def falling_squares(positions):\n    coords = sorted({p for l, s in positions for p in (l, l + s)})\n    idx = {c: i for i, c in enumerate(coords)}\n    n = len(coords)\n    mx, lazy = [0] * (4 * n), [None] * (4 * n)\n\n    def push(node):\n        if lazy[node] is not None:\n            for ch in (2 * node, 2 * node + 1):\n                mx[ch] = lazy[ch] = lazy[node]\n            lazy[node] = None\n\n    def query(node, lo, hi, l, r):                 # max over [l, r)\n        if r <= lo or hi <= l:\n            return 0\n        if l <= lo and hi <= r:\n            return mx[node]\n        push(node)\n        mid = (lo + hi) // 2\n        return max(query(2 * node, lo, mid, l, r), query(2 * node + 1, mid, hi, l, r))\n\n    def assign(node, lo, hi, l, r, val):           # set [l, r) to val\n        if r <= lo or hi <= l:\n            return\n        if l <= lo and hi <= r:\n            mx[node] = lazy[node] = val\n            return\n        push(node)\n        mid = (lo + hi) // 2\n        assign(2 * node, lo, mid, l, r, val)\n        assign(2 * node + 1, mid, hi, l, r, val)\n        mx[node] = max(mx[2 * node], mx[2 * node + 1])\n\n    out = []\n    for left, side in positions:\n        l, r = idx[left], idx[left + side]\n        top = query(1, 0, n, l, r) + side\n        assign(1, 0, n, l, r, top)\n        out.append(mx[1])\n    return out",
+            "best": true,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert falling_squares([[1, 2], [2, 3], [6, 1]]) == [2, 5, 5]\nassert falling_squares([[100, 100], [200, 100]]) == [100, 100]\nassert falling_squares([[1, 5], [2, 2], [7, 5]]) == [5, 7, 7]\n\ndef brute(pos):\n    height, out = {}, []\n    for l, s in pos:\n        base = max((height.get(x, 0) for x in range(l, l + s)), default=0)\n        for x in range(l, l + s):\n            height[x] = base + s\n        out.append(max(height.values()))\n    return out\n\nrng = random.Random(19)\nfor _ in range(200):\n    pos = [[rng.randint(1, 20), rng.randint(1, 6)] for _ in range(rng.randint(1, 15))]\n    assert falling_squares(pos) == brute(pos)",
+        "smallTests": "",
+        "topic": "range-query",
+        "topicTitle": "Segment Trees and Fenwick Trees",
+        "section": "segment-tree",
+        "sectionTitle": "Counting pairs and segment trees",
+        "ref": null
+      }
+    ],
+    "count": 8
+  },
+  {
+    "id": "string-algorithms",
+    "title": "String Algorithms",
+    "status": "ready",
+    "target": null,
+    "layout": "flat",
+    "prelude": "import random",
+    "sections": [
+      {
+        "id": "matching",
+        "title": "Exact matching: KMP, Rabin-Karp and Z",
+        "summary": "",
+        "idea": [
+          "The <strong>prefix function</strong> <code>pi[i]</code> is the length of the longest proper border of <code>s[:i+1]</code>. It is built in O(m) by reusing itself: if the border cannot be extended by <code>s[i]</code>, fall back to the border of the border, <code>pi[k-1]</code>, and try again. Each fall-back shortens <code>k</code>, and <code>k</code> grows by at most one per character, so the total work is linear.",
+          "KMP search runs the same loop over the text with the pattern's <code>pi</code>. A neat equivalent: compute <code>pi</code> (or the Z-array) of <code>pattern + \"#\" + text</code>; every position where it reaches <code>m</code> is a match. The separator stops a match from running across the boundary.",
+          "Rabin&ndash;Karp keeps <code>h = s[i]&middot;B<sup>m-1</sup> + &hellip; + s[i+m-1]</code> mod a large prime, and slides the window in O(1): remove the leading character's term, multiply by B, add the new one. Equal hashes are only a <em>probable</em> match, so verify the substring before trusting it."
+        ],
+        "problems": [
+          {
+            "id": "find-first-occurrence",
+            "starter": "def str_str(haystack, needle):\n    pass\n",
+            "num": 349,
+            "lc": 28,
+            "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+            "url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+            "premium": false,
+            "name": "Find the Index of the First Occurrence in a String",
+            "difficulty": "easy",
+            "tags": [
+              "Two Pointers",
+              "String",
+              "String Matching",
+              "Z Algorithm",
+              "Knuth–Morris–Pratt Algorithm",
+              "Boyer–Moore String-Search Algorithm"
+            ],
+            "statement": [
+              "Given two strings <code>needle</code> and <code>haystack</code>, return the index of the first occurrence of <code>needle</code> in <code>haystack</code>, or <code>-1</code> if <code>needle</code> is not part of <code>haystack</code>."
+            ],
+            "examples": [
+              {
+                "input": "haystack = \"sadbutsad\", needle = \"sad\" Output: 0 Explanation: \"sad\" occurs at index 0 and 6. The first occurrence is at index 0, so we return 0.",
+                "output": "0 Explanation: \"sad\" occurs at index 0 and 6. The first occurrence is at index 0, so we return 0.",
+                "explanation": "\"sad\" occurs at index 0 and 6. The first occurrence is at index 0, so we return 0."
+              },
+              {
+                "input": "haystack = \"leetcode\", needle = \"leeto\" Output: -1 Explanation: \"leeto\" did not occur in \"leetcode\", so we return -1.",
+                "output": "-1 Explanation: \"leeto\" did not occur in \"leetcode\", so we return -1.",
+                "explanation": "\"leeto\" did not occur in \"leetcode\", so we return -1."
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= haystack.length, needle.length &lt;= 10<sup>4</sup></code>",
+              "<code>haystack</code> and <code>needle</code> consist of only lowercase English characters."
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Try every starting position",
+                "time": "O(n&middot;m)",
+                "space": "O(1)",
+                "why": [
+                  "Compare the pattern at each start. On repetitive inputs almost every start matches for a long way before failing, so the bound is reached."
+                ],
+                "code": "def str_str(haystack, needle):\n    n, m = len(haystack), len(needle)\n    for i in range(n - m + 1):\n        if haystack[i:i + m] == needle:\n            return i\n    return -1",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "KMP with the prefix function",
+                "time": "O(n + m)",
+                "space": "O(m)",
+                "why": [
+                  "<code>k</code> is how many pattern characters currently match. On a mismatch, instead of restarting, fall back to <code>pi[k-1]</code>: the longest prefix of the pattern that is still known to match the text ending here.",
+                  "The text pointer never moves backwards, and <code>k</code> drops at most as often as it rose, so the scan is O(n) after an O(m) build."
+                ],
+                "code": "def prefix_function(s):\n    pi, k = [0] * len(s), 0\n    for i in range(1, len(s)):\n        while k and s[i] != s[k]:\n            k = pi[k - 1]              # fall back to the border of the border\n        if s[i] == s[k]:\n            k += 1\n        pi[i] = k\n    return pi\n\n\ndef str_str(haystack, needle):\n    if not needle:\n        return 0\n    pi, k = prefix_function(needle), 0\n    for i, ch in enumerate(haystack):\n        while k and ch != needle[k]:\n            k = pi[k - 1]\n        if ch == needle[k]:\n            k += 1\n        if k == len(needle):\n            return i - k + 1\n    return -1",
+                "best": true,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Rabin-Karp rolling hash",
+                "time": "O(n + m) expected",
+                "space": "O(1)",
+                "why": [
+                  "Hash the pattern and the first window, then roll: <code>h = (h - s[i]&middot;B<sup>m-1</sup>)&middot;B + s[i+m]</code>, all mod <code>2<sup>61</sup>-1</code>. Precompute <code>B<sup>m-1</sup></code> once.",
+                  "On a hash hit, compare the actual substring. A random base makes an adversarial collision unlikely, so verification almost never fails and the expected time stays linear."
+                ],
+                "code": "def str_str(haystack, needle):\n    n, m = len(haystack), len(needle)\n    if m > n:\n        return -1\n    MOD, B = (1 << 61) - 1, random.randrange(256, 1 << 40)\n    top = pow(B, m - 1, MOD)\n    hp = hw = 0\n    for i in range(m):\n        hp = (hp * B + ord(needle[i])) % MOD\n        hw = (hw * B + ord(haystack[i])) % MOD\n    for i in range(n - m + 1):\n        if hw == hp and haystack[i:i + m] == needle:    # verify: hashes can collide\n            return i\n        if i + m < n:\n            hw = ((hw - ord(haystack[i]) * top) * B + ord(haystack[i + m])) % MOD\n    return -1",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Z-function on pattern + separator + text",
+                "time": "O(n + m)",
+                "space": "O(n + m)",
+                "why": [
+                  "<code>z[i]</code> is the length of the longest common prefix of the string and its suffix starting at <code>i</code>. On <code>needle + \"\\0\" + haystack</code>, any <code>z[i] == m</code> marks a match.",
+                  "The <code>[l, r)</code> box is the rightmost segment known to equal a prefix. Inside it, <code>z[i - l]</code> gives a free lower bound, so each character is compared successfully at most once."
+                ],
+                "code": "def z_function(s):\n    n = len(s)\n    z, l, r = [0] * n, 0, 0\n    if n:\n        z[0] = n\n    for i in range(1, n):\n        if i < r:\n            z[i] = min(r - i, z[i - l])        # reuse the match inside [l, r)\n        while i + z[i] < n and s[z[i]] == s[i + z[i]]:\n            z[i] += 1\n        if i + z[i] > r:\n            l, r = i, i + z[i]\n    return z\n\n\ndef str_str(haystack, needle):\n    m = len(needle)\n    z = z_function(needle + \"\\0\" + haystack)\n    for i in range(m + 1, len(z)):\n        if z[i] >= m:\n            return i - m - 1\n    return -1 if m else 0",
+                "best": false,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert str_str(\"sadbutsad\", \"sad\") == 0\nassert str_str(\"leetcode\", \"leeto\") == -1\nassert str_str(\"a\", \"a\") == 0\nassert str_str(\"mississippi\", \"issip\") == 4\nassert str_str(\"aaaaaaaaab\", \"aaab\") == 6\n\nrng = random.Random(23)\nfor _ in range(400):\n    h = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 30)))\n    nd = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 5)))\n    assert str_str(h, nd) == h.find(nd), (h, nd)",
+            "smallTests": "",
+            "topic": "string-algorithms",
+            "topicTitle": "String Algorithms",
+            "section": "matching",
+            "sectionTitle": "Exact matching: KMP, Rabin-Karp and Z",
+            "ref": null
+          },
+          {
+            "id": "rotate-string",
+            "starter": "def rotate_string(s, goal):\n    pass\n",
+            "num": 350,
+            "lc": 796,
+            "slug": "rotate-string",
+            "url": "https://leetcode.com/problems/rotate-string/",
+            "premium": false,
+            "name": "Rotate String",
+            "difficulty": "easy",
+            "tags": [
+              "String",
+              "String Matching"
+            ],
+            "statement": [
+              "Given two strings <code>s</code> and <code>goal</code>, return <code>true</code> <em>if and only if</em> <code>s</code> <em>can become</em> <code>goal</code> <em>after some number of <strong>shifts</strong> on</em> <code>s</code>.",
+              "A <strong>shift</strong> on <code>s</code> consists of moving the leftmost character of <code>s</code> to the rightmost position.",
+              "<ul>\n <li>For example, if <code>s = &quot;abcde&quot;</code>, then it will be <code>&quot;bcdea&quot;</code> after one shift.</li>\n</ul>"
+            ],
+            "examples": [
+              {
+                "input": "s = \"abcde\", goal = \"cdeab\" Output: true",
+                "output": "true"
+              },
+              {
+                "input": "s = \"abcde\", goal = \"abced\" Output: false",
+                "output": "false"
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= s.length, goal.length &lt;= 100</code>",
+              "<code>s</code> and <code>goal</code> consist of lowercase English letters."
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Build every rotation",
+                "time": "O(n&sup2;)",
+                "space": "O(n)",
+                "why": [
+                  "n rotations, each built and compared in O(n)."
+                ],
+                "code": "def rotate_string(s, goal):\n    return len(s) == len(goal) and any(s[i:] + s[:i] == goal for i in range(max(1, len(s))))",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Substring of s + s",
+                "time": "O(n) with KMP",
+                "space": "O(n)",
+                "why": [
+                  "Lengths must match first, otherwise <code>\"a\"</code> would be found in <code>\"aa\"</code>-style doubled strings of the wrong size.",
+                  "Python's <code>in</code> is a fast C search (a two-way / Boyer&ndash;Moore&ndash;Horspool hybrid), so the one-liner is the right production answer. If asked for a guaranteed bound, run KMP on <code>s + s</code>."
+                ],
+                "code": "def rotate_string(s, goal):\n    return len(s) == len(goal) and goal in s + s",
+                "best": true,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert rotate_string(\"abcde\", \"cdeab\") is True\nassert rotate_string(\"abcde\", \"abced\") is False\nassert rotate_string(\"\", \"\") is True\nassert rotate_string(\"a\", \"aa\") is False\n\ndef brute(s, g):\n    return len(s) == len(g) and any(s[i:] + s[:i] == g for i in range(max(1, len(s))))\n\nrng = random.Random(29)\nfor _ in range(400):\n    s = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(0, 8)))\n    g = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(0, 8)))\n    assert rotate_string(s, g) == brute(s, g)",
+            "smallTests": "",
+            "topic": "string-algorithms",
+            "topicTitle": "String Algorithms",
+            "section": "matching",
+            "sectionTitle": "Exact matching: KMP, Rabin-Karp and Z",
+            "ref": null
+          },
+          {
+            "id": "repeated-string-match",
+            "starter": "def repeated_string_match(a, b):\n    pass\n",
+            "num": 351,
+            "lc": 686,
+            "slug": "repeated-string-match",
+            "url": "https://leetcode.com/problems/repeated-string-match/",
+            "premium": false,
+            "name": "Repeated String Match",
+            "difficulty": "medium",
+            "tags": [
+              "String",
+              "String Matching",
+              "Z Algorithm",
+              "Knuth–Morris–Pratt Algorithm",
+              "Boyer–Moore String-Search Algorithm"
+            ],
+            "statement": [
+              "Given two strings <code>a</code> and <code>b</code>, return <em>the minimum number of times you should repeat string </em><code>a</code><em> so that string</em> <code>b</code> <em>is a substring of it</em>. If it is impossible for <code>b</code>​​​​​​ to be a substring of <code>a</code> after repeating it, return <code>-1</code>.",
+              "<strong>Notice:</strong> string <code>&quot;abc&quot;</code> repeated 0 times is <code>&quot;&quot;</code>, repeated 1 time is <code>&quot;abc&quot;</code> and repeated 2 times is <code>&quot;abcabc&quot;</code>."
+            ],
+            "examples": [
+              {
+                "input": "a = \"abcd\", b = \"cdabcdab\" Output: 3 Explanation: We return 3 because by repeating a three times \"abcdabcdabcd\", b is a substring of it.",
+                "output": "3 Explanation: We return 3 because by repeating a three times \"abcdabcdabcd\", b is a substring of it.",
+                "explanation": "We return 3 because by repeating a three times \"abcdabcdabcd\", b is a substring of it."
+              },
+              {
+                "input": "a = \"a\", b = \"aa\" Output: 2",
+                "output": "2"
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= a.length, b.length &lt;= 10<sup>4</sup></code>",
+              "<code>a</code> and <code>b</code> consist of lowercase English letters."
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Keep appending until it is long enough",
+                "time": "O((n + m)&middot;m)",
+                "space": "O(n + m)",
+                "why": [
+                  "Append copies until the text is at least as long as <code>b</code>, check, then try one more copy. Without the \"one more\" bound this loops forever on impossible inputs."
+                ],
+                "code": "def repeated_string_match(a, b):\n    text, count = a, 1\n    while len(text) < len(b):\n        text += a; count += 1\n    if b in text:\n        return count\n    if b in text + a:\n        return count + 1\n    return -1",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "KMP over the repeated text without building it",
+                "time": "O(n + m)",
+                "space": "O(m)",
+                "why": [
+                  "Scan positions <code>0 .. (q+1)&middot;len(a) - 1</code> of the virtual text, reading character <code>a[i % len(a)]</code>. When KMP completes a match ending at <code>i</code>, the copies needed are <code>i // len(a) + 1</code>.",
+                  "Memory stays O(m) regardless of how many copies are virtual."
+                ],
+                "code": "def repeated_string_match(a, b):\n    pi, k = [0] * len(b), 0\n    for i in range(1, len(b)):\n        while k and b[i] != b[k]:\n            k = pi[k - 1]\n        if b[i] == b[k]:\n            k += 1\n        pi[i] = k\n\n    q = -(-len(b) // len(a))\n    k = 0\n    for i in range((q + 1) * len(a)):\n        ch = a[i % len(a)]\n        while k and ch != b[k]:\n            k = pi[k - 1]\n        if ch == b[k]:\n            k += 1\n        if k == len(b):\n            return i // len(a) + 1\n    return -1",
+                "best": true,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert repeated_string_match(\"abcd\", \"cdabcdab\") == 3\nassert repeated_string_match(\"a\", \"aa\") == 2\nassert repeated_string_match(\"abc\", \"wxyz\") == -1\nassert repeated_string_match(\"abc\", \"cabcabca\") == 4\n\ndef brute(a, b):\n    for k in range(1, len(b) // len(a) + 3):\n        if b in a * k:\n            return k\n    return -1\n\nrng = random.Random(31)\nfor _ in range(400):\n    a = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 4)))\n    b = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 10)))\n    assert repeated_string_match(a, b) == brute(a, b)",
+            "smallTests": "",
+            "topic": "string-algorithms",
+            "topicTitle": "String Algorithms",
+            "section": "matching",
+            "sectionTitle": "Exact matching: KMP, Rabin-Karp and Z",
+            "ref": null
+          }
+        ]
+      },
+      {
+        "id": "borders-and-hashing",
+        "title": "Borders, Z-arrays and rolling hashes",
+        "summary": "",
+        "idea": [
+          "Many \"hard\" string problems are one array away. <code>pi[-1]</code> of a string is its longest border, which answers \"longest prefix that is also a suffix\", and <code>n - pi[-1]</code> is the shortest period. The Z-array answers \"how much of the prefix matches from here\" for every position at once.",
+          "When the question is about <em>arbitrary</em> repeated substrings rather than prefixes, rolling hashes plus binary search on the length is the standard interview answer: if a repeated substring of length L exists, one of every shorter length does too, so the predicate is monotone."
+        ],
+        "problems": [
+          {
+            "id": "repeated-substring-pattern",
+            "starter": "def repeated_substring_pattern(s):\n    pass\n",
+            "num": 352,
+            "lc": 459,
+            "slug": "repeated-substring-pattern",
+            "url": "https://leetcode.com/problems/repeated-substring-pattern/",
+            "premium": false,
+            "name": "Repeated Substring Pattern",
+            "difficulty": "easy",
+            "tags": [
+              "String",
+              "String Matching",
+              "Z Algorithm",
+              "Knuth–Morris–Pratt Algorithm"
+            ],
+            "statement": [
+              "Given a string <code>s</code>, check if it can be constructed by taking a substring of it and appending multiple copies of the substring together."
+            ],
+            "examples": [
+              {
+                "input": "s = \"abab\" Output: true Explanation: It is the substring \"ab\" twice.",
+                "output": "true Explanation: It is the substring \"ab\" twice.",
+                "explanation": "It is the substring \"ab\" twice."
+              },
+              {
+                "input": "s = \"aba\" Output: false",
+                "output": "false"
+              },
+              {
+                "input": "s = \"abcabcabcabc\" Output: true Explanation: It is the substring \"abc\" four times or the substring \"abcabc\" twice.",
+                "output": "true Explanation: It is the substring \"abc\" four times or the substring \"abcabc\" twice.",
+                "explanation": "It is the substring \"abc\" four times or the substring \"abcabc\" twice."
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= s.length &lt;= 10<sup>4</sup></code>",
+              "<code>s</code> consists of lowercase English letters."
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Try every divisor length",
+                "time": "O(n &middot; d(n))",
+                "space": "O(n)",
+                "why": [
+                  "A repeating unit's length divides n. For each divisor L &lt; n, check <code>s[:L] * (n // L) == s</code>. <code>d(n)</code>, the number of divisors, is small in practice."
+                ],
+                "code": "def repeated_substring_pattern(s):\n    n = len(s)\n    return any(n % L == 0 and s[:L] * (n // L) == s for L in range(1, n // 2 + 1))",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "s is inside (s + s) with the ends cut off",
+                "time": "O(n)",
+                "space": "O(n)",
+                "why": [
+                  "If <code>s</code> is periodic, shifting it by one period gives itself, so <code>s</code> appears in <code>s + s</code> at an offset other than 0 and n. Cutting the first and last character rules those two out.",
+                  "The converse holds too (a string equal to a non-trivial rotation of itself is periodic), which is what makes the trick a full answer and not a heuristic."
+                ],
+                "code": "def repeated_substring_pattern(s):\n    return s in (s + s)[1:-1]",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Shortest period from the prefix function",
+                "time": "O(n)",
+                "space": "O(n)",
+                "why": [
+                  "The longest border <code>b = pi[-1]</code> gives the shortest period <code>p = n - b</code>. The string is a repetition exactly when there is a border and <code>p</code> divides <code>n</code>.",
+                  "This is the version to explain: it says <em>why</em> and also tells you the repeating unit, <code>s[:p]</code>."
+                ],
+                "code": "def repeated_substring_pattern(s):\n    pi, k = [0] * len(s), 0\n    for i in range(1, len(s)):\n        while k and s[i] != s[k]:\n            k = pi[k - 1]\n        if s[i] == s[k]:\n            k += 1\n        pi[i] = k\n    period = len(s) - pi[-1]\n    return pi[-1] > 0 and len(s) % period == 0",
+                "best": true,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert repeated_substring_pattern(\"abab\") is True\nassert repeated_substring_pattern(\"aba\") is False\nassert repeated_substring_pattern(\"abcabcabcabc\") is True\nassert repeated_substring_pattern(\"a\") is False\nassert repeated_substring_pattern(\"abaababaab\") is True\n\ndef brute(s):\n    n = len(s)\n    return any(n % L == 0 and s[:L] * (n // L) == s for L in range(1, n))\n\nrng = random.Random(37)\nfor _ in range(500):\n    unit = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 4)))\n    s = unit * rng.randint(1, 4) if rng.random() < 0.5 else \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 12)))\n    assert repeated_substring_pattern(s) == brute(s), s",
+            "smallTests": "",
+            "topic": "string-algorithms",
+            "topicTitle": "String Algorithms",
+            "section": "borders-and-hashing",
+            "sectionTitle": "Borders, Z-arrays and rolling hashes",
+            "ref": null
+          },
+          {
+            "id": "longest-happy-prefix",
+            "starter": "def longest_prefix(s):\n    pass\n",
+            "num": 353,
+            "lc": 1392,
+            "slug": "longest-happy-prefix",
+            "url": "https://leetcode.com/problems/longest-happy-prefix/",
+            "premium": false,
+            "name": "Longest Happy Prefix",
+            "difficulty": "hard",
+            "tags": [
+              "String",
+              "Rolling Hash",
+              "String Matching",
+              "Hash Function",
+              "Z Algorithm",
+              "Knuth–Morris–Pratt Algorithm"
+            ],
+            "statement": [
+              "A string is called a <strong>happy prefix</strong> if it is a <strong>non-empty</strong> prefix which is also a suffix (excluding itself).",
+              "Given a string <code>s</code>, return <em>the <strong>longest happy prefix</strong> of</em> <code>s</code>. Return an empty string <code>&quot;&quot;</code> if no such prefix exists."
+            ],
+            "examples": [
+              {
+                "input": "s = \"level\" Output: \"l\" Explanation: s contains 4 prefix excluding itself (\"l\", \"le\", \"lev\", \"leve\"), and suffix (\"l\", \"el\", \"vel\", \"evel\"). The largest prefix which is also suffix is given by \"l\".",
+                "output": "\"l\" Explanation: s contains 4 prefix excluding itself (\"l\", \"le\", \"lev\", \"leve\"), and suffix (\"l\", \"el\", \"vel\", \"evel\"). The largest prefix which is also suffix is given by \"l\".",
+                "explanation": "s contains 4 prefix excluding itself (\"l\", \"le\", \"lev\", \"leve\"), and suffix (\"l\", \"el\", \"vel\", \"evel\"). The largest prefix which is also suffix is given by \"l\"."
+              },
+              {
+                "input": "s = \"ababab\" Output: \"abab\" Explanation: \"abab\" is the largest prefix which is also suffix. They can overlap in the original string.",
+                "output": "\"abab\" Explanation: \"abab\" is the largest prefix which is also suffix. They can overlap in the original string.",
+                "explanation": "\"abab\" is the largest prefix which is also suffix. They can overlap in the original string."
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= s.length &lt;= 10<sup>5</sup></code>",
+              "<code>s</code> contains only lowercase English letters."
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Try every length, longest first",
+                "time": "O(n&sup2;)",
+                "space": "O(n)",
+                "why": [
+                  "Each comparison of a prefix and a suffix costs up to O(n)."
+                ],
+                "code": "def longest_prefix(s):\n    for L in range(len(s) - 1, 0, -1):\n        if s[:L] == s[-L:]:\n            return s[:L]\n    return \"\"",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Prefix function",
+                "time": "O(n)",
+                "space": "O(n)",
+                "why": [
+                  "<code>pi[-1]</code> is, by definition, the length of the longest proper border of the whole string."
+                ],
+                "code": "def longest_prefix(s):\n    pi, k = [0] * len(s), 0\n    for i in range(1, len(s)):\n        while k and s[i] != s[k]:\n            k = pi[k - 1]\n        if s[i] == s[k]:\n            k += 1\n        pi[i] = k\n    return s[:pi[-1]] if s else \"\"",
+                "best": true,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Prefix and suffix hashes grown together",
+                "time": "O(n)",
+                "space": "O(1)",
+                "why": [
+                  "Grow the prefix hash forwards (<code>h&middot;B + c</code>) and the suffix hash backwards (<code>c&middot;B<sup>L</sup> + h</code>). Whenever they agree, remember L. Same polynomial, so equal strings give equal hashes.",
+                  "O(1) extra space, but correct only with high probability. Mention the collision risk, and that a 61-bit Mersenne modulus with a random base makes it negligible."
+                ],
+                "code": "def longest_prefix(s):\n    MOD, B = (1 << 61) - 1, random.randrange(256, 1 << 40)\n    pre = suf = 0\n    power, best = 1, 0\n    for L in range(1, len(s)):\n        pre = (pre * B + ord(s[L - 1])) % MOD\n        suf = (ord(s[-L]) * power + suf) % MOD\n        power = power * B % MOD\n        if pre == suf:\n            best = L\n    return s[:best]",
+                "best": false,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert longest_prefix(\"level\") == \"l\"\nassert longest_prefix(\"ababab\") == \"abab\"\nassert longest_prefix(\"a\") == \"\"\nassert longest_prefix(\"aaaa\") == \"aaa\"\n\ndef brute(s):\n    return next((s[:L] for L in range(len(s) - 1, 0, -1) if s[:L] == s[-L:]), \"\")\n\nrng = random.Random(41)\nfor _ in range(500):\n    s = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 16)))\n    assert longest_prefix(s) == brute(s), s",
+            "smallTests": "",
+            "topic": "string-algorithms",
+            "topicTitle": "String Algorithms",
+            "section": "borders-and-hashing",
+            "sectionTitle": "Borders, Z-arrays and rolling hashes",
+            "ref": null
+          },
+          {
+            "id": "shortest-palindrome",
+            "starter": "def shortest_palindrome(s):\n    pass\n",
+            "num": 354,
+            "lc": 214,
+            "slug": "shortest-palindrome",
+            "url": "https://leetcode.com/problems/shortest-palindrome/",
+            "premium": false,
+            "name": "Shortest Palindrome",
+            "difficulty": "hard",
+            "tags": [
+              "String",
+              "Rolling Hash",
+              "String Matching",
+              "Hash Function",
+              "Manacher",
+              "Z Algorithm",
+              "Knuth–Morris–Pratt Algorithm"
+            ],
+            "statement": [
+              "You are given a string <code>s</code>. You can convert <code>s</code> to a palindrome by adding characters in front of it.",
+              "Return <em>the shortest palindrome you can find by performing this transformation</em>."
+            ],
+            "examples": [
+              {
+                "input": "s = \"aacecaaa\" Output: \"aaacecaaa\"",
+                "output": "\"aaacecaaa\""
+              },
+              {
+                "input": "s = \"abcd\" Output: \"dcbabcd\"",
+                "output": "\"dcbabcd\""
+              }
+            ],
+            "constraints": [
+              "<code>0 &lt;= s.length &lt;= 5 * 10<sup>4</sup></code>",
+              "<code>s</code> consists of lowercase English letters only."
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Longest palindromic prefix by direct check",
+                "time": "O(n&sup2;)",
+                "space": "O(n)",
+                "why": [
+                  "Test prefixes from longest to shortest; each test is O(n)."
+                ],
+                "code": "def shortest_palindrome(s):\n    for L in range(len(s), 0, -1):\n        if s[:L] == s[:L][::-1]:\n            return s[L:][::-1] + s\n    return s",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "KMP border of s + # + reverse(s)",
+                "time": "O(n)",
+                "space": "O(n)",
+                "why": [
+                  "The separator keeps the border from spilling across the middle, so <code>pi[-1]</code> is at most <code>len(s)</code> and equals the length of the longest palindromic prefix."
+                ],
+                "code": "def shortest_palindrome(s):\n    t = s + \"#\" + s[::-1]\n    pi, k = [0] * len(t), 0\n    for i in range(1, len(t)):\n        while k and t[i] != t[k]:\n            k = pi[k - 1]\n        if t[i] == t[k]:\n            k += 1\n        pi[i] = k\n    return s[pi[-1]:][::-1] + s",
+                "best": true,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Forward and backward rolling hash",
+                "time": "O(n)",
+                "space": "O(1)",
+                "why": [
+                  "For each prefix length L, keep the hash of <code>s[:L]</code> read forwards and read backwards. When they agree, <code>s[:L]</code> is (very probably) a palindrome; keep the largest such L."
+                ],
+                "code": "def shortest_palindrome(s):\n    MOD, B = (1 << 61) - 1, random.randrange(256, 1 << 40)\n    fwd = bwd = 0\n    power, best = 1, 0\n    for i, ch in enumerate(s):\n        fwd = (fwd * B + ord(ch)) % MOD\n        bwd = (bwd + ord(ch) * power) % MOD\n        power = power * B % MOD\n        if fwd == bwd:\n            best = i + 1\n    return s[best:][::-1] + s",
+                "best": false,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert shortest_palindrome(\"aacecaaa\") == \"aaacecaaa\"\nassert shortest_palindrome(\"abcd\") == \"dcbabcd\"\nassert shortest_palindrome(\"\") == \"\"\nassert shortest_palindrome(\"aba\") == \"aba\"\n\ndef brute(s):\n    for L in range(len(s), 0, -1):\n        if s[:L] == s[:L][::-1]:\n            return s[L:][::-1] + s\n    return s\n\nrng = random.Random(43)\nfor _ in range(500):\n    s = \"\".join(rng.choice(\"abc\") for _ in range(rng.randint(0, 14)))\n    assert shortest_palindrome(s) == brute(s), s",
+            "smallTests": "",
+            "topic": "string-algorithms",
+            "topicTitle": "String Algorithms",
+            "section": "borders-and-hashing",
+            "sectionTitle": "Borders, Z-arrays and rolling hashes",
+            "ref": null
+          },
+          {
+            "id": "sum-of-scores-of-built-strings",
+            "starter": "def sum_scores(s):\n    pass\n",
+            "num": 355,
+            "lc": 2223,
+            "slug": "sum-of-scores-of-built-strings",
+            "url": "https://leetcode.com/problems/sum-of-scores-of-built-strings/",
+            "premium": false,
+            "name": "Sum of Scores of Built Strings",
+            "difficulty": "hard",
+            "tags": [
+              "String",
+              "Binary Search",
+              "Rolling Hash",
+              "Suffix Array",
+              "String Matching",
+              "Hash Function",
+              "Z Algorithm",
+              "Knuth–Morris–Pratt Algorithm"
+            ],
+            "statement": [
+              "You are <strong>building</strong> a string <code>s</code> of length <code>n</code> <strong>one</strong> character at a time, <strong>prepending</strong> each new character to the <strong>front</strong> of the string. The strings are labeled from <code>1</code> to <code>n</code>, where the string with length <code>i</code> is labeled <code>s<sub>i</sub></code>.",
+              "<ul>\n <li>For example, for <code>s = &quot;abaca&quot;</code>, <code>s<sub>1</sub> == &quot;a&quot;</code>, <code>s<sub>2</sub> == &quot;ca&quot;</code>, <code>s<sub>3</sub> == &quot;aca&quot;</code>, etc.</li>\n</ul>\n\nThe <strong>score</strong> of <code>s<sub>i</sub></code> is the length of the <strong>longest common prefix</strong> between <code>s<sub>i</sub></code> and <code>s<sub>n</sub></code> (Note that <code>s == s<sub>n</sub></code>).",
+              "Given the final string <code>s</code>, return<em> the <strong>sum</strong> of the <strong>score</strong> of every </em><code>s<sub>i</sub></code>."
+            ],
+            "examples": [
+              {
+                "input": "s = \"babab\" Output: 9",
+                "output": "9",
+                "explanation": "For s1 == \"b\", the longest common prefix is \"b\" which has a score of 1. For s2 == \"ab\", there is no common prefix so the score is 0. For s3 == \"bab\", the longest common prefix is \"bab\" which has a score of 3. For s4 == \"abab\", there is no common prefix so the score is 0. For s5 == \"babab\", the longest common prefix is \"babab\" which has a score of 5. The sum of the scores is 1 + 0 + 3 + 0 + 5 = 9, so we return 9."
+              },
+              {
+                "input": "s = \"azbazbzaz\" Output: 14",
+                "output": "14",
+                "explanation": "For s2 == \"az\", the longest common prefix is \"az\" which has a score of 2. For s6 == \"azbzaz\", the longest common prefix is \"azb\" which has a score of 3. For s9 == \"azbazbzaz\", the longest common prefix is \"azbazbzaz\" which has a score of 9. For all other si, the score is 0. The sum of the scores is 2 + 3 + 9 = 14, so we return 14."
+              }
+            ],
+            "constraints": [
+              "<code>1 &lt;= s.length &lt;= 10<sup>5</sup></code>",
+              "<code>s</code> consists of lowercase English letters."
+            ],
+            "note": "",
+            "pitfall": "",
+            "approaches": [
+              {
+                "name": "Compare every suffix with the string",
+                "time": "O(n&sup2;)",
+                "space": "O(1)",
+                "why": [
+                  "Each LCP is computed from scratch; <code>aaaa&hellip;</code> hits the worst case."
+                ],
+                "code": "def sum_scores(s):\n    total, n = 0, len(s)\n    for i in range(n):\n        k = 0\n        while i + k < n and s[k] == s[i + k]:\n            k += 1\n        total += k\n    return total",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Z-function",
+                "time": "O(n)",
+                "space": "O(n)",
+                "why": [
+                  "The <code>[l, r)</code> box reuses earlier matches. Each successful comparison pushes <code>r</code> right, and <code>r</code> never exceeds n, so the total work is linear."
+                ],
+                "code": "def sum_scores(s):\n    n = len(s)\n    z, l, r = [0] * n, 0, 0\n    z[0] = n\n    for i in range(1, n):\n        if i < r:\n            z[i] = min(r - i, z[i - l])\n        while i + z[i] < n and s[z[i]] == s[i + z[i]]:\n            z[i] += 1\n        if i + z[i] > r:\n            l, r = i, i + z[i]\n    return sum(z)",
+                "best": true,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert sum_scores(\"babab\") == 9\nassert sum_scores(\"azbazbzaz\") == 14\nassert sum_scores(\"a\") == 1\n\ndef brute(s):\n    total = 0\n    for i in range(len(s)):\n        k = 0\n        while i + k < len(s) and s[k] == s[i + k]:\n            k += 1\n        total += k\n    return total\n\nrng = random.Random(47)\nfor _ in range(400):\n    s = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 20)))\n    assert sum_scores(s) == brute(s)",
+            "smallTests": "",
+            "topic": "string-algorithms",
+            "topicTitle": "String Algorithms",
+            "section": "borders-and-hashing",
+            "sectionTitle": "Borders, Z-arrays and rolling hashes",
+            "ref": null
+          },
+          {
+            "id": "longest-duplicate-substring",
+            "starter": "def longest_dup_substring(s):\n    pass\n",
+            "num": 356,
+            "lc": 1044,
+            "slug": "longest-duplicate-substring",
+            "url": "https://leetcode.com/problems/longest-duplicate-substring/",
+            "premium": false,
+            "name": "Longest Duplicate Substring",
+            "difficulty": "hard",
+            "tags": [
+              "String",
+              "Binary Search",
+              "Sliding Window",
+              "Rolling Hash",
+              "Suffix Array",
+              "Hash Function",
+              "Suffix Automaton",
+              "Suffix Tree",
+              "Z Algorithm",
+              "Boyer–Moore String-Search Algorithm"
+            ],
+            "statement": [
+              "Given a string <code>s</code>, consider all <em>duplicated substrings</em>: (contiguous) substrings of s that occur 2 or more times. The occurrences may overlap.",
+              "Return <strong>any</strong> duplicated substring that has the longest possible length. If <code>s</code> does not have a duplicated substring, the answer is <code>&quot;&quot;</code>."
+            ],
+            "examples": [
+              {
+                "input": "s = \"banana\" Output: \"ana\"",
+                "output": "\"ana\""
+              },
+              {
+                "input": "s = \"abcd\" Output: \"\"",
+                "output": "\"\""
+              }
+            ],
+            "constraints": [
+              "<code>2 &lt;= s.length &lt;= 3 * 10<sup>4</sup></code>",
+              "<code>s</code> consists of lowercase English letters."
+            ],
+            "note": "",
+            "pitfall": "Do not trust a hash match without comparing the strings. With a fixed small base and modulus, LeetCode's tests include inputs built to collide.",
+            "approaches": [
+              {
+                "name": "Every length, set of substrings",
+                "time": "O(n&sup3;)",
+                "space": "O(n&sup2;)",
+                "why": [
+                  "For each length from longest down, put every window into a set. Slicing and hashing each window costs O(L)."
+                ],
+                "code": "def longest_dup_substring(s):\n    for L in range(len(s) - 1, 0, -1):\n        seen = set()\n        for i in range(len(s) - L + 1):\n            w = s[i:i + L]\n            if w in seen:\n                return w\n            seen.add(w)\n    return \"\"",
+                "best": false,
+                "tag": "",
+                "change": ""
+              },
+              {
+                "name": "Binary search on length + rolling hash",
+                "time": "O(n log n) expected",
+                "space": "O(n)",
+                "why": [
+                  "<code>check(L)</code> rolls a hash over every window of length L and stores the start index per hash. On a repeated hash, compare the actual substrings so a collision can never produce a wrong answer.",
+                  "Binary search finds the largest L with <code>check(L)</code> true: O(log n) checks of O(n) each."
+                ],
+                "code": "def longest_dup_substring(s):\n    n = len(s)\n    MOD, B = (1 << 61) - 1, random.randrange(256, 1 << 40)\n    codes = [ord(c) for c in s]\n\n    def check(L):\n        top = pow(B, L - 1, MOD)\n        h = 0\n        for i in range(L):\n            h = (h * B + codes[i]) % MOD\n        seen = {h: [0]}\n        for i in range(1, n - L + 1):\n            h = ((h - codes[i - 1] * top) * B + codes[i + L - 1]) % MOD\n            for j in seen.get(h, ()):\n                if s[j:j + L] == s[i:i + L]:       # rule out a collision\n                    return i\n            seen.setdefault(h, []).append(i)\n        return -1\n\n    lo, hi, best = 1, n - 1, \"\"\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        at = check(mid)\n        if at != -1:\n            best, lo = s[at:at + mid], mid + 1\n        else:\n            hi = mid - 1\n    return best",
+                "best": true,
+                "tag": "",
+                "change": ""
+              }
+            ],
+            "recurrence": null,
+            "tests": "assert longest_dup_substring(\"banana\") == \"ana\"\nassert longest_dup_substring(\"abcd\") == \"\"\nassert longest_dup_substring(\"aaaa\") == \"aaa\"\n\ndef brute_len(s):\n    for L in range(len(s) - 1, 0, -1):\n        windows = [s[i:i + L] for i in range(len(s) - L + 1)]\n        if len(set(windows)) < len(windows):\n            return L\n    return 0\n\nrng = random.Random(53)\nfor _ in range(300):\n    s = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(2, 18)))\n    got = longest_dup_substring(s)\n    assert len(got) == brute_len(s), s\n    if got:\n        assert s.find(got) != s.rfind(got)       # occurs at least twice",
+            "smallTests": "",
+            "topic": "string-algorithms",
+            "topicTitle": "String Algorithms",
+            "section": "borders-and-hashing",
+            "sectionTitle": "Borders, Z-arrays and rolling hashes",
+            "ref": null
+          }
+        ]
+      }
+    ],
+    "problems": [
+      {
+        "id": "find-first-occurrence",
+        "starter": "def str_str(haystack, needle):\n    pass\n",
+        "num": 349,
+        "lc": 28,
+        "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+        "url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+        "premium": false,
+        "name": "Find the Index of the First Occurrence in a String",
+        "difficulty": "easy",
+        "tags": [
+          "Two Pointers",
+          "String",
+          "String Matching",
+          "Z Algorithm",
+          "Knuth–Morris–Pratt Algorithm",
+          "Boyer–Moore String-Search Algorithm"
+        ],
+        "statement": [
+          "Given two strings <code>needle</code> and <code>haystack</code>, return the index of the first occurrence of <code>needle</code> in <code>haystack</code>, or <code>-1</code> if <code>needle</code> is not part of <code>haystack</code>."
+        ],
+        "examples": [
+          {
+            "input": "haystack = \"sadbutsad\", needle = \"sad\" Output: 0 Explanation: \"sad\" occurs at index 0 and 6. The first occurrence is at index 0, so we return 0.",
+            "output": "0 Explanation: \"sad\" occurs at index 0 and 6. The first occurrence is at index 0, so we return 0.",
+            "explanation": "\"sad\" occurs at index 0 and 6. The first occurrence is at index 0, so we return 0."
+          },
+          {
+            "input": "haystack = \"leetcode\", needle = \"leeto\" Output: -1 Explanation: \"leeto\" did not occur in \"leetcode\", so we return -1.",
+            "output": "-1 Explanation: \"leeto\" did not occur in \"leetcode\", so we return -1.",
+            "explanation": "\"leeto\" did not occur in \"leetcode\", so we return -1."
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= haystack.length, needle.length &lt;= 10<sup>4</sup></code>",
+          "<code>haystack</code> and <code>needle</code> consist of only lowercase English characters."
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Try every starting position",
+            "time": "O(n&middot;m)",
+            "space": "O(1)",
+            "why": [
+              "Compare the pattern at each start. On repetitive inputs almost every start matches for a long way before failing, so the bound is reached."
+            ],
+            "code": "def str_str(haystack, needle):\n    n, m = len(haystack), len(needle)\n    for i in range(n - m + 1):\n        if haystack[i:i + m] == needle:\n            return i\n    return -1",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "KMP with the prefix function",
+            "time": "O(n + m)",
+            "space": "O(m)",
+            "why": [
+              "<code>k</code> is how many pattern characters currently match. On a mismatch, instead of restarting, fall back to <code>pi[k-1]</code>: the longest prefix of the pattern that is still known to match the text ending here.",
+              "The text pointer never moves backwards, and <code>k</code> drops at most as often as it rose, so the scan is O(n) after an O(m) build."
+            ],
+            "code": "def prefix_function(s):\n    pi, k = [0] * len(s), 0\n    for i in range(1, len(s)):\n        while k and s[i] != s[k]:\n            k = pi[k - 1]              # fall back to the border of the border\n        if s[i] == s[k]:\n            k += 1\n        pi[i] = k\n    return pi\n\n\ndef str_str(haystack, needle):\n    if not needle:\n        return 0\n    pi, k = prefix_function(needle), 0\n    for i, ch in enumerate(haystack):\n        while k and ch != needle[k]:\n            k = pi[k - 1]\n        if ch == needle[k]:\n            k += 1\n        if k == len(needle):\n            return i - k + 1\n    return -1",
+            "best": true,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Rabin-Karp rolling hash",
+            "time": "O(n + m) expected",
+            "space": "O(1)",
+            "why": [
+              "Hash the pattern and the first window, then roll: <code>h = (h - s[i]&middot;B<sup>m-1</sup>)&middot;B + s[i+m]</code>, all mod <code>2<sup>61</sup>-1</code>. Precompute <code>B<sup>m-1</sup></code> once.",
+              "On a hash hit, compare the actual substring. A random base makes an adversarial collision unlikely, so verification almost never fails and the expected time stays linear."
+            ],
+            "code": "def str_str(haystack, needle):\n    n, m = len(haystack), len(needle)\n    if m > n:\n        return -1\n    MOD, B = (1 << 61) - 1, random.randrange(256, 1 << 40)\n    top = pow(B, m - 1, MOD)\n    hp = hw = 0\n    for i in range(m):\n        hp = (hp * B + ord(needle[i])) % MOD\n        hw = (hw * B + ord(haystack[i])) % MOD\n    for i in range(n - m + 1):\n        if hw == hp and haystack[i:i + m] == needle:    # verify: hashes can collide\n            return i\n        if i + m < n:\n            hw = ((hw - ord(haystack[i]) * top) * B + ord(haystack[i + m])) % MOD\n    return -1",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Z-function on pattern + separator + text",
+            "time": "O(n + m)",
+            "space": "O(n + m)",
+            "why": [
+              "<code>z[i]</code> is the length of the longest common prefix of the string and its suffix starting at <code>i</code>. On <code>needle + \"\\0\" + haystack</code>, any <code>z[i] == m</code> marks a match.",
+              "The <code>[l, r)</code> box is the rightmost segment known to equal a prefix. Inside it, <code>z[i - l]</code> gives a free lower bound, so each character is compared successfully at most once."
+            ],
+            "code": "def z_function(s):\n    n = len(s)\n    z, l, r = [0] * n, 0, 0\n    if n:\n        z[0] = n\n    for i in range(1, n):\n        if i < r:\n            z[i] = min(r - i, z[i - l])        # reuse the match inside [l, r)\n        while i + z[i] < n and s[z[i]] == s[i + z[i]]:\n            z[i] += 1\n        if i + z[i] > r:\n            l, r = i, i + z[i]\n    return z\n\n\ndef str_str(haystack, needle):\n    m = len(needle)\n    z = z_function(needle + \"\\0\" + haystack)\n    for i in range(m + 1, len(z)):\n        if z[i] >= m:\n            return i - m - 1\n    return -1 if m else 0",
+            "best": false,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert str_str(\"sadbutsad\", \"sad\") == 0\nassert str_str(\"leetcode\", \"leeto\") == -1\nassert str_str(\"a\", \"a\") == 0\nassert str_str(\"mississippi\", \"issip\") == 4\nassert str_str(\"aaaaaaaaab\", \"aaab\") == 6\n\nrng = random.Random(23)\nfor _ in range(400):\n    h = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 30)))\n    nd = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 5)))\n    assert str_str(h, nd) == h.find(nd), (h, nd)",
+        "smallTests": "",
+        "topic": "string-algorithms",
+        "topicTitle": "String Algorithms",
+        "section": "matching",
+        "sectionTitle": "Exact matching: KMP, Rabin-Karp and Z",
+        "ref": null
+      },
+      {
+        "id": "rotate-string",
+        "starter": "def rotate_string(s, goal):\n    pass\n",
+        "num": 350,
+        "lc": 796,
+        "slug": "rotate-string",
+        "url": "https://leetcode.com/problems/rotate-string/",
+        "premium": false,
+        "name": "Rotate String",
+        "difficulty": "easy",
+        "tags": [
+          "String",
+          "String Matching"
+        ],
+        "statement": [
+          "Given two strings <code>s</code> and <code>goal</code>, return <code>true</code> <em>if and only if</em> <code>s</code> <em>can become</em> <code>goal</code> <em>after some number of <strong>shifts</strong> on</em> <code>s</code>.",
+          "A <strong>shift</strong> on <code>s</code> consists of moving the leftmost character of <code>s</code> to the rightmost position.",
+          "<ul>\n <li>For example, if <code>s = &quot;abcde&quot;</code>, then it will be <code>&quot;bcdea&quot;</code> after one shift.</li>\n</ul>"
+        ],
+        "examples": [
+          {
+            "input": "s = \"abcde\", goal = \"cdeab\" Output: true",
+            "output": "true"
+          },
+          {
+            "input": "s = \"abcde\", goal = \"abced\" Output: false",
+            "output": "false"
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= s.length, goal.length &lt;= 100</code>",
+          "<code>s</code> and <code>goal</code> consist of lowercase English letters."
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Build every rotation",
+            "time": "O(n&sup2;)",
+            "space": "O(n)",
+            "why": [
+              "n rotations, each built and compared in O(n)."
+            ],
+            "code": "def rotate_string(s, goal):\n    return len(s) == len(goal) and any(s[i:] + s[:i] == goal for i in range(max(1, len(s))))",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Substring of s + s",
+            "time": "O(n) with KMP",
+            "space": "O(n)",
+            "why": [
+              "Lengths must match first, otherwise <code>\"a\"</code> would be found in <code>\"aa\"</code>-style doubled strings of the wrong size.",
+              "Python's <code>in</code> is a fast C search (a two-way / Boyer&ndash;Moore&ndash;Horspool hybrid), so the one-liner is the right production answer. If asked for a guaranteed bound, run KMP on <code>s + s</code>."
+            ],
+            "code": "def rotate_string(s, goal):\n    return len(s) == len(goal) and goal in s + s",
+            "best": true,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert rotate_string(\"abcde\", \"cdeab\") is True\nassert rotate_string(\"abcde\", \"abced\") is False\nassert rotate_string(\"\", \"\") is True\nassert rotate_string(\"a\", \"aa\") is False\n\ndef brute(s, g):\n    return len(s) == len(g) and any(s[i:] + s[:i] == g for i in range(max(1, len(s))))\n\nrng = random.Random(29)\nfor _ in range(400):\n    s = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(0, 8)))\n    g = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(0, 8)))\n    assert rotate_string(s, g) == brute(s, g)",
+        "smallTests": "",
+        "topic": "string-algorithms",
+        "topicTitle": "String Algorithms",
+        "section": "matching",
+        "sectionTitle": "Exact matching: KMP, Rabin-Karp and Z",
+        "ref": null
+      },
+      {
+        "id": "repeated-string-match",
+        "starter": "def repeated_string_match(a, b):\n    pass\n",
+        "num": 351,
+        "lc": 686,
+        "slug": "repeated-string-match",
+        "url": "https://leetcode.com/problems/repeated-string-match/",
+        "premium": false,
+        "name": "Repeated String Match",
+        "difficulty": "medium",
+        "tags": [
+          "String",
+          "String Matching",
+          "Z Algorithm",
+          "Knuth–Morris–Pratt Algorithm",
+          "Boyer–Moore String-Search Algorithm"
+        ],
+        "statement": [
+          "Given two strings <code>a</code> and <code>b</code>, return <em>the minimum number of times you should repeat string </em><code>a</code><em> so that string</em> <code>b</code> <em>is a substring of it</em>. If it is impossible for <code>b</code>​​​​​​ to be a substring of <code>a</code> after repeating it, return <code>-1</code>.",
+          "<strong>Notice:</strong> string <code>&quot;abc&quot;</code> repeated 0 times is <code>&quot;&quot;</code>, repeated 1 time is <code>&quot;abc&quot;</code> and repeated 2 times is <code>&quot;abcabc&quot;</code>."
+        ],
+        "examples": [
+          {
+            "input": "a = \"abcd\", b = \"cdabcdab\" Output: 3 Explanation: We return 3 because by repeating a three times \"abcdabcdabcd\", b is a substring of it.",
+            "output": "3 Explanation: We return 3 because by repeating a three times \"abcdabcdabcd\", b is a substring of it.",
+            "explanation": "We return 3 because by repeating a three times \"abcdabcdabcd\", b is a substring of it."
+          },
+          {
+            "input": "a = \"a\", b = \"aa\" Output: 2",
+            "output": "2"
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= a.length, b.length &lt;= 10<sup>4</sup></code>",
+          "<code>a</code> and <code>b</code> consist of lowercase English letters."
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Keep appending until it is long enough",
+            "time": "O((n + m)&middot;m)",
+            "space": "O(n + m)",
+            "why": [
+              "Append copies until the text is at least as long as <code>b</code>, check, then try one more copy. Without the \"one more\" bound this loops forever on impossible inputs."
+            ],
+            "code": "def repeated_string_match(a, b):\n    text, count = a, 1\n    while len(text) < len(b):\n        text += a; count += 1\n    if b in text:\n        return count\n    if b in text + a:\n        return count + 1\n    return -1",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "KMP over the repeated text without building it",
+            "time": "O(n + m)",
+            "space": "O(m)",
+            "why": [
+              "Scan positions <code>0 .. (q+1)&middot;len(a) - 1</code> of the virtual text, reading character <code>a[i % len(a)]</code>. When KMP completes a match ending at <code>i</code>, the copies needed are <code>i // len(a) + 1</code>.",
+              "Memory stays O(m) regardless of how many copies are virtual."
+            ],
+            "code": "def repeated_string_match(a, b):\n    pi, k = [0] * len(b), 0\n    for i in range(1, len(b)):\n        while k and b[i] != b[k]:\n            k = pi[k - 1]\n        if b[i] == b[k]:\n            k += 1\n        pi[i] = k\n\n    q = -(-len(b) // len(a))\n    k = 0\n    for i in range((q + 1) * len(a)):\n        ch = a[i % len(a)]\n        while k and ch != b[k]:\n            k = pi[k - 1]\n        if ch == b[k]:\n            k += 1\n        if k == len(b):\n            return i // len(a) + 1\n    return -1",
+            "best": true,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert repeated_string_match(\"abcd\", \"cdabcdab\") == 3\nassert repeated_string_match(\"a\", \"aa\") == 2\nassert repeated_string_match(\"abc\", \"wxyz\") == -1\nassert repeated_string_match(\"abc\", \"cabcabca\") == 4\n\ndef brute(a, b):\n    for k in range(1, len(b) // len(a) + 3):\n        if b in a * k:\n            return k\n    return -1\n\nrng = random.Random(31)\nfor _ in range(400):\n    a = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 4)))\n    b = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 10)))\n    assert repeated_string_match(a, b) == brute(a, b)",
+        "smallTests": "",
+        "topic": "string-algorithms",
+        "topicTitle": "String Algorithms",
+        "section": "matching",
+        "sectionTitle": "Exact matching: KMP, Rabin-Karp and Z",
+        "ref": null
+      },
+      {
+        "id": "repeated-substring-pattern",
+        "starter": "def repeated_substring_pattern(s):\n    pass\n",
+        "num": 352,
+        "lc": 459,
+        "slug": "repeated-substring-pattern",
+        "url": "https://leetcode.com/problems/repeated-substring-pattern/",
+        "premium": false,
+        "name": "Repeated Substring Pattern",
+        "difficulty": "easy",
+        "tags": [
+          "String",
+          "String Matching",
+          "Z Algorithm",
+          "Knuth–Morris–Pratt Algorithm"
+        ],
+        "statement": [
+          "Given a string <code>s</code>, check if it can be constructed by taking a substring of it and appending multiple copies of the substring together."
+        ],
+        "examples": [
+          {
+            "input": "s = \"abab\" Output: true Explanation: It is the substring \"ab\" twice.",
+            "output": "true Explanation: It is the substring \"ab\" twice.",
+            "explanation": "It is the substring \"ab\" twice."
+          },
+          {
+            "input": "s = \"aba\" Output: false",
+            "output": "false"
+          },
+          {
+            "input": "s = \"abcabcabcabc\" Output: true Explanation: It is the substring \"abc\" four times or the substring \"abcabc\" twice.",
+            "output": "true Explanation: It is the substring \"abc\" four times or the substring \"abcabc\" twice.",
+            "explanation": "It is the substring \"abc\" four times or the substring \"abcabc\" twice."
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= s.length &lt;= 10<sup>4</sup></code>",
+          "<code>s</code> consists of lowercase English letters."
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Try every divisor length",
+            "time": "O(n &middot; d(n))",
+            "space": "O(n)",
+            "why": [
+              "A repeating unit's length divides n. For each divisor L &lt; n, check <code>s[:L] * (n // L) == s</code>. <code>d(n)</code>, the number of divisors, is small in practice."
+            ],
+            "code": "def repeated_substring_pattern(s):\n    n = len(s)\n    return any(n % L == 0 and s[:L] * (n // L) == s for L in range(1, n // 2 + 1))",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "s is inside (s + s) with the ends cut off",
+            "time": "O(n)",
+            "space": "O(n)",
+            "why": [
+              "If <code>s</code> is periodic, shifting it by one period gives itself, so <code>s</code> appears in <code>s + s</code> at an offset other than 0 and n. Cutting the first and last character rules those two out.",
+              "The converse holds too (a string equal to a non-trivial rotation of itself is periodic), which is what makes the trick a full answer and not a heuristic."
+            ],
+            "code": "def repeated_substring_pattern(s):\n    return s in (s + s)[1:-1]",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Shortest period from the prefix function",
+            "time": "O(n)",
+            "space": "O(n)",
+            "why": [
+              "The longest border <code>b = pi[-1]</code> gives the shortest period <code>p = n - b</code>. The string is a repetition exactly when there is a border and <code>p</code> divides <code>n</code>.",
+              "This is the version to explain: it says <em>why</em> and also tells you the repeating unit, <code>s[:p]</code>."
+            ],
+            "code": "def repeated_substring_pattern(s):\n    pi, k = [0] * len(s), 0\n    for i in range(1, len(s)):\n        while k and s[i] != s[k]:\n            k = pi[k - 1]\n        if s[i] == s[k]:\n            k += 1\n        pi[i] = k\n    period = len(s) - pi[-1]\n    return pi[-1] > 0 and len(s) % period == 0",
+            "best": true,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert repeated_substring_pattern(\"abab\") is True\nassert repeated_substring_pattern(\"aba\") is False\nassert repeated_substring_pattern(\"abcabcabcabc\") is True\nassert repeated_substring_pattern(\"a\") is False\nassert repeated_substring_pattern(\"abaababaab\") is True\n\ndef brute(s):\n    n = len(s)\n    return any(n % L == 0 and s[:L] * (n // L) == s for L in range(1, n))\n\nrng = random.Random(37)\nfor _ in range(500):\n    unit = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 4)))\n    s = unit * rng.randint(1, 4) if rng.random() < 0.5 else \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 12)))\n    assert repeated_substring_pattern(s) == brute(s), s",
+        "smallTests": "",
+        "topic": "string-algorithms",
+        "topicTitle": "String Algorithms",
+        "section": "borders-and-hashing",
+        "sectionTitle": "Borders, Z-arrays and rolling hashes",
+        "ref": null
+      },
+      {
+        "id": "longest-happy-prefix",
+        "starter": "def longest_prefix(s):\n    pass\n",
+        "num": 353,
+        "lc": 1392,
+        "slug": "longest-happy-prefix",
+        "url": "https://leetcode.com/problems/longest-happy-prefix/",
+        "premium": false,
+        "name": "Longest Happy Prefix",
+        "difficulty": "hard",
+        "tags": [
+          "String",
+          "Rolling Hash",
+          "String Matching",
+          "Hash Function",
+          "Z Algorithm",
+          "Knuth–Morris–Pratt Algorithm"
+        ],
+        "statement": [
+          "A string is called a <strong>happy prefix</strong> if it is a <strong>non-empty</strong> prefix which is also a suffix (excluding itself).",
+          "Given a string <code>s</code>, return <em>the <strong>longest happy prefix</strong> of</em> <code>s</code>. Return an empty string <code>&quot;&quot;</code> if no such prefix exists."
+        ],
+        "examples": [
+          {
+            "input": "s = \"level\" Output: \"l\" Explanation: s contains 4 prefix excluding itself (\"l\", \"le\", \"lev\", \"leve\"), and suffix (\"l\", \"el\", \"vel\", \"evel\"). The largest prefix which is also suffix is given by \"l\".",
+            "output": "\"l\" Explanation: s contains 4 prefix excluding itself (\"l\", \"le\", \"lev\", \"leve\"), and suffix (\"l\", \"el\", \"vel\", \"evel\"). The largest prefix which is also suffix is given by \"l\".",
+            "explanation": "s contains 4 prefix excluding itself (\"l\", \"le\", \"lev\", \"leve\"), and suffix (\"l\", \"el\", \"vel\", \"evel\"). The largest prefix which is also suffix is given by \"l\"."
+          },
+          {
+            "input": "s = \"ababab\" Output: \"abab\" Explanation: \"abab\" is the largest prefix which is also suffix. They can overlap in the original string.",
+            "output": "\"abab\" Explanation: \"abab\" is the largest prefix which is also suffix. They can overlap in the original string.",
+            "explanation": "\"abab\" is the largest prefix which is also suffix. They can overlap in the original string."
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= s.length &lt;= 10<sup>5</sup></code>",
+          "<code>s</code> contains only lowercase English letters."
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Try every length, longest first",
+            "time": "O(n&sup2;)",
+            "space": "O(n)",
+            "why": [
+              "Each comparison of a prefix and a suffix costs up to O(n)."
+            ],
+            "code": "def longest_prefix(s):\n    for L in range(len(s) - 1, 0, -1):\n        if s[:L] == s[-L:]:\n            return s[:L]\n    return \"\"",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Prefix function",
+            "time": "O(n)",
+            "space": "O(n)",
+            "why": [
+              "<code>pi[-1]</code> is, by definition, the length of the longest proper border of the whole string."
+            ],
+            "code": "def longest_prefix(s):\n    pi, k = [0] * len(s), 0\n    for i in range(1, len(s)):\n        while k and s[i] != s[k]:\n            k = pi[k - 1]\n        if s[i] == s[k]:\n            k += 1\n        pi[i] = k\n    return s[:pi[-1]] if s else \"\"",
+            "best": true,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Prefix and suffix hashes grown together",
+            "time": "O(n)",
+            "space": "O(1)",
+            "why": [
+              "Grow the prefix hash forwards (<code>h&middot;B + c</code>) and the suffix hash backwards (<code>c&middot;B<sup>L</sup> + h</code>). Whenever they agree, remember L. Same polynomial, so equal strings give equal hashes.",
+              "O(1) extra space, but correct only with high probability. Mention the collision risk, and that a 61-bit Mersenne modulus with a random base makes it negligible."
+            ],
+            "code": "def longest_prefix(s):\n    MOD, B = (1 << 61) - 1, random.randrange(256, 1 << 40)\n    pre = suf = 0\n    power, best = 1, 0\n    for L in range(1, len(s)):\n        pre = (pre * B + ord(s[L - 1])) % MOD\n        suf = (ord(s[-L]) * power + suf) % MOD\n        power = power * B % MOD\n        if pre == suf:\n            best = L\n    return s[:best]",
+            "best": false,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert longest_prefix(\"level\") == \"l\"\nassert longest_prefix(\"ababab\") == \"abab\"\nassert longest_prefix(\"a\") == \"\"\nassert longest_prefix(\"aaaa\") == \"aaa\"\n\ndef brute(s):\n    return next((s[:L] for L in range(len(s) - 1, 0, -1) if s[:L] == s[-L:]), \"\")\n\nrng = random.Random(41)\nfor _ in range(500):\n    s = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 16)))\n    assert longest_prefix(s) == brute(s), s",
+        "smallTests": "",
+        "topic": "string-algorithms",
+        "topicTitle": "String Algorithms",
+        "section": "borders-and-hashing",
+        "sectionTitle": "Borders, Z-arrays and rolling hashes",
+        "ref": null
+      },
+      {
+        "id": "shortest-palindrome",
+        "starter": "def shortest_palindrome(s):\n    pass\n",
+        "num": 354,
+        "lc": 214,
+        "slug": "shortest-palindrome",
+        "url": "https://leetcode.com/problems/shortest-palindrome/",
+        "premium": false,
+        "name": "Shortest Palindrome",
+        "difficulty": "hard",
+        "tags": [
+          "String",
+          "Rolling Hash",
+          "String Matching",
+          "Hash Function",
+          "Manacher",
+          "Z Algorithm",
+          "Knuth–Morris–Pratt Algorithm"
+        ],
+        "statement": [
+          "You are given a string <code>s</code>. You can convert <code>s</code> to a palindrome by adding characters in front of it.",
+          "Return <em>the shortest palindrome you can find by performing this transformation</em>."
+        ],
+        "examples": [
+          {
+            "input": "s = \"aacecaaa\" Output: \"aaacecaaa\"",
+            "output": "\"aaacecaaa\""
+          },
+          {
+            "input": "s = \"abcd\" Output: \"dcbabcd\"",
+            "output": "\"dcbabcd\""
+          }
+        ],
+        "constraints": [
+          "<code>0 &lt;= s.length &lt;= 5 * 10<sup>4</sup></code>",
+          "<code>s</code> consists of lowercase English letters only."
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Longest palindromic prefix by direct check",
+            "time": "O(n&sup2;)",
+            "space": "O(n)",
+            "why": [
+              "Test prefixes from longest to shortest; each test is O(n)."
+            ],
+            "code": "def shortest_palindrome(s):\n    for L in range(len(s), 0, -1):\n        if s[:L] == s[:L][::-1]:\n            return s[L:][::-1] + s\n    return s",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "KMP border of s + # + reverse(s)",
+            "time": "O(n)",
+            "space": "O(n)",
+            "why": [
+              "The separator keeps the border from spilling across the middle, so <code>pi[-1]</code> is at most <code>len(s)</code> and equals the length of the longest palindromic prefix."
+            ],
+            "code": "def shortest_palindrome(s):\n    t = s + \"#\" + s[::-1]\n    pi, k = [0] * len(t), 0\n    for i in range(1, len(t)):\n        while k and t[i] != t[k]:\n            k = pi[k - 1]\n        if t[i] == t[k]:\n            k += 1\n        pi[i] = k\n    return s[pi[-1]:][::-1] + s",
+            "best": true,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Forward and backward rolling hash",
+            "time": "O(n)",
+            "space": "O(1)",
+            "why": [
+              "For each prefix length L, keep the hash of <code>s[:L]</code> read forwards and read backwards. When they agree, <code>s[:L]</code> is (very probably) a palindrome; keep the largest such L."
+            ],
+            "code": "def shortest_palindrome(s):\n    MOD, B = (1 << 61) - 1, random.randrange(256, 1 << 40)\n    fwd = bwd = 0\n    power, best = 1, 0\n    for i, ch in enumerate(s):\n        fwd = (fwd * B + ord(ch)) % MOD\n        bwd = (bwd + ord(ch) * power) % MOD\n        power = power * B % MOD\n        if fwd == bwd:\n            best = i + 1\n    return s[best:][::-1] + s",
+            "best": false,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert shortest_palindrome(\"aacecaaa\") == \"aaacecaaa\"\nassert shortest_palindrome(\"abcd\") == \"dcbabcd\"\nassert shortest_palindrome(\"\") == \"\"\nassert shortest_palindrome(\"aba\") == \"aba\"\n\ndef brute(s):\n    for L in range(len(s), 0, -1):\n        if s[:L] == s[:L][::-1]:\n            return s[L:][::-1] + s\n    return s\n\nrng = random.Random(43)\nfor _ in range(500):\n    s = \"\".join(rng.choice(\"abc\") for _ in range(rng.randint(0, 14)))\n    assert shortest_palindrome(s) == brute(s), s",
+        "smallTests": "",
+        "topic": "string-algorithms",
+        "topicTitle": "String Algorithms",
+        "section": "borders-and-hashing",
+        "sectionTitle": "Borders, Z-arrays and rolling hashes",
+        "ref": null
+      },
+      {
+        "id": "sum-of-scores-of-built-strings",
+        "starter": "def sum_scores(s):\n    pass\n",
+        "num": 355,
+        "lc": 2223,
+        "slug": "sum-of-scores-of-built-strings",
+        "url": "https://leetcode.com/problems/sum-of-scores-of-built-strings/",
+        "premium": false,
+        "name": "Sum of Scores of Built Strings",
+        "difficulty": "hard",
+        "tags": [
+          "String",
+          "Binary Search",
+          "Rolling Hash",
+          "Suffix Array",
+          "String Matching",
+          "Hash Function",
+          "Z Algorithm",
+          "Knuth–Morris–Pratt Algorithm"
+        ],
+        "statement": [
+          "You are <strong>building</strong> a string <code>s</code> of length <code>n</code> <strong>one</strong> character at a time, <strong>prepending</strong> each new character to the <strong>front</strong> of the string. The strings are labeled from <code>1</code> to <code>n</code>, where the string with length <code>i</code> is labeled <code>s<sub>i</sub></code>.",
+          "<ul>\n <li>For example, for <code>s = &quot;abaca&quot;</code>, <code>s<sub>1</sub> == &quot;a&quot;</code>, <code>s<sub>2</sub> == &quot;ca&quot;</code>, <code>s<sub>3</sub> == &quot;aca&quot;</code>, etc.</li>\n</ul>\n\nThe <strong>score</strong> of <code>s<sub>i</sub></code> is the length of the <strong>longest common prefix</strong> between <code>s<sub>i</sub></code> and <code>s<sub>n</sub></code> (Note that <code>s == s<sub>n</sub></code>).",
+          "Given the final string <code>s</code>, return<em> the <strong>sum</strong> of the <strong>score</strong> of every </em><code>s<sub>i</sub></code>."
+        ],
+        "examples": [
+          {
+            "input": "s = \"babab\" Output: 9",
+            "output": "9",
+            "explanation": "For s1 == \"b\", the longest common prefix is \"b\" which has a score of 1. For s2 == \"ab\", there is no common prefix so the score is 0. For s3 == \"bab\", the longest common prefix is \"bab\" which has a score of 3. For s4 == \"abab\", there is no common prefix so the score is 0. For s5 == \"babab\", the longest common prefix is \"babab\" which has a score of 5. The sum of the scores is 1 + 0 + 3 + 0 + 5 = 9, so we return 9."
+          },
+          {
+            "input": "s = \"azbazbzaz\" Output: 14",
+            "output": "14",
+            "explanation": "For s2 == \"az\", the longest common prefix is \"az\" which has a score of 2. For s6 == \"azbzaz\", the longest common prefix is \"azb\" which has a score of 3. For s9 == \"azbazbzaz\", the longest common prefix is \"azbazbzaz\" which has a score of 9. For all other si, the score is 0. The sum of the scores is 2 + 3 + 9 = 14, so we return 14."
+          }
+        ],
+        "constraints": [
+          "<code>1 &lt;= s.length &lt;= 10<sup>5</sup></code>",
+          "<code>s</code> consists of lowercase English letters."
+        ],
+        "note": "",
+        "pitfall": "",
+        "approaches": [
+          {
+            "name": "Compare every suffix with the string",
+            "time": "O(n&sup2;)",
+            "space": "O(1)",
+            "why": [
+              "Each LCP is computed from scratch; <code>aaaa&hellip;</code> hits the worst case."
+            ],
+            "code": "def sum_scores(s):\n    total, n = 0, len(s)\n    for i in range(n):\n        k = 0\n        while i + k < n and s[k] == s[i + k]:\n            k += 1\n        total += k\n    return total",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Z-function",
+            "time": "O(n)",
+            "space": "O(n)",
+            "why": [
+              "The <code>[l, r)</code> box reuses earlier matches. Each successful comparison pushes <code>r</code> right, and <code>r</code> never exceeds n, so the total work is linear."
+            ],
+            "code": "def sum_scores(s):\n    n = len(s)\n    z, l, r = [0] * n, 0, 0\n    z[0] = n\n    for i in range(1, n):\n        if i < r:\n            z[i] = min(r - i, z[i - l])\n        while i + z[i] < n and s[z[i]] == s[i + z[i]]:\n            z[i] += 1\n        if i + z[i] > r:\n            l, r = i, i + z[i]\n    return sum(z)",
+            "best": true,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert sum_scores(\"babab\") == 9\nassert sum_scores(\"azbazbzaz\") == 14\nassert sum_scores(\"a\") == 1\n\ndef brute(s):\n    total = 0\n    for i in range(len(s)):\n        k = 0\n        while i + k < len(s) and s[k] == s[i + k]:\n            k += 1\n        total += k\n    return total\n\nrng = random.Random(47)\nfor _ in range(400):\n    s = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(1, 20)))\n    assert sum_scores(s) == brute(s)",
+        "smallTests": "",
+        "topic": "string-algorithms",
+        "topicTitle": "String Algorithms",
+        "section": "borders-and-hashing",
+        "sectionTitle": "Borders, Z-arrays and rolling hashes",
+        "ref": null
+      },
+      {
+        "id": "longest-duplicate-substring",
+        "starter": "def longest_dup_substring(s):\n    pass\n",
+        "num": 356,
+        "lc": 1044,
+        "slug": "longest-duplicate-substring",
+        "url": "https://leetcode.com/problems/longest-duplicate-substring/",
+        "premium": false,
+        "name": "Longest Duplicate Substring",
+        "difficulty": "hard",
+        "tags": [
+          "String",
+          "Binary Search",
+          "Sliding Window",
+          "Rolling Hash",
+          "Suffix Array",
+          "Hash Function",
+          "Suffix Automaton",
+          "Suffix Tree",
+          "Z Algorithm",
+          "Boyer–Moore String-Search Algorithm"
+        ],
+        "statement": [
+          "Given a string <code>s</code>, consider all <em>duplicated substrings</em>: (contiguous) substrings of s that occur 2 or more times. The occurrences may overlap.",
+          "Return <strong>any</strong> duplicated substring that has the longest possible length. If <code>s</code> does not have a duplicated substring, the answer is <code>&quot;&quot;</code>."
+        ],
+        "examples": [
+          {
+            "input": "s = \"banana\" Output: \"ana\"",
+            "output": "\"ana\""
+          },
+          {
+            "input": "s = \"abcd\" Output: \"\"",
+            "output": "\"\""
+          }
+        ],
+        "constraints": [
+          "<code>2 &lt;= s.length &lt;= 3 * 10<sup>4</sup></code>",
+          "<code>s</code> consists of lowercase English letters."
+        ],
+        "note": "",
+        "pitfall": "Do not trust a hash match without comparing the strings. With a fixed small base and modulus, LeetCode's tests include inputs built to collide.",
+        "approaches": [
+          {
+            "name": "Every length, set of substrings",
+            "time": "O(n&sup3;)",
+            "space": "O(n&sup2;)",
+            "why": [
+              "For each length from longest down, put every window into a set. Slicing and hashing each window costs O(L)."
+            ],
+            "code": "def longest_dup_substring(s):\n    for L in range(len(s) - 1, 0, -1):\n        seen = set()\n        for i in range(len(s) - L + 1):\n            w = s[i:i + L]\n            if w in seen:\n                return w\n            seen.add(w)\n    return \"\"",
+            "best": false,
+            "tag": "",
+            "change": ""
+          },
+          {
+            "name": "Binary search on length + rolling hash",
+            "time": "O(n log n) expected",
+            "space": "O(n)",
+            "why": [
+              "<code>check(L)</code> rolls a hash over every window of length L and stores the start index per hash. On a repeated hash, compare the actual substrings so a collision can never produce a wrong answer.",
+              "Binary search finds the largest L with <code>check(L)</code> true: O(log n) checks of O(n) each."
+            ],
+            "code": "def longest_dup_substring(s):\n    n = len(s)\n    MOD, B = (1 << 61) - 1, random.randrange(256, 1 << 40)\n    codes = [ord(c) for c in s]\n\n    def check(L):\n        top = pow(B, L - 1, MOD)\n        h = 0\n        for i in range(L):\n            h = (h * B + codes[i]) % MOD\n        seen = {h: [0]}\n        for i in range(1, n - L + 1):\n            h = ((h - codes[i - 1] * top) * B + codes[i + L - 1]) % MOD\n            for j in seen.get(h, ()):\n                if s[j:j + L] == s[i:i + L]:       # rule out a collision\n                    return i\n            seen.setdefault(h, []).append(i)\n        return -1\n\n    lo, hi, best = 1, n - 1, \"\"\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        at = check(mid)\n        if at != -1:\n            best, lo = s[at:at + mid], mid + 1\n        else:\n            hi = mid - 1\n    return best",
+            "best": true,
+            "tag": "",
+            "change": ""
+          }
+        ],
+        "recurrence": null,
+        "tests": "assert longest_dup_substring(\"banana\") == \"ana\"\nassert longest_dup_substring(\"abcd\") == \"\"\nassert longest_dup_substring(\"aaaa\") == \"aaa\"\n\ndef brute_len(s):\n    for L in range(len(s) - 1, 0, -1):\n        windows = [s[i:i + L] for i in range(len(s) - L + 1)]\n        if len(set(windows)) < len(windows):\n            return L\n    return 0\n\nrng = random.Random(53)\nfor _ in range(300):\n    s = \"\".join(rng.choice(\"ab\") for _ in range(rng.randint(2, 18)))\n    got = longest_dup_substring(s)\n    assert len(got) == brute_len(s), s\n    if got:\n        assert s.find(got) != s.rfind(got)       # occurs at least twice",
+        "smallTests": "",
+        "topic": "string-algorithms",
+        "topicTitle": "String Algorithms",
+        "section": "borders-and-hashing",
+        "sectionTitle": "Borders, Z-arrays and rolling hashes",
+        "ref": null
+      }
+    ],
+    "count": 8
   }
 ];

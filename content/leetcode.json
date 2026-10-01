@@ -10724,5 +10724,707 @@
       "<code>above<sub>i</sub> != below<sub>i</sub></code>",
       "<code>left<sub>i</sub> != right<sub>i</sub></code>"
     ]
+  },
+  "minimum-falling-path-sum": {
+    "lc": 931,
+    "title": "Minimum Falling Path Sum",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "statement": [
+      "Given an <code>n x n</code> array of integers <code>matrix</code>, return <em>the <strong>minimum sum</strong> of any <strong>falling path</strong> through</em> <code>matrix</code>.",
+      "A <strong>falling path</strong> starts at any element in the first row and chooses the element in the next row that is either directly below or diagonally left/right. Specifically, the next element from position <code>(row, col)</code> will be <code>(row + 1, col - 1)</code>, <code>(row + 1, col)</code>, or <code>(row + 1, col + 1)</code>."
+    ],
+    "examples": [
+      {
+        "input": "matrix = [[2,1,3],[6,5,4],[7,8,9]] Output: 13 Explanation: There are two falling paths with a minimum sum as shown.",
+        "output": "13 Explanation: There are two falling paths with a minimum sum as shown.",
+        "explanation": "There are two falling paths with a minimum sum as shown."
+      },
+      {
+        "input": "matrix = [[-19,57],[-40,-5]] Output: -59 Explanation: The falling path with a minimum sum is shown.",
+        "output": "-59 Explanation: The falling path with a minimum sum is shown.",
+        "explanation": "The falling path with a minimum sum is shown."
+      }
+    ],
+    "constraints": [
+      "<code>n == matrix.length == matrix[i].length</code>",
+      "<code>1 &lt;= n &lt;= 100</code>",
+      "<code>-100 &lt;= matrix[i][j] &lt;= 100</code>"
+    ]
+  },
+  "maximal-square": {
+    "lc": 221,
+    "title": "Maximal Square",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "statement": [
+      "Given an <code>m x n</code> binary <code>matrix</code> filled with <code>0</code>&#39;s and <code>1</code>&#39;s, <em>find the largest square containing only</em> <code>1</code>&#39;s <em>and return its area</em>."
+    ],
+    "examples": [
+      {
+        "input": "matrix = [[\"1\",\"0\",\"1\",\"0\",\"0\"],[\"1\",\"0\",\"1\",\"1\",\"1\"],[\"1\",\"1\",\"1\",\"1\",\"1\"],[\"1\",\"0\",\"0\",\"1\",\"0\"]] Output: 4",
+        "output": "4"
+      },
+      {
+        "input": "matrix = [[\"0\",\"1\"],[\"1\",\"0\"]] Output: 1",
+        "output": "1"
+      },
+      {
+        "input": "matrix = [[\"0\"]] Output: 0",
+        "output": "0"
+      }
+    ],
+    "constraints": [
+      "<code>m == matrix.length</code>",
+      "<code>n == matrix[i].length</code>",
+      "<code>1 &lt;= m, n &lt;= 300</code>",
+      "<code>matrix[i][j]</code> is <code>&#39;0&#39;</code> or <code>&#39;1&#39;</code>."
+    ]
+  },
+  "count-square-submatrices-with-all-ones": {
+    "lc": 1277,
+    "title": "Count Square Submatrices with All Ones",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "statement": [
+      "Given a <code>m * n</code> matrix of ones and zeros, return how many <strong>square</strong> submatrices have all ones."
+    ],
+    "examples": [
+      {
+        "input": "matrix = [ [0,1,1,1], [1,1,1,1], [0,1,1,1] ] Output: 15",
+        "output": "15",
+        "explanation": "There are 10 squares of side 1. There are 4 squares of side 2. There is 1 square of side 3. Total number of squares = 10 + 4 + 1 = 15."
+      },
+      {
+        "input": "matrix = [ [1,0,1], [1,1,0], [1,1,0] ] Output: 7",
+        "output": "7",
+        "explanation": "There are 6 squares of side 1. There is 1 square of side 2. Total number of squares = 6 + 1 = 7."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= arr.length &lt;= 300</code>",
+      "<code>1 &lt;= arr[0].length &lt;= 300</code>",
+      "<code>0 &lt;= arr[i][j] &lt;= 1</code>"
+    ]
+  },
+  "longest-increasing-path-in-a-matrix": {
+    "lc": 329,
+    "title": "Longest Increasing Path in a Matrix",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Dynamic Programming",
+      "Depth-First Search",
+      "Breadth-First Search",
+      "Graph Theory",
+      "Topological Sort",
+      "Memoization",
+      "Matrix",
+      "Directed Acyclic Graph"
+    ],
+    "statement": [
+      "Given an <code>m x n</code> integers <code>matrix</code>, return <em>the length of the longest increasing path in </em><code>matrix</code>.",
+      "From each cell, you can either move in four directions: left, right, up, or down. You <strong>may not</strong> move <strong>diagonally</strong> or move <strong>outside the boundary</strong> (i.e., wrap-around is not allowed)."
+    ],
+    "examples": [
+      {
+        "input": "matrix = [[9,9,4],[6,6,8],[2,1,1]] Output: 4 Explanation: The longest increasing path is [1, 2, 6, 9].",
+        "output": "4 Explanation: The longest increasing path is [1, 2, 6, 9].",
+        "explanation": "The longest increasing path is [1, 2, 6, 9]."
+      },
+      {
+        "input": "matrix = [[3,4,5],[3,2,6],[2,2,1]] Output: 4 Explanation: The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.",
+        "output": "4 Explanation: The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.",
+        "explanation": "The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed."
+      },
+      {
+        "input": "matrix = [[1]] Output: 1",
+        "output": "1"
+      }
+    ],
+    "constraints": [
+      "<code>m == matrix.length</code>",
+      "<code>n == matrix[i].length</code>",
+      "<code>1 &lt;= m, n &lt;= 200</code>",
+      "<code>0 &lt;= matrix[i][j] &lt;= 2<sup>31</sup> - 1</code>"
+    ]
+  },
+  "range-sum-query-immutable": {
+    "lc": 303,
+    "title": "Range Sum Query - Immutable",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Design",
+      "Prefix Sum"
+    ],
+    "statement": [
+      "Given an integer array <code>nums</code>, handle multiple queries of the following type:",
+      "<ol>\n <li>Calculate the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> where <code>left &lt;= right</code>.</li>\n</ol>\n\nImplement the <code>NumArray</code> class:",
+      "<ul>\n <li><code>NumArray(int[] nums)</code> Initializes the object with the integer array <code>nums</code>.</li>\n <li><code>int sumRange(int left, int right)</code> Returns the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> (i.e. <code>nums[left] + nums[left + 1] + ... + nums[right]</code>).</li>\n</ul>"
+    ],
+    "examples": [
+      {
+        "input": "[\"NumArray\", \"sumRange\", \"sumRange\", \"sumRange\"] [[[-2, 0, 3, -5, 2, -1]], [0, 2], [2, 5], [0, 5]]",
+        "output": "[null, 1, -1, -3]",
+        "explanation": "NumArray numArray = new NumArray([-2, 0, 3, -5, 2, -1]); numArray.sumRange(0, 2); // return (-2) + 0 + 3 = 1 numArray.sumRange(2, 5); // return 3 + (-5) + 2 + (-1) = -1 numArray.sumRange(0, 5); // return (-2) + 0 + 3 + (-5) + 2 + (-1) = -3"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code>",
+      "<code>-10<sup>5</sup> &lt;= nums[i] &lt;= 10<sup>5</sup></code>",
+      "<code>0 &lt;= left &lt;= right &lt; nums.length</code>",
+      "At most <code>10<sup>4</sup></code> calls will be made to <code>sumRange</code>."
+    ]
+  },
+  "range-sum-query-mutable": {
+    "lc": 307,
+    "title": "Range Sum Query - Mutable",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Divide and Conquer",
+      "Design",
+      "Binary Indexed Tree",
+      "Segment Tree",
+      "Sqrt Decomposition"
+    ],
+    "statement": [
+      "Given an integer array <code>nums</code>, handle multiple queries of the following types:",
+      "<ol>\n <li><strong>Update</strong> the value of an element in <code>nums</code>.</li>\n <li>Calculate the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> where <code>left &lt;= right</code>.</li>\n</ol>\n\nImplement the <code>NumArray</code> class:",
+      "<ul>\n <li><code>NumArray(int[] nums)</code> Initializes the object with the integer array <code>nums</code>.</li>\n <li><code>void update(int index, int val)</code> <strong>Updates</strong> the value of <code>nums[index]</code> to be <code>val</code>.</li>\n <li><code>int sumRange(int left, int right)</code> Returns the <strong>sum</strong> of the elements of <code>nums</code> between indices <code>left</code> and <code>right</code> <strong>inclusive</strong> (i.e. <code>nums[left] + nums[left + 1] + ... + nums[right]</code>).</li>\n</ul>"
+    ],
+    "examples": [
+      {
+        "input": "[\"NumArray\", \"sumRange\", \"update\", \"sumRange\"] [[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]",
+        "output": "[null, 9, null, 8]",
+        "explanation": "NumArray numArray = new NumArray([1, 3, 5]); numArray.sumRange(0, 2); // return 1 + 3 + 5 = 9 numArray.update(1, 2); // nums = [1, 2, 5] numArray.sumRange(0, 2); // return 1 + 2 + 5 = 8"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= nums.length &lt;= 3 * 10<sup>4</sup></code>",
+      "<code>-100 &lt;= nums[i] &lt;= 100</code>",
+      "<code>0 &lt;= index &lt; nums.length</code>",
+      "<code>-100 &lt;= val &lt;= 100</code>",
+      "<code>0 &lt;= left &lt;= right &lt; nums.length</code>",
+      "At most <code>3 * 10<sup>4</sup></code> calls will be made to <code>update</code> and <code>sumRange</code>."
+    ]
+  },
+  "count-of-smaller-numbers-after-self": {
+    "lc": 315,
+    "title": "Count of Smaller Numbers After Self",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Binary Search",
+      "Divide and Conquer",
+      "Binary Indexed Tree",
+      "Segment Tree",
+      "Merge Sort",
+      "Ordered Set",
+      "Treap"
+    ],
+    "statement": [
+      "Given an integer array <code>nums</code>, return<em> an integer array </em><code>counts</code><em> where </em><code>counts[i]</code><em> is the number of smaller elements to the right of </em><code>nums[i]</code>."
+    ],
+    "examples": [
+      {
+        "input": "nums = [5,2,6,1] Output: [2,1,1,0]",
+        "output": "[2,1,1,0]",
+        "explanation": "To the right of 5 there are 2 smaller elements (2 and 1). To the right of 2 there is only 1 smaller element (1). To the right of 6 there is 1 smaller element (1). To the right of 1 there is 0 smaller element."
+      },
+      {
+        "input": "nums = [-1] Output: [0]",
+        "output": "[0]"
+      },
+      {
+        "input": "nums = [-1,-1] Output: [0,0]",
+        "output": "[0,0]"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+      "<code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code>"
+    ]
+  },
+  "create-sorted-array-through-instructions": {
+    "lc": 1649,
+    "title": "Create Sorted Array through Instructions",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Binary Search",
+      "Divide and Conquer",
+      "Binary Indexed Tree",
+      "Segment Tree",
+      "Merge Sort",
+      "Ordered Set"
+    ],
+    "statement": [
+      "Given an integer array <code>instructions</code>, you are asked to create a sorted array from the elements in <code>instructions</code>. You start with an empty container <code>nums</code>. For each element from <strong>left to right</strong> in <code>instructions</code>, insert it into <code>nums</code>. The <strong>cost</strong> of each insertion is the <b>minimum</b> of the following:",
+      "<ul>\r\n <li>The number of elements currently in <code>nums</code> that are <strong>strictly less than</strong> <code>instructions[i]</code>.</li>\r\n <li>The number of elements currently in <code>nums</code> that are <strong>strictly greater than</strong> <code>instructions[i]</code>.</li>\r\n</ul>\r\n\r\nFor example, if inserting element <code>3</code> into <code>nums = [1,2,3,5]</code>, the <strong>cost</strong> of insertion is <code>min(2, 1)</code> (elements <code>1</code> and <code>2</code> are less than <code>3</code>, element <code>5</code> is greater than <code>3</code>) and <code>nums</code> will become <code>[1,2,3,3,5]</code>.",
+      "Return <em>the <strong>total cost</strong> to insert all elements from </em><code>instructions</code><em> into </em><code>nums</code>. Since the answer may be large, return it <strong>modulo</strong> <code>10<sup>9</sup> + 7</code>"
+    ],
+    "examples": [
+      {
+        "input": "instructions = [1,5,6,2] Output: 1 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 5 with cost min(1, 0) = 0, now nums = [1,5]. Insert 6 with cost min(2, 0) = 0, now nums = [1,5,6]. Insert 2 with cost min(1, 2) = 1, now nums = [1,2,5,6]. The total cost is 0 + 0 + 0 + 1 = 1.",
+        "output": "1 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 5 with cost min(1, 0) = 0, now nums = [1,5]. Insert 6 with cost min(2, 0) = 0, now nums = [1,5,6]. Insert 2 with cost min(1, 2) = 1, now nums = [1,2,5,6]. The total cost is 0 + 0 + 0 + 1 = 1.",
+        "explanation": "Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 5 with cost min(1, 0) = 0, now nums = [1,5]. Insert 6 with cost min(2, 0) = 0, now nums = [1,5,6]. Insert 2 with cost min(1, 2) = 1, now nums = [1,2,5,6]. The total cost is 0 + 0 + 0 + 1 = 1."
+      },
+      {
+        "input": "instructions = [1,2,3,6,5,4] Output: 3 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 2 with cost min(1, 0) = 0, now nums = [1,2]. Insert 3 with cost min(2, 0) = 0, now nums = [1,2,3]. Insert 6 with cost min(3, 0) = 0, now nums = [1,2,3,6]. Insert 5 with cost min(3, 1) = 1, now nums = [1,2,3,5,6]. Insert 4 with cost min(3, 2) = 2, now nums = [1,2,3,4,5,6]. The total cost is 0 + 0 + 0 + 0 + 1 + 2 = 3.",
+        "output": "3 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 2 with cost min(1, 0) = 0, now nums = [1,2]. Insert 3 with cost min(2, 0) = 0, now nums = [1,2,3]. Insert 6 with cost min(3, 0) = 0, now nums = [1,2,3,6]. Insert 5 with cost min(3, 1) = 1, now nums = [1,2,3,5,6]. Insert 4 with cost min(3, 2) = 2, now nums = [1,2,3,4,5,6]. The total cost is 0 + 0 + 0 + 0 + 1 + 2 = 3.",
+        "explanation": "Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 2 with cost min(1, 0) = 0, now nums = [1,2]. Insert 3 with cost min(2, 0) = 0, now nums = [1,2,3]. Insert 6 with cost min(3, 0) = 0, now nums = [1,2,3,6]. Insert 5 with cost min(3, 1) = 1, now nums = [1,2,3,5,6]. Insert 4 with cost min(3, 2) = 2, now nums = [1,2,3,4,5,6]. The total cost is 0 + 0 + 0 + 0 + 1 + 2 = 3."
+      },
+      {
+        "input": "instructions = [1,3,3,3,2,4,2,1,2] Output: 4 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3,3]. Insert 2 with cost min(1, 3) = 1, now nums = [1,2,3,3,3]. Insert 4 with cost min(5, 0) = 0, now nums = [1,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(1, 4) = 1, now nums = [1,2,2,3,3,3,4]. ​​​​​​​Insert 1 with cost min(0, 6) = 0, now nums = [1,1,2,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(2, 4) = 2, now nums = [1,1,2,2,2,3,3,3,4]. The total cost is 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4.",
+        "output": "4 Explanation: Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3,3]. Insert 2 with cost min(1, 3) = 1, now nums = [1,2,3,3,3]. Insert 4 with cost min(5, 0) = 0, now nums = [1,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(1, 4) = 1, now nums = [1,2,2,3,3,3,4]. ​​​​​​​Insert 1 with cost min(0, 6) = 0, now nums = [1,1,2,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(2, 4) = 2, now nums = [1,1,2,2,2,3,3,3,4]. The total cost is 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4.",
+        "explanation": "Begin with nums = []. Insert 1 with cost min(0, 0) = 0, now nums = [1]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3]. Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3,3]. Insert 2 with cost min(1, 3) = 1, now nums = [1,2,3,3,3]. Insert 4 with cost min(5, 0) = 0, now nums = [1,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(1, 4) = 1, now nums = [1,2,2,3,3,3,4]. ​​​​​​​Insert 1 with cost min(0, 6) = 0, now nums = [1,1,2,2,3,3,3,4]. ​​​​​​​Insert 2 with cost min(2, 4) = 2, now nums = [1,1,2,2,2,3,3,3,4]. The total cost is 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= instructions.length &lt;= 10<sup>5</sup></code>",
+      "<code>1 &lt;= instructions[i] &lt;= 10<sup>5</sup></code>"
+    ]
+  },
+  "reverse-pairs": {
+    "lc": 493,
+    "title": "Reverse Pairs",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Binary Search",
+      "Divide and Conquer",
+      "Binary Indexed Tree",
+      "Segment Tree",
+      "Merge Sort",
+      "Ordered Set",
+      "Treap"
+    ],
+    "statement": [
+      "Given an integer array <code>nums</code>, return <em>the number of <strong>reverse pairs</strong> in the array</em>.",
+      "A <strong>reverse pair</strong> is a pair <code>(i, j)</code> where:",
+      "<ul>\n <li><code>0 &lt;= i &lt; j &lt; nums.length</code> and</li>\n <li><code>nums[i] &gt; 2 * nums[j]</code>.</li>\n</ul>"
+    ],
+    "examples": [
+      {
+        "input": "nums = [1,3,2,3,1] Output: 2 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1",
+        "output": "2 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1",
+        "explanation": "The reverse pairs are: (1, 4) --> nums[1] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 3, nums[4] = 1, 3 > 2 * 1"
+      },
+      {
+        "input": "nums = [2,4,3,5,1] Output: 3 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1 (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1",
+        "output": "3 Explanation: The reverse pairs are: (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1 (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1",
+        "explanation": "The reverse pairs are: (1, 4) --> nums[1] = 4, nums[4] = 1, 4 > 2 * 1 (2, 4) --> nums[2] = 3, nums[4] = 1, 3 > 2 * 1 (3, 4) --> nums[3] = 5, nums[4] = 1, 5 > 2 * 1"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= nums.length &lt;= 5 * 10<sup>4</sup></code>",
+      "<code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code>"
+    ]
+  },
+  "count-of-range-sum": {
+    "lc": 327,
+    "title": "Count of Range Sum",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Binary Search",
+      "Divide and Conquer",
+      "Binary Indexed Tree",
+      "Segment Tree",
+      "Merge Sort",
+      "Ordered Set",
+      "Treap"
+    ],
+    "statement": [
+      "Given an integer array <code>nums</code> and two integers <code>lower</code> and <code>upper</code>, return <em>the number of range sums that lie in</em> <code>[lower, upper]</code> <em>inclusive</em>.",
+      "Range sum <code>S(i, j)</code> is defined as the sum of the elements in <code>nums</code> between indices <code>i</code> and <code>j</code> inclusive, where <code>i &lt;= j</code>."
+    ],
+    "examples": [
+      {
+        "input": "nums = [-2,5,-1], lower = -2, upper = 2 Output: 3 Explanation: The three ranges are: [0,0], [2,2], and [0,2] and their respective sums are: -2, -1, 2.",
+        "output": "3 Explanation: The three ranges are: [0,0], [2,2], and [0,2] and their respective sums are: -2, -1, 2.",
+        "explanation": "The three ranges are: [0,0], [2,2], and [0,2] and their respective sums are: -2, -1, 2."
+      },
+      {
+        "input": "nums = [0], lower = 0, upper = 0 Output: 1",
+        "output": "1"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+      "<code>-2<sup>31</sup> &lt;= nums[i] &lt;= 2<sup>31</sup> - 1</code>",
+      "<code>-10<sup>5</sup> &lt;= lower &lt;= upper &lt;= 10<sup>5</sup></code>",
+      "The answer is <strong>guaranteed</strong> to fit in a <strong>32-bit</strong> integer."
+    ]
+  },
+  "longest-increasing-subsequence-ii": {
+    "lc": 2407,
+    "title": "Longest Increasing Subsequence II",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Divide and Conquer",
+      "Dynamic Programming",
+      "Binary Indexed Tree",
+      "Segment Tree",
+      "Queue",
+      "Monotonic Queue"
+    ],
+    "statement": [
+      "You are given an integer array <code>nums</code> and an integer <code>k</code>.",
+      "Find the longest subsequence of <code>nums</code> that meets the following requirements:",
+      "<ul>\n <li>The subsequence is <strong>strictly increasing</strong> and</li>\n <li>The difference between adjacent elements in the subsequence is <strong>at most</strong> <code>k</code>.</li>\n</ul>\n\nReturn<em> the length of the <strong>longest</strong> <strong>subsequence</strong> that meets the requirements.</em>",
+      "A <strong>subsequence</strong> is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements."
+    ],
+    "examples": [
+      {
+        "input": "nums = [4,2,1,4,3,4,5,8,15], k = 3 Output: 5",
+        "output": "5",
+        "explanation": "The longest subsequence that meets the requirements is [1,3,4,5,8]. The subsequence has a length of 5, so we return 5. Note that the subsequence [1,3,4,5,8,15] does not meet the requirements because 15 - 8 = 7 is larger than 3."
+      },
+      {
+        "input": "nums = [7,4,5,1,8,12,4,7], k = 5 Output: 4",
+        "output": "4",
+        "explanation": "The longest subsequence that meets the requirements is [4,5,8,12]. The subsequence has a length of 4, so we return 4."
+      },
+      {
+        "input": "nums = [1,5], k = 1 Output: 1",
+        "output": "1",
+        "explanation": "The longest subsequence that meets the requirements is [1]. The subsequence has a length of 1, so we return 1."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= nums.length &lt;= 10<sup>5</sup></code>",
+      "<code>1 &lt;= nums[i], k &lt;= 10<sup>5</sup></code>"
+    ]
+  },
+  "falling-squares": {
+    "lc": 699,
+    "title": "Falling Squares",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "Array",
+      "Segment Tree",
+      "Ordered Set"
+    ],
+    "statement": [
+      "There are several squares being dropped onto the X-axis of a 2D plane.",
+      "You are given a 2D integer array <code>positions</code> where <code>positions[i] = [left<sub>i</sub>, sideLength<sub>i</sub>]</code> represents the <code>i<sup>th</sup></code> square with a side length of <code>sideLength<sub>i</sub></code> that is dropped with its left edge aligned with X-coordinate <code>left<sub>i</sub></code>.",
+      "Each square is dropped one at a time from a height above any landed squares. It then falls downward (negative Y direction) until it either lands <strong>on the top side of another square</strong> or <strong>on the X-axis</strong>. A square brushing the left/right side of another square does not count as landing on it. Once it lands, it freezes in place and cannot be moved.",
+      "After each square is dropped, you must record the <strong>height of the current tallest stack of squares</strong>.",
+      "Return <em>an integer array </em><code>ans</code><em> where </em><code>ans[i]</code><em> represents the height described above after dropping the </em><code>i<sup>th</sup></code><em> square</em>."
+    ],
+    "examples": [
+      {
+        "input": "positions = [[1,2],[2,3],[6,1]] Output: [2,5,5]",
+        "output": "[2,5,5]",
+        "explanation": "After the first drop, the tallest stack is square 1 with a height of 2. After the second drop, the tallest stack is squares 1 and 2 with a height of 5. After the third drop, the tallest stack is still squares 1 and 2 with a height of 5. Thus, we return an answer of [2, 5, 5]."
+      },
+      {
+        "input": "positions = [[100,100],[200,100]] Output: [100,100]",
+        "output": "[100,100]",
+        "explanation": "After the first drop, the tallest stack is square 1 with a height of 100. After the second drop, the tallest stack is either square 1 or square 2, both with heights of 100. Thus, we return an answer of [100, 100]. Note that square 2 only brushes the right side of square 1, which does not count as landing on it."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= positions.length &lt;= 1000</code>",
+      "<code>1 &lt;= left<sub>i</sub> &lt;= 10<sup>8</sup></code>",
+      "<code>1 &lt;= sideLength<sub>i</sub> &lt;= 10<sup>6</sup></code>"
+    ]
+  },
+  "find-the-index-of-the-first-occurrence-in-a-string": {
+    "lc": 28,
+    "title": "Find the Index of the First Occurrence in a String",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "Two Pointers",
+      "String",
+      "String Matching",
+      "Z Algorithm",
+      "Knuth–Morris–Pratt Algorithm",
+      "Boyer–Moore String-Search Algorithm"
+    ],
+    "statement": [
+      "Given two strings <code>needle</code> and <code>haystack</code>, return the index of the first occurrence of <code>needle</code> in <code>haystack</code>, or <code>-1</code> if <code>needle</code> is not part of <code>haystack</code>."
+    ],
+    "examples": [
+      {
+        "input": "haystack = \"sadbutsad\", needle = \"sad\" Output: 0 Explanation: \"sad\" occurs at index 0 and 6. The first occurrence is at index 0, so we return 0.",
+        "output": "0 Explanation: \"sad\" occurs at index 0 and 6. The first occurrence is at index 0, so we return 0.",
+        "explanation": "\"sad\" occurs at index 0 and 6. The first occurrence is at index 0, so we return 0."
+      },
+      {
+        "input": "haystack = \"leetcode\", needle = \"leeto\" Output: -1 Explanation: \"leeto\" did not occur in \"leetcode\", so we return -1.",
+        "output": "-1 Explanation: \"leeto\" did not occur in \"leetcode\", so we return -1.",
+        "explanation": "\"leeto\" did not occur in \"leetcode\", so we return -1."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= haystack.length, needle.length &lt;= 10<sup>4</sup></code>",
+      "<code>haystack</code> and <code>needle</code> consist of only lowercase English characters."
+    ]
+  },
+  "rotate-string": {
+    "lc": 796,
+    "title": "Rotate String",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "String",
+      "String Matching"
+    ],
+    "statement": [
+      "Given two strings <code>s</code> and <code>goal</code>, return <code>true</code> <em>if and only if</em> <code>s</code> <em>can become</em> <code>goal</code> <em>after some number of <strong>shifts</strong> on</em> <code>s</code>.",
+      "A <strong>shift</strong> on <code>s</code> consists of moving the leftmost character of <code>s</code> to the rightmost position.",
+      "<ul>\n <li>For example, if <code>s = &quot;abcde&quot;</code>, then it will be <code>&quot;bcdea&quot;</code> after one shift.</li>\n</ul>"
+    ],
+    "examples": [
+      {
+        "input": "s = \"abcde\", goal = \"cdeab\" Output: true",
+        "output": "true"
+      },
+      {
+        "input": "s = \"abcde\", goal = \"abced\" Output: false",
+        "output": "false"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= s.length, goal.length &lt;= 100</code>",
+      "<code>s</code> and <code>goal</code> consist of lowercase English letters."
+    ]
+  },
+  "repeated-string-match": {
+    "lc": 686,
+    "title": "Repeated String Match",
+    "difficulty": "medium",
+    "premium": false,
+    "tags": [
+      "String",
+      "String Matching",
+      "Z Algorithm",
+      "Knuth–Morris–Pratt Algorithm",
+      "Boyer–Moore String-Search Algorithm"
+    ],
+    "statement": [
+      "Given two strings <code>a</code> and <code>b</code>, return <em>the minimum number of times you should repeat string </em><code>a</code><em> so that string</em> <code>b</code> <em>is a substring of it</em>. If it is impossible for <code>b</code>​​​​​​ to be a substring of <code>a</code> after repeating it, return <code>-1</code>.",
+      "<strong>Notice:</strong> string <code>&quot;abc&quot;</code> repeated 0 times is <code>&quot;&quot;</code>, repeated 1 time is <code>&quot;abc&quot;</code> and repeated 2 times is <code>&quot;abcabc&quot;</code>."
+    ],
+    "examples": [
+      {
+        "input": "a = \"abcd\", b = \"cdabcdab\" Output: 3 Explanation: We return 3 because by repeating a three times \"abcdabcdabcd\", b is a substring of it.",
+        "output": "3 Explanation: We return 3 because by repeating a three times \"abcdabcdabcd\", b is a substring of it.",
+        "explanation": "We return 3 because by repeating a three times \"abcdabcdabcd\", b is a substring of it."
+      },
+      {
+        "input": "a = \"a\", b = \"aa\" Output: 2",
+        "output": "2"
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= a.length, b.length &lt;= 10<sup>4</sup></code>",
+      "<code>a</code> and <code>b</code> consist of lowercase English letters."
+    ]
+  },
+  "repeated-substring-pattern": {
+    "lc": 459,
+    "title": "Repeated Substring Pattern",
+    "difficulty": "easy",
+    "premium": false,
+    "tags": [
+      "String",
+      "String Matching",
+      "Z Algorithm",
+      "Knuth–Morris–Pratt Algorithm"
+    ],
+    "statement": [
+      "Given a string <code>s</code>, check if it can be constructed by taking a substring of it and appending multiple copies of the substring together."
+    ],
+    "examples": [
+      {
+        "input": "s = \"abab\" Output: true Explanation: It is the substring \"ab\" twice.",
+        "output": "true Explanation: It is the substring \"ab\" twice.",
+        "explanation": "It is the substring \"ab\" twice."
+      },
+      {
+        "input": "s = \"aba\" Output: false",
+        "output": "false"
+      },
+      {
+        "input": "s = \"abcabcabcabc\" Output: true Explanation: It is the substring \"abc\" four times or the substring \"abcabc\" twice.",
+        "output": "true Explanation: It is the substring \"abc\" four times or the substring \"abcabc\" twice.",
+        "explanation": "It is the substring \"abc\" four times or the substring \"abcabc\" twice."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= s.length &lt;= 10<sup>4</sup></code>",
+      "<code>s</code> consists of lowercase English letters."
+    ]
+  },
+  "longest-happy-prefix": {
+    "lc": 1392,
+    "title": "Longest Happy Prefix",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "String",
+      "Rolling Hash",
+      "String Matching",
+      "Hash Function",
+      "Z Algorithm",
+      "Knuth–Morris–Pratt Algorithm"
+    ],
+    "statement": [
+      "A string is called a <strong>happy prefix</strong> if it is a <strong>non-empty</strong> prefix which is also a suffix (excluding itself).",
+      "Given a string <code>s</code>, return <em>the <strong>longest happy prefix</strong> of</em> <code>s</code>. Return an empty string <code>&quot;&quot;</code> if no such prefix exists."
+    ],
+    "examples": [
+      {
+        "input": "s = \"level\" Output: \"l\" Explanation: s contains 4 prefix excluding itself (\"l\", \"le\", \"lev\", \"leve\"), and suffix (\"l\", \"el\", \"vel\", \"evel\"). The largest prefix which is also suffix is given by \"l\".",
+        "output": "\"l\" Explanation: s contains 4 prefix excluding itself (\"l\", \"le\", \"lev\", \"leve\"), and suffix (\"l\", \"el\", \"vel\", \"evel\"). The largest prefix which is also suffix is given by \"l\".",
+        "explanation": "s contains 4 prefix excluding itself (\"l\", \"le\", \"lev\", \"leve\"), and suffix (\"l\", \"el\", \"vel\", \"evel\"). The largest prefix which is also suffix is given by \"l\"."
+      },
+      {
+        "input": "s = \"ababab\" Output: \"abab\" Explanation: \"abab\" is the largest prefix which is also suffix. They can overlap in the original string.",
+        "output": "\"abab\" Explanation: \"abab\" is the largest prefix which is also suffix. They can overlap in the original string.",
+        "explanation": "\"abab\" is the largest prefix which is also suffix. They can overlap in the original string."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= s.length &lt;= 10<sup>5</sup></code>",
+      "<code>s</code> contains only lowercase English letters."
+    ]
+  },
+  "shortest-palindrome": {
+    "lc": 214,
+    "title": "Shortest Palindrome",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "String",
+      "Rolling Hash",
+      "String Matching",
+      "Hash Function",
+      "Manacher",
+      "Z Algorithm",
+      "Knuth–Morris–Pratt Algorithm"
+    ],
+    "statement": [
+      "You are given a string <code>s</code>. You can convert <code>s</code> to a palindrome by adding characters in front of it.",
+      "Return <em>the shortest palindrome you can find by performing this transformation</em>."
+    ],
+    "examples": [
+      {
+        "input": "s = \"aacecaaa\" Output: \"aaacecaaa\"",
+        "output": "\"aaacecaaa\""
+      },
+      {
+        "input": "s = \"abcd\" Output: \"dcbabcd\"",
+        "output": "\"dcbabcd\""
+      }
+    ],
+    "constraints": [
+      "<code>0 &lt;= s.length &lt;= 5 * 10<sup>4</sup></code>",
+      "<code>s</code> consists of lowercase English letters only."
+    ]
+  },
+  "sum-of-scores-of-built-strings": {
+    "lc": 2223,
+    "title": "Sum of Scores of Built Strings",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "String",
+      "Binary Search",
+      "Rolling Hash",
+      "Suffix Array",
+      "String Matching",
+      "Hash Function",
+      "Z Algorithm",
+      "Knuth–Morris–Pratt Algorithm"
+    ],
+    "statement": [
+      "You are <strong>building</strong> a string <code>s</code> of length <code>n</code> <strong>one</strong> character at a time, <strong>prepending</strong> each new character to the <strong>front</strong> of the string. The strings are labeled from <code>1</code> to <code>n</code>, where the string with length <code>i</code> is labeled <code>s<sub>i</sub></code>.",
+      "<ul>\n <li>For example, for <code>s = &quot;abaca&quot;</code>, <code>s<sub>1</sub> == &quot;a&quot;</code>, <code>s<sub>2</sub> == &quot;ca&quot;</code>, <code>s<sub>3</sub> == &quot;aca&quot;</code>, etc.</li>\n</ul>\n\nThe <strong>score</strong> of <code>s<sub>i</sub></code> is the length of the <strong>longest common prefix</strong> between <code>s<sub>i</sub></code> and <code>s<sub>n</sub></code> (Note that <code>s == s<sub>n</sub></code>).",
+      "Given the final string <code>s</code>, return<em> the <strong>sum</strong> of the <strong>score</strong> of every </em><code>s<sub>i</sub></code>."
+    ],
+    "examples": [
+      {
+        "input": "s = \"babab\" Output: 9",
+        "output": "9",
+        "explanation": "For s1 == \"b\", the longest common prefix is \"b\" which has a score of 1. For s2 == \"ab\", there is no common prefix so the score is 0. For s3 == \"bab\", the longest common prefix is \"bab\" which has a score of 3. For s4 == \"abab\", there is no common prefix so the score is 0. For s5 == \"babab\", the longest common prefix is \"babab\" which has a score of 5. The sum of the scores is 1 + 0 + 3 + 0 + 5 = 9, so we return 9."
+      },
+      {
+        "input": "s = \"azbazbzaz\" Output: 14",
+        "output": "14",
+        "explanation": "For s2 == \"az\", the longest common prefix is \"az\" which has a score of 2. For s6 == \"azbzaz\", the longest common prefix is \"azb\" which has a score of 3. For s9 == \"azbazbzaz\", the longest common prefix is \"azbazbzaz\" which has a score of 9. For all other si, the score is 0. The sum of the scores is 2 + 3 + 9 = 14, so we return 14."
+      }
+    ],
+    "constraints": [
+      "<code>1 &lt;= s.length &lt;= 10<sup>5</sup></code>",
+      "<code>s</code> consists of lowercase English letters."
+    ]
+  },
+  "longest-duplicate-substring": {
+    "lc": 1044,
+    "title": "Longest Duplicate Substring",
+    "difficulty": "hard",
+    "premium": false,
+    "tags": [
+      "String",
+      "Binary Search",
+      "Sliding Window",
+      "Rolling Hash",
+      "Suffix Array",
+      "Hash Function",
+      "Suffix Automaton",
+      "Suffix Tree",
+      "Z Algorithm",
+      "Boyer–Moore String-Search Algorithm"
+    ],
+    "statement": [
+      "Given a string <code>s</code>, consider all <em>duplicated substrings</em>: (contiguous) substrings of s that occur 2 or more times. The occurrences may overlap.",
+      "Return <strong>any</strong> duplicated substring that has the longest possible length. If <code>s</code> does not have a duplicated substring, the answer is <code>&quot;&quot;</code>."
+    ],
+    "examples": [
+      {
+        "input": "s = \"banana\" Output: \"ana\"",
+        "output": "\"ana\""
+      },
+      {
+        "input": "s = \"abcd\" Output: \"\"",
+        "output": "\"\""
+      }
+    ],
+    "constraints": [
+      "<code>2 &lt;= s.length &lt;= 3 * 10<sup>4</sup></code>",
+      "<code>s</code> consists of lowercase English letters."
+    ]
   }
 }

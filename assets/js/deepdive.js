@@ -63,21 +63,63 @@
 
   /* ---------- topic index: one row per topic, same card as Browse ---------- */
   function topicCard(t) {
-    return '<a class="entry-card" href="' + page + '?topic=' + encodeURIComponent(t.id) + '">' +
+    var tags = (t.tags && t.tags.length)
+      ? t.tags.map(function (g) { return '<span class="tag tag-pattern">' + esc(g) + "</span>"; }).join("")
+      : '<span class="tag">' + plural(t.sections.length, "section") + "</span>" +
+        '<span class="tag">' + plural(t.questions.length, "interview question") + "</span>";
+    return '<a class="entry-card" data-tags="' + esc((t.tags || []).join("|")) + '" href="' +
+        page + '?topic=' + encodeURIComponent(t.id) + '">' +
         '<span class="body">' +
           '<span class="title">' + esc(t.title) + "</span>" +
           (t.summary ? '<br><span class="subtitle">' + t.summary + "</span>" : "") +
-          '<span class="tags">' +
-            '<span class="tag">' + plural(t.sections.length, "section") + "</span>" +
-            '<span class="tag">' + plural(t.questions.length, "interview question") + "</span>" +
-          "</span>" +
+          '<span class="tags">' + tags + "</span>" +
         "</span>" +
+        (t.level ? '<span class="badge lvl-' + t.level + '">' + t.level + "</span>" : "") +
       "</a>";
   }
 
+  /* topics may carry a `group`; groups are listed in order of first appearance */
   function topicIndex() {
     document.title = docTitle + " — python-grail";
-    root.innerHTML = '<div class="entry-list">' + topics.map(topicCard).join("") + "</div>";
+    var groups = [], byGroup = {};
+    topics.forEach(function (t) {
+      var g = t.group || "";
+      if (!(g in byGroup)) { byGroup[g] = []; groups.push(g); }
+      byGroup[g].push(t);
+    });
+    root.innerHTML = groups.map(function (g) {
+      var list = byGroup[g];
+      var allTags = [];
+      list.forEach(function (t) {
+        (t.tags || []).forEach(function (x) { if (allTags.indexOf(x) === -1) allTags.push(x); });
+      });
+      allTags.sort();
+      var filter = allTags.length > 1
+        ? '<p class="code-label">Filter by pattern</p><div class="chips dd-filter">' +
+            '<button type="button" class="chip" aria-pressed="true" data-tag="">All ' + list.length + "</button>" +
+            allTags.map(function (x) {
+              var n = list.filter(function (t) { return t.tags.indexOf(x) !== -1; }).length;
+              return '<button type="button" class="chip" aria-pressed="false" data-tag="' + esc(x) + '">' +
+                esc(x) + ' <span class="sr-n">' + n + "</span></button>";
+            }).join("") + "</div>"
+        : "";
+      return '<section class="dd-group">' +
+        (g ? '<h2 class="section-title">' + esc(g) + "</h2>" : "") + filter +
+        '<div class="entry-list">' + list.map(topicCard).join("") + "</div></section>";
+    }).join("");
+
+    root.querySelectorAll(".dd-filter").forEach(function (bar) {
+      bar.addEventListener("click", function (e) {
+        var chip = e.target.closest("[data-tag]");
+        if (!chip) return;
+        var tag = chip.dataset.tag;
+        bar.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", String(c === chip)); });
+        bar.parentNode.querySelectorAll(".entry-card").forEach(function (card) {
+          var tags = card.dataset.tags ? card.dataset.tags.split("|") : [];
+          card.hidden = !!tag && tags.indexOf(tag) === -1;
+        });
+      });
+    });
   }
 
   /* ---------- one topic: theory, then interview questions ---------- */
@@ -87,6 +129,10 @@
     var html =
       '<p class="crumb-line"><a href="' + page + '">' + esc(name) + "</a> / " + esc(t.title) + "</p>" +
       '<h2 class="dd-topic-title">' + esc(t.title) + "</h2>" +
+      ((t.tags && t.tags.length) || t.level
+        ? '<p class="dd-meta">' + (t.level ? '<span class="badge lvl-' + t.level + '">' + t.level + "</span>" : "") +
+          (t.tags || []).map(function (g) { return '<span class="tag tag-pattern">' + esc(g) + "</span>"; }).join("") + "</p>"
+        : "") +
       '<div class="dd-intro">' + t.intro.map(function (p) { return "<p>" + p + "</p>"; }).join("") + "</div>";
 
     /* contents */

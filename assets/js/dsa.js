@@ -10,14 +10,35 @@
     return n + " " + word + (n === 1 ? "" : "s");
   }
 
+  var progress = window.progress;
+
+  function ids(problems) {
+    return problems.map(function (p) { return p.id; });
+  }
+
+  /* "7 / 21 solved" with a bar; empty string when nothing is tracked */
+  function progressBar(problems) {
+    var done = progress.countSolved(ids(problems)), n = problems.length;
+    return '<span class="prog" title="' + done + " of " + n + ' solved">' +
+      '<span class="prog-bar"><span style="width:' + (n ? (100 * done / n).toFixed(1) : 0) + '%"></span></span>' +
+      '<span class="prog-n">' + done + " / " + n + "</span></span>";
+  }
+
   /* ---------- topic index ---------- */
   function topicIndex() {
     document.title = "DSA — python-grail";
 
-    root.innerHTML = '<div class="entry-list">' + topics.map(function (t, i) {
+    var all = [];
+    topics.forEach(function (t) { all = all.concat(t.problems); });
+    var solvedAll = progress.countSolved(ids(all));
+    root.innerHTML =
+      '<p class="topic-sub overall">' + solvedAll + " of " + all.length +
+        " problems solved &middot; progress is saved in this browser" +
+        (solvedAll ? "" : ' &middot; open a problem and run your code, or mark it solved') + "</p>" +
+      '<div class="entry-list">' + topics.map(function (t, i) {
       var ready = t.count > 0;
       var right = ready
-        ? '<span class="badge count">' + plural(t.count, "problem") + "</span>"
+        ? progressBar(t.problems)
         : '<span class="badge planned">' +
             (t.target ? t.target + " planned" : "planned") + "</span>";
 
@@ -34,11 +55,14 @@
 
   function problemRows(problems) {
     return '<div class="entry-list">' + problems.map(function (p) {
-      return '<a class="entry-card" href="problem.html?id=' +
+      var solved = progress.isSolved(p.id), starred = progress.isStarred(p.id);
+      return '<a class="entry-card' + (solved ? " is-solved" : "") + '" href="problem.html?id=' +
         encodeURIComponent(p.id) + '">' +
         '<span class="num">' + (p.lc || (p.ref ? "GFG" : "—")) + "</span>" +
         '<span class="body">' +
-          '<span class="title">' + esc(p.name) + "</span>" +
+          '<span class="title">' + (solved ? '<span class="tick" title="solved">&#10003;</span> ' : "") +
+            esc(p.name) + (starred ? ' <span class="star-mark" title="starred">&#9733;</span>' : "") +
+          "</span>" +
           '<span class="tags">' +
             p.tags.slice(0, 4).map(function (tag) {
               return '<span class="tag">' + esc(tag) + "</span>";
@@ -83,13 +107,40 @@
               '<span class="title">' + esc(s.title) + "</span>" +
               (s.summary ? '<span class="subtitle">' + s.summary + "</span>" : "") +
             "</span>" +
-            '<span class="badge count">' + plural(s.problems.length, "problem") + "</span>" +
+            progressBar(s.problems) +
           "</a>";
         }).join("") + "</div>";
       return;
     }
 
-    root.innerHTML = head + problemRows(t.problems);
+    var mode = "all";
+    function paint() {
+      var shown = t.problems.filter(function (p) {
+        if (mode === "todo") return !progress.isSolved(p.id);
+        if (mode === "starred") return progress.isStarred(p.id);
+        return true;
+      });
+      document.getElementById("rows").innerHTML = shown.length
+        ? problemRows(shown)
+        : '<p class="empty">Nothing here yet.</p>';
+      Array.prototype.forEach.call(document.querySelectorAll(".filter-chip"), function (b) {
+        b.setAttribute("aria-pressed", b.dataset.mode === mode);
+      });
+    }
+    root.innerHTML = head +
+      '<div class="topic-tools">' + progressBar(t.problems) +
+        '<span class="chips">' +
+          ["all", "todo", "starred"].map(function (m) {
+            return '<button type="button" class="chip filter-chip" data-mode="' + m + '">' +
+              { all: "All", todo: "Unsolved", starred: "Starred" }[m] + "</button>";
+          }).join("") +
+        "</span>" +
+      "</div>" +
+      '<div id="rows"></div>';
+    Array.prototype.forEach.call(document.querySelectorAll(".filter-chip"), function (b) {
+      b.onclick = function () { mode = b.dataset.mode; paint(); };
+    });
+    paint();
   }
 
   /* ---------- one pattern: the idea, then its problems ---------- */

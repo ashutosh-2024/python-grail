@@ -6,6 +6,9 @@ window.GRAIL_DB = [
   {
     "id": "btree-indexes",
     "title": "B-Tree and B+ Tree Indexes",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "Why every index is a wide, shallow, sorted tree, and when the planner ignores it.",
     "intro": [
       "Almost every index you will create in a relational database is a B+ tree. PostgreSQL, MySQL/InnoDB, SQLite, SQL Server and Oracle all default to one. Understanding its shape explains nearly every indexing rule of thumb you have been told: why a lookup in a billion-row table touches three or four pages, why column order in a composite index matters, why <code>LIKE '%foo'</code> cannot use an index, and why an index on a boolean column is usually useless.",
@@ -423,6 +426,9 @@ window.GRAIL_DB = [
   {
     "id": "transactions",
     "title": "Transactions, ACID and Isolation",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "What each ACID letter promises, the read anomalies, and how MVCC gives readers a snapshot.",
     "intro": [
       "A transaction is a group of reads and writes the database treats as one unit: either all of it happens or none of it does, and concurrent transactions are kept from seeing each other&rsquo;s half-finished work. That sentence hides almost every hard question in database engineering, and interviewers know it.",
@@ -830,6 +836,9 @@ window.GRAIL_DB = [
   {
     "id": "locking",
     "title": "Concurrency and Locking",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "Shared and exclusive locks, two-phase locking, deadlocks, and optimistic vs pessimistic control.",
     "intro": [
       "MVCC removed most reader/writer blocking, but writers still have to be kept from trampling each other, and <code>SELECT ... FOR UPDATE</code>, foreign-key checks, unique-index inserts and DDL all take locks even in an MVCC engine. When a production database stalls, the cause is very often a lock queue, and the most common database error in a busy service after timeouts is a deadlock.",
@@ -1294,6 +1303,9 @@ window.GRAIL_DB = [
   {
     "id": "query-execution",
     "title": "Query Execution and the Optimizer",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "Parsing, planning, scans, the three join algorithms, reading EXPLAIN, and why innocent queries crawl.",
     "intro": [
       "SQL says <em>what</em> you want, never <em>how</em> to get it. Between your query and the data sits a planner that chooses among many equivalent programs &mdash; which index, which join order, which join algorithm &mdash; using statistics that may be stale. Most &ldquo;the database is slow&rdquo; incidents are a bad plan, and most bad plans can be read straight off <code>EXPLAIN</code>.",
@@ -1699,6 +1711,9 @@ window.GRAIL_DB = [
   {
     "id": "internals",
     "title": "Storage Engine Internals",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "Pages, the buffer pool, WAL and checkpoints, dirty pages, and LSM trees vs B-trees.",
     "intro": [
       "Underneath SQL, a storage engine does one job: keep a large amount of data on a slow device, keep the useful part in fast memory, and never lose a committed write when the power goes out. The same handful of structures &mdash; fixed-size pages, a buffer pool, a write-ahead log, checkpoints &mdash; appear in every serious engine, and the one big design fork is whether to update data in place (B-trees) or only ever append (LSM trees).",
@@ -2052,6 +2067,9 @@ window.GRAIL_DB = [
   {
     "id": "redis",
     "title": "In-Memory Databases and Redis",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "Redis's single-threaded design, its hash tables and sorted sets, memory layout, persistence and eviction.",
     "intro": [
       "An in-memory database keeps the whole dataset in RAM and treats disk only as a place to recover from. That removes the buffer pool, page layout and most of the I/O path, and what is left can answer a request in a few microseconds. Redis is the example every interviewer reaches for, and it is also a deliberately simple system whose design decisions are easy to reason about.",
@@ -2493,6 +2511,9 @@ window.GRAIL_DB = [
   {
     "id": "distributed",
     "title": "Distributed Databases and Replication",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "Leader/follower replication, sync vs async, quorums, failover, CAP, and split brain.",
     "intro": [
       "Copying data to several machines buys availability, read scaling and geographic locality. It also means the copies can disagree, and every distributed database is a set of decisions about what happens when they do. The interview questions in this area are really about those decisions: what can a client observe, what can be lost, and who is allowed to accept writes after a failure.",
@@ -2843,6 +2864,9 @@ window.GRAIL_DB = [
   {
     "id": "sharding",
     "title": "Partitioning and Sharding",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "Hash vs range partitioning, consistent hashing, hot partitions, rebalancing and cross-shard queries.",
     "intro": [
       "Replication copies the same data to many machines. Partitioning (sharding) splits <em>different</em> data across machines, so that the dataset and the write load can exceed what one node can handle. Most real systems do both: each partition is replicated.",
@@ -3154,6 +3178,9 @@ window.GRAIL_DB = [
   {
     "id": "durability",
     "title": "Write-Ahead Logging and Durability",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "WAL mechanics, what fsync really promises, sequential vs random I/O, and redo/undo crash recovery.",
     "intro": [
       "The D in ACID is a promise about a moment in time: once <code>COMMIT</code> returns, the data survives a crash. Keeping that promise without making every commit slow is what the write-ahead log is for, and understanding it means understanding what the operating system and the disk actually guarantee &mdash; which is less than most people assume.",
@@ -3491,6 +3518,9 @@ window.GRAIL_DB = [
   {
     "id": "recovery",
     "title": "Replication Lag, Backups and Recovery",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "What lagging replicas let clients see, RPO and RTO, failover in practice, backups and point-in-time recovery.",
     "intro": [
       "The distributed-databases page covered how replication works and how leaders are elected. This page is about living with it: what clients observe when replicas lag, how a failover actually runs, and what you do when the problem is not a dead machine but bad data &mdash; a dropped table, a buggy deploy, a corrupted disk &mdash; which replication faithfully copies to every replica within milliseconds.",
@@ -3837,6 +3867,9 @@ window.GRAIL_DB = [
   {
     "id": "normalization",
     "title": "Normalization and Denormalization",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "1NF through BCNF as the removal of update anomalies, and when to deliberately undo it.",
     "intro": [
       "Normalization is a method for deciding which columns belong in which table so that each fact is stored exactly once. The normal forms sound academic, but each one exists to remove a specific way that data goes wrong: an update that changes one copy of a fact but not another, a fact you cannot record until some unrelated fact exists, or a fact that disappears when you delete something else.",
@@ -4096,6 +4129,9 @@ window.GRAIL_DB = [
   {
     "id": "sql",
     "title": "SQL Fundamentals",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "Joins, grouping, window functions, CTEs, subqueries, set operations and the NULL traps.",
     "intro": [
       "Interviews for data-heavy roles still include a live SQL exercise, and the mistakes people make are consistent: a <code>LEFT JOIN</code> silently turned into an inner join by a <code>WHERE</code> clause, a filter in <code>WHERE</code> that belonged in <code>HAVING</code>, a <code>NOT IN</code> that returns nothing because of a <code>NULL</code>, and not knowing window functions exist.",
@@ -4434,6 +4470,9 @@ window.GRAIL_DB = [
   {
     "id": "columnar",
     "title": "Columnar Databases and OLAP",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "Row vs column storage, compression, zone maps, vectorized execution, and why ClickHouse is fast.",
     "intro": [
       "A row store keeps each row&rsquo;s values together; a column store keeps each column&rsquo;s values together. That single layout decision changes almost everything downstream: how much data a query reads, how well it compresses, how the CPU processes it, and which workloads the system is good at.",
@@ -4758,6 +4797,9 @@ window.GRAIL_DB = [
   {
     "id": "caching",
     "title": "Caching Patterns",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "Cache-aside, write-through and write-back, TTLs, stampedes, hot keys, and keeping a cache honest.",
     "intro": [
       "A cache puts a copy of data somewhere faster than its source &mdash; process memory, Redis, a CDN &mdash; so most reads never reach the database. The speed-up is easy. The hard parts are the ones interviewers ask about: when the copy disagrees with the source, what happens when a popular entry expires under load, and what to do when one key is hotter than any single machine.",

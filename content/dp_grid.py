@@ -9,6 +9,7 @@ GRID = dict(
         "Movement is restricted to right and down (or down and diagonally), so a cell can only be reached from the cells above and to its left. That gives the recurrence immediately: <code>f(r, c)</code> combines <code>f(r-1, c)</code> and <code>f(r, c-1)</code> &mdash; add them to count paths, take the min to find the cheapest.",
         "Fill row by row, left to right, and both inputs are ready when you need them. The first row and column are the base cases, because they have only one neighbour to pull from.",
         "Every grid problem here shrinks the same way. <strong>Two rows:</strong> row <code>r</code> reads only row <code>r-1</code> and itself. <strong>One row:</strong> before the update <code>row[c]</code> is still \"the cell above\", and <code>row[c-1]</code> has just become \"the cell to the left\". O(rows&middot;cols) time, O(cols) space.",
+        "Matrix problems that are not about paths still fit when the state is anchored at a corner. <strong>Maximal Square</strong> stores the largest square whose <em>bottom-right</em> corner is the cell, which makes it depend only on its up, left and up-left neighbours. And when moves go in all four directions (Longest Increasing Path), there is no fill order &mdash; but if the moves can never loop, memoised DFS is the fill order.",
         "Sometimes you must go <strong>backwards</strong>. In Dungeon Game what a cell needs depends on the path <em>after</em> it, not before, so the table is filled from the bottom-right corner. When the forward direction does not give a clean recurrence, try the other end.",
     ],
     problems=[
@@ -717,6 +718,391 @@ for _ in range(80):
     d = [[random.randint(-10, 8) for _ in range(cols)] for _ in range(random.randint(1, 5))]
     assert calculate_minimum_hp(d) == brute(d), d''',
         pitfall="Filling top-left to bottom-right and tracking current health. The best path so far is not the best path to extend, because a later room can punish a low minimum.",
+    ),
+
+    # ------------------------------------------------------------- matrix DP
+    dict(
+        id="minimum-falling-path-sum",
+        lc=931, slug="minimum-falling-path-sum",
+        name="Minimum Falling Path Sum",
+        difficulty="medium",
+        recurrence=dict(
+            state="<code>f(r, c)</code> = the smallest sum of a falling path that starts anywhere in row 0 and ends at <code>(r, c)</code>.",
+            derive=[
+                "A falling path enters <code>(r, c)</code> from one of three cells in the row above: <code>c-1</code>, <code>c</code> or <code>c+1</code>.",
+                "Take the cheapest of the three and pay for this cell. Columns outside the grid are infinity.",
+                "Row 0 is the base case, and the answer is the minimum over the whole last row, because the path may end in any column.",
+            ],
+            formula='''f(0, c) = matrix[0][c]
+f(r, c) = matrix[r][c] + min(f(r-1, c-1), f(r-1, c), f(r-1, c+1))
+answer: min over c of f(n-1, c)''',
+        ),
+        approaches=[
+            dict(
+                name="Plain recursion",
+                time="O(n&middot;3<sup>n</sup>)",
+                space="O(n)",
+                tag="brute force",
+                small=True,
+                why=[
+                    "From every bottom cell, branch three ways per row upward. The same upper cells are priced again and again.",
+                ],
+                code='''def min_falling_path_sum(matrix):
+    n = len(matrix)
+
+    def f(r, c):
+        if c < 0 or c >= n:
+            return inf
+        if r == 0:
+            return matrix[0][c]
+        return matrix[r][c] + min(f(r - 1, c - 1), f(r - 1, c), f(r - 1, c + 1))
+
+    return min(f(n - 1, c) for c in range(n))''',
+            ),
+            dict(
+                name="Top-down memo",
+                time="O(n&sup2;)",
+                space="O(n&sup2;)",
+                change="Cache on <code>(r, c)</code>: n&sup2; states, three lookups each.",
+                why=["Each cell is priced once."],
+                code='''def min_falling_path_sum(matrix):
+    n = len(matrix)
+
+    @cache
+    def f(r, c):
+        if c < 0 or c >= n:
+            return inf
+        if r == 0:
+            return matrix[0][c]
+        return matrix[r][c] + min(f(r - 1, c - 1), f(r - 1, c), f(r - 1, c + 1))
+
+    return min(f(n - 1, c) for c in range(n))''',
+            ),
+            dict(
+                name="One row at a time",
+                time="O(n&sup2;)",
+                space="O(n)",
+                best=True,
+                change="Row <code>r</code> reads only row <code>r-1</code>, so keep one previous row. It cannot be updated in place: cell <code>c</code> needs the old <code>prev[c-1]</code>, which the in-place write would already have overwritten.",
+                why=[
+                    "Pad the previous row with infinity on both sides so the edge columns need no special case.",
+                    "This is the one-row trick's limit: it works when only the left neighbour is read from the current row. Reading a diagonal on both sides needs a second buffer.",
+                ],
+                code='''def min_falling_path_sum(matrix):
+    prev = matrix[0][:]
+    for row in matrix[1:]:
+        padded = [inf] + prev + [inf]
+        prev = [x + min(padded[c], padded[c + 1], padded[c + 2])
+                for c, x in enumerate(row)]
+    return min(prev)''',
+            ),
+        ],
+        tests='''assert min_falling_path_sum([[2, 1, 3], [6, 5, 4], [7, 8, 9]]) == 13
+assert min_falling_path_sum([[-19, 57], [-40, -5]]) == -59
+assert min_falling_path_sum([[7]]) == 7
+
+def brute(m):
+    n = len(m)
+    best = inf
+    for start in range(n):
+        stack = [(0, start, m[0][start])]
+        while stack:
+            r, c, s = stack.pop()
+            if r == n - 1:
+                best = min(best, s)
+                continue
+            for d in (-1, 0, 1):
+                if 0 <= c + d < n:
+                    stack.append((r + 1, c + d, s + m[r + 1][c + d]))
+    return best
+
+random.seed(931)
+for _ in range(60):
+    n = random.randint(1, 7)
+    m = [[random.randint(-20, 20) for _ in range(n)] for _ in range(n)]
+    assert min_falling_path_sum(m) == brute(m)''',
+        small_tests='''assert min_falling_path_sum([[2, 1, 3], [6, 5, 4], [7, 8, 9]]) == 13
+assert min_falling_path_sum([[-19, 57], [-40, -5]]) == -59
+assert min_falling_path_sum([[7]]) == 7''',
+    ),
+
+    dict(
+        id="maximal-square",
+        lc=221, slug="maximal-square",
+        name="Maximal Square",
+        difficulty="medium",
+        recurrence=dict(
+            state="<code>f(r, c)</code> = the side of the largest all-<code>1</code> square whose <strong>bottom-right corner</strong> is <code>(r, c)</code>.",
+            derive=[
+                "Anchoring the square at its bottom-right corner is the whole trick: it makes the state local, so a cell only needs its up, left and up-left neighbours.",
+                "A square of side k ending at <code>(r, c)</code> needs squares of side k-1 ending at the cell above, the cell to the left and the cell diagonally up-left. The largest k is limited by the smallest of the three.",
+                "A <code>0</code> cell ends no square: <code>f = 0</code>.",
+            ],
+            formula='''f(r, c) = 0                                          if matrix[r][c] == "0"
+f(r, c) = 1 + min(f(r-1, c), f(r, c-1), f(r-1, c-1))   otherwise
+f = 0 outside the grid
+answer: (max over all cells of f)^2''',
+        ),
+        approaches=[
+            dict(
+                name="Grow a square from every cell",
+                time="O(m&middot;n&middot;min(m,n)<sup>2</sup>)",
+                space="O(1)",
+                tag="brute force",
+                why=[
+                    "From each top-left corner, grow the side while the new bottom row and right column are all ones. Rechecks the same cells for every corner.",
+                ],
+                code='''def maximal_square(matrix):
+    m, n, best = len(matrix), len(matrix[0]), 0
+    for r in range(m):
+        for c in range(n):
+            k = 0
+            while r + k < m and c + k < n and \\
+                    all(matrix[r + k][c + j] == "1" for j in range(k + 1)) and \\
+                    all(matrix[r + i][c + k] == "1" for i in range(k + 1)):
+                k += 1
+            best = max(best, k)
+    return best * best''',
+            ),
+            dict(
+                name="Bottom-up 2-D table",
+                time="O(m&middot;n)",
+                space="O(m&middot;n)",
+                change="Fill row by row with one padding row and column of zeros, so the edges need no special case.",
+                why=[
+                    "The three cells read are above, left and up-left, all filled earlier in row-major order.",
+                ],
+                code='''def maximal_square(matrix):
+    m, n = len(matrix), len(matrix[0])
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    best = 0
+    for r in range(1, m + 1):
+        for c in range(1, n + 1):
+            if matrix[r - 1][c - 1] == "1":
+                dp[r][c] = 1 + min(dp[r - 1][c], dp[r][c - 1], dp[r - 1][c - 1])
+                best = max(best, dp[r][c])
+    return best * best''',
+            ),
+            dict(
+                name="One row plus one saved diagonal",
+                time="O(m&middot;n)",
+                space="O(n)",
+                best=True,
+                change="Keep one row. Before overwriting <code>row[c]</code>, save its old value: it is the up-left cell for column <code>c+1</code>.",
+                why=[
+                    "<code>row[c]</code> before the write is \"above\", <code>row[c-1]</code> after its write is \"left\", and <code>diag</code> holds the old <code>row[c-1]</code>, which is \"up-left\".",
+                    "Reset <code>diag</code> to 0 at the start of each row: the padding column.",
+                ],
+                code='''def maximal_square(matrix):
+    n = len(matrix[0])
+    row, best = [0] * (n + 1), 0
+    for line in matrix:
+        diag = 0
+        for c in range(1, n + 1):
+            above = row[c]
+            row[c] = 1 + min(row[c], row[c - 1], diag) if line[c - 1] == "1" else 0
+            diag = above
+            best = max(best, row[c])
+    return best * best''',
+            ),
+        ],
+        tests='''M = [["1","0","1","0","0"],["1","0","1","1","1"],["1","1","1","1","1"],["1","0","0","1","0"]]
+assert maximal_square(M) == 4
+assert maximal_square([["0","1"],["1","0"]]) == 1
+assert maximal_square([["0"]]) == 0
+
+def brute(mat):
+    m, n, best = len(mat), len(mat[0]), 0
+    for r in range(m):
+        for c in range(n):
+            for k in range(1, min(m - r, n - c) + 1):
+                if all(mat[r + i][c + j] == "1" for i in range(k) for j in range(k)):
+                    best = max(best, k * k)
+    return best
+
+random.seed(221)
+for _ in range(150):
+    m, n = random.randint(1, 7), random.randint(1, 7)
+    mat = [[random.choice("1110") for _ in range(n)] for _ in range(m)]
+    assert maximal_square(mat) == brute(mat), mat''',
+    ),
+
+    dict(
+        id="count-square-submatrices",
+        lc=1277, slug="count-square-submatrices-with-all-ones",
+        name="Count Square Submatrices with All Ones",
+        difficulty="medium",
+        recurrence=dict(
+            state="<code>f(r, c)</code> = the side of the largest all-ones square with bottom-right corner <code>(r, c)</code> &mdash; the same state as Maximal Square.",
+            derive=[
+                "If the largest square ending at <code>(r, c)</code> has side k, then squares of side 1, 2, &hellip;, k all end there too, and no others. So the cell contributes exactly k squares.",
+                "The answer is therefore the <em>sum</em> of the table instead of its maximum. Same recurrence, different reduction.",
+            ],
+            formula='''f(r, c) = 0                                          if matrix[r][c] == 0
+f(r, c) = 1 + min(f(r-1, c), f(r, c-1), f(r-1, c-1))   otherwise
+answer: sum of f over all cells''',
+        ),
+        approaches=[
+            dict(
+                name="Check every square",
+                time="O(m&middot;n&middot;min(m,n)<sup>3</sup>)",
+                space="O(1)",
+                tag="brute force",
+                why=["Enumerate every top-left corner and size, and test every cell inside."],
+                code='''def count_squares(matrix):
+    m, n, total = len(matrix), len(matrix[0]), 0
+    for r in range(m):
+        for c in range(n):
+            for k in range(1, min(m - r, n - c) + 1):
+                if all(matrix[r + i][c + j] for i in range(k) for j in range(k)):
+                    total += 1
+                else:
+                    break
+    return total''',
+            ),
+            dict(
+                name="In-place DP",
+                time="O(m&middot;n)",
+                space="O(1)",
+                best=True,
+                change="Reuse the input matrix as the table: each cell is read as input exactly once, just before it is overwritten.",
+                why=[
+                    "The neighbours read (above, left, up-left) have already been converted to square sides, which is exactly what the recurrence needs.",
+                    "Mutating the input is fine on LeetCode and worth asking about in an interview; copy first if the caller still needs it.",
+                ],
+                code='''def count_squares(matrix):
+    for r in range(1, len(matrix)):
+        for c in range(1, len(matrix[0])):
+            if matrix[r][c]:
+                matrix[r][c] = 1 + min(matrix[r - 1][c], matrix[r][c - 1], matrix[r - 1][c - 1])
+    return sum(map(sum, matrix))''',
+            ),
+        ],
+        tests='''assert count_squares([[0,1,1,1],[1,1,1,1],[0,1,1,1]]) == 15
+assert count_squares([[1,0,1],[1,1,0],[1,1,0]]) == 7
+assert count_squares([[0]]) == 0
+
+def brute(mat):
+    m, n, t = len(mat), len(mat[0]), 0
+    for r in range(m):
+        for c in range(n):
+            for k in range(1, min(m - r, n - c) + 1):
+                t += all(mat[r + i][c + j] for i in range(k) for j in range(k))
+    return t
+
+random.seed(1277)
+for _ in range(150):
+    m, n = random.randint(1, 7), random.randint(1, 7)
+    mat = [[random.choice([1, 1, 1, 0]) for _ in range(n)] for _ in range(m)]
+    expect = brute(mat)
+    assert count_squares([row[:] for row in mat]) == expect''',
+    ),
+
+    dict(
+        id="longest-increasing-path-in-a-matrix",
+        lc=329, slug="longest-increasing-path-in-a-matrix",
+        name="Longest Increasing Path in a Matrix",
+        difficulty="hard",
+        recurrence=dict(
+            state="<code>f(r, c)</code> = the length of the longest strictly increasing path that <strong>starts</strong> at <code>(r, c)</code>.",
+            derive=[
+                "Moves go in all four directions, so there is no row-major order to fill the table in. But every move goes to a strictly larger value, so following moves can never loop: the cells form a DAG ordered by value.",
+                "A path from <code>(r, c)</code> is this cell plus the best path from any larger neighbour.",
+                "So memoised DFS works (the recursion order is the DAG order), and so does a bottom-up pass over cells sorted by value.",
+            ],
+            formula='''f(r, c) = 1 + max(f(nr, nc) for each neighbour with matrix[nr][nc] > matrix[r][c])
+f(r, c) = 1 if no neighbour is larger
+answer: max over all cells of f''',
+        ),
+        approaches=[
+            dict(
+                name="Plain DFS from every cell",
+                time="O(m&middot;n&middot;4<sup>m&middot;n</sup>) worst case",
+                space="O(m&middot;n)",
+                tag="brute force",
+                small=True,
+                why=[
+                    "Explore every increasing path from every start. A grid that increases in a snake pattern makes the same long tails get re-walked from every start.",
+                ],
+                code='''def longest_increasing_path(matrix):
+    m, n = len(matrix), len(matrix[0])
+
+    def f(r, c):
+        best = 1
+        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+            if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > matrix[r][c]:
+                best = max(best, 1 + f(nr, nc))
+        return best
+
+    return max(f(r, c) for r in range(m) for c in range(n))''',
+            ),
+            dict(
+                name="Memoised DFS",
+                time="O(m&middot;n)",
+                space="O(m&middot;n)",
+                best=True,
+                change="Cache <code>f(r, c)</code>. Strictly increasing moves mean no cycles, so no visited-set is needed &mdash; the cache alone is correct.",
+                why=[
+                    "Each cell is computed once and looks at four neighbours.",
+                    "Recursion depth can reach m&middot;n on a snake-shaped grid. Python's default limit is 1000, so raise it or use the bottom-up version for big inputs.",
+                ],
+                code='''def longest_increasing_path(matrix):
+    m, n = len(matrix), len(matrix[0])
+
+    @cache
+    def f(r, c):
+        best = 1
+        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+            if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > matrix[r][c]:
+                best = max(best, 1 + f(nr, nc))
+        return best
+
+    return max(f(r, c) for r in range(m) for c in range(n))''',
+            ),
+            dict(
+                name="Bottom-up in decreasing value order",
+                time="O(m&middot;n&middot;log(m&middot;n))",
+                space="O(m&middot;n)",
+                change="Process cells from largest value to smallest. When a cell is processed, every larger neighbour already has its final answer.",
+                why=[
+                    "This is the DAG's topological order made explicit by sorting. No recursion, so no depth limit; the sort adds the log factor.",
+                    "Kahn's algorithm on the same DAG (peel cells with no larger neighbour, layer by layer) gives O(m&middot;n) and counts layers instead.",
+                ],
+                code='''def longest_increasing_path(matrix):
+    m, n = len(matrix), len(matrix[0])
+    f = [[1] * n for _ in range(m)]
+    cells = sorted(((matrix[r][c], r, c) for r in range(m) for c in range(n)), reverse=True)
+    for v, r, c in cells:
+        for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+            if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > v:
+                f[r][c] = max(f[r][c], 1 + f[nr][nc])
+    return max(map(max, f))''',
+            ),
+        ],
+        tests='''assert longest_increasing_path([[9,9,4],[6,6,8],[2,1,1]]) == 4
+assert longest_increasing_path([[3,4,5],[3,2,6],[2,2,1]]) == 4
+assert longest_increasing_path([[1]]) == 1
+
+random.seed(329)
+def brute(mat):
+    m, n = len(mat), len(mat[0])
+    def go(r, c):
+        return 1 + max([go(a, b) for a, b in ((r+1,c),(r-1,c),(r,c+1),(r,c-1))
+                        if 0 <= a < m and 0 <= b < n and mat[a][b] > mat[r][c]], default=0)
+    return max(go(r, c) for r in range(m) for c in range(n))
+
+for _ in range(100):
+    m, n = random.randint(1, 4), random.randint(1, 4)
+    mat = [[random.randint(0, 9) for _ in range(n)] for _ in range(m)]
+    assert longest_increasing_path(mat) == brute(mat)
+
+snake = [[r * 30 + (c if r % 2 == 0 else 29 - c) for c in range(30)] for r in range(30)]
+import sys; sys.setrecursionlimit(5000)
+assert longest_increasing_path(snake) == 900''',
+        small_tests='''assert longest_increasing_path([[9,9,4],[6,6,8],[2,1,1]]) == 4
+assert longest_increasing_path([[3,4,5],[3,2,6],[2,2,1]]) == 4
+assert longest_increasing_path([[1]]) == 1''',
+        pitfall="Adding a visited set \"to avoid cycles\". Strictly increasing paths cannot revisit a cell, and a visited set that is not reset per start makes the memo return wrong answers.",
     ),
     ],
 )

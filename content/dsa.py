@@ -108,6 +108,8 @@ from stacks import STACKS_TOPIC
 from sliding_window import SLIDING_WINDOW_TOPIC
 from two_pointers import TWO_POINTERS_TOPIC
 from hashing import HASHING_TOPIC
+from range_query import RANGE_QUERY_TOPIC
+from string_algos import STRING_ALGOS_TOPIC
 
 TOPICS = [
 
@@ -1466,6 +1468,8 @@ BITS_TOPIC,
 GREEDY_TOPIC,
 MATH_TOPIC,
 GRAPHS_TOPIC,
+RANGE_QUERY_TOPIC,
+STRING_ALGOS_TOPIC,
 ] + [
 
 # Planned topics. None has any problems yet, so each is a placeholder page

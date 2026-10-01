@@ -67,9 +67,10 @@
             return '<span class="tag">' + esc(t) + "</span>";
           }).join("") + "</div>"
         : "") +
-      (p.url || p.ref
-        ? '<div class="actions">' + lcLink(p) + refLink(p) + "</div>"
-        : "") +
+      '<div class="actions">' + lcLink(p) + refLink(p) +
+        '<button type="button" class="track-btn" id="btn-solved"></button>' +
+        '<button type="button" class="track-btn" id="btn-star"></button>' +
+      "</div>" +
     "</div>";
 
   html += '<div class="entry-body">';
@@ -112,6 +113,32 @@
   if (p.pitfall) {
     html += '<div class="pitfall"><strong>Common mistake.</strong> ' + p.pitfall + "</div>";
   }
+
+  /* ---------- try it: write and run your own solution ---------- */
+  var mockParam = new URLSearchParams(location.search).get("mock") === "1";
+  var mock = window.progress.mock();
+  var inMock = mockParam && mock && mock.id === p.id;
+  html += "<h2>Try it</h2>" +
+    '<p class="try-hint">Write a solution below and run it against the same tests the build ran. ' +
+      "Python runs in your browser; nothing is sent anywhere.</p>" +
+    '<div class="editor">' +
+      '<textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>' +
+      '<div class="editor-bar">' +
+        '<button type="button" class="btn btn-primary btn-sm" id="run">Run tests</button>' +
+        '<button type="button" class="btn btn-sm" id="reset">Reset</button>' +
+        '<span class="run-status" id="status"></span>' +
+      "</div>" +
+      '<pre class="code output run-output" id="result" hidden><code></code></pre>' +
+    "</div>";
+
+  var alwaysShow = window.progress.pref("showSolutions", false) && !inMock;
+  html += '<details class="reveal solutions-reveal" id="solutions"' + (alwaysShow ? " open" : "") + ">" +
+    "<summary>" + (inMock ? "Solutions are hidden during a mock interview"
+                          : "Show solutions (" + p.approaches.length + " approach" +
+                            (p.approaches.length === 1 ? "" : "es") + ")") + "</summary>" +
+    '<div class="reveal-inner">' +
+    '<label class="always-show"><input type="checkbox" id="always-show"' +
+      (alwaysShow ? " checked" : "") + "> Always show solutions</label>";
 
   /* ---------- complexity summary ---------- */
   html += "<h2>At a glance</h2>" +
@@ -191,15 +218,161 @@
       "</div>" +
     "</details>";
 
-  /* ---------- prev / next ---------- */
-  var prev = flat[idx - 1], next = flat[idx + 1];
+  html += "</div></details>";                  /* end of the hidden solutions */
+
+  /* ---------- prev / next, within this topic only ---------- */
+  var inTopic = flat.filter(function (q) { return q.topic === p.topic; });
+  var tIdx = inTopic.indexOf(p);
+  var prev = inTopic[tIdx - 1], next = inTopic[tIdx + 1];
+  function navLink(q, dir) {
+    return '<a href="problem.html?id=' + encodeURIComponent(q.id) + '">' +
+      '<span class="code-label">' + (dir < 0 ? "&larr; Previous" : "Next &rarr;") + "</span><br>" +
+      esc(q.name) + "</a>";
+  }
   html += '<div class="entry-nav">' +
-    (prev ? '<a href="problem.html?id=' + encodeURIComponent(prev.id) + '">&larr; ' +
-            esc(prev.name) + "</a>" : "<span></span>") +
-    (next ? '<a href="problem.html?id=' + encodeURIComponent(next.id) + '">' +
-            esc(next.name) + " &rarr;</a>" : "<span></span>") +
-    "</div>";
+    (prev ? navLink(prev, -1) : "<span></span>") +
+    (next ? navLink(next, 1) : "<span></span>") +
+    "</div>" +
+    '<p class="code-label" style="text-align:center;margin-top:12px">' +
+      (tIdx + 1) + " of " + inTopic.length + " in " + esc(topicObj.title || "this topic") + "</p>";
 
   html += "</div>";
+  if (inMock) {
+    html = '<div class="mock-bar" id="mock-bar"><span>Mock interview</span>' +
+      '<b id="mock-clock">--:--</b>' +
+      '<button type="button" class="btn btn-sm" id="mock-end">End</button></div>' + html;
+  }
   root.innerHTML = html;
+
+  /* ---------- solved / starred ---------- */
+  var solvedBtn = document.getElementById("btn-solved");
+  var starBtn = document.getElementById("btn-star");
+  function paintTrack() {
+    var solved = window.progress.isSolved(p.id), starred = window.progress.isStarred(p.id);
+    solvedBtn.textContent = solved ? "\u2713 Solved" : "Mark solved";
+    solvedBtn.setAttribute("aria-pressed", solved);
+    starBtn.textContent = starred ? "\u2605 Starred" : "\u2606 Star";
+    starBtn.setAttribute("aria-pressed", starred);
+  }
+  solvedBtn.onclick = function () { window.progress.toggleSolved(p.id); paintTrack(); };
+  starBtn.onclick = function () { window.progress.toggleStarred(p.id); paintTrack(); };
+  paintTrack();
+
+  /* ---------- editor ---------- */
+  var area = document.getElementById("code");
+  var statusEl = document.getElementById("status");
+  var resultEl = document.getElementById("result");
+  area.value = window.progress.draft(p.id) || p.starter;
+  function fit() {
+    area.style.height = "auto";
+    area.style.height = Math.max(220, area.scrollHeight + 4) + "px";
+  }
+  fit();
+  area.addEventListener("input", function () { window.progress.saveDraft(p.id, area.value); fit(); });
+  area.addEventListener("keydown", function (e) {
+    if (e.key === "Tab" && !e.shiftKey) {                /* indent, do not leave the box */
+      e.preventDefault();
+      var a = area.selectionStart, b = area.selectionEnd;
+      area.value = area.value.slice(0, a) + "    " + area.value.slice(b);
+      area.selectionStart = area.selectionEnd = a + 4;
+      window.progress.saveDraft(p.id, area.value);
+    } else if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      runTests();
+    }
+  });
+  document.getElementById("reset").onclick = function () {
+    if (area.value !== p.starter && !confirm("Discard your code and start from the template?")) return;
+    area.value = p.starter;
+    window.progress.clearDraft(p.id);
+    resultEl.hidden = true;
+    statusEl.textContent = "";
+    fit();
+  };
+
+  var runBtn = document.getElementById("run");
+  function runTests() {
+    if (runBtn.disabled) return;
+    runBtn.disabled = true;
+    resultEl.hidden = true;
+    statusEl.className = "run-status";
+    var prelude = (window.GRAIL_PRELUDE || "") + "\n\n" + (topicObj.prelude || "");
+    window.pyRunner.run({ prelude: prelude, code: area.value, tests: p.tests },
+                        function (msg) { statusEl.textContent = msg; })
+      .then(function (r) {
+        resultEl.hidden = false;
+        resultEl.className = "code output run-output" + (r.ok ? "" : " error");
+        var out = r.output ? r.output.replace(/\s+$/, "") : "";
+        if (r.ok) {
+          statusEl.textContent = "All tests passed";
+          statusEl.className = "run-status pass";
+          resultEl.firstChild.textContent = (out ? out + "\n\n" : "") +
+            "\u2713 Every assertion the build checks passed.";
+          window.progress.setSolved(p.id, true);
+          paintTrack();
+          if (inMock) finishMock(true);
+        } else {
+          statusEl.textContent = r.stage === "tests" ? "A test failed" :
+            r.stage === "timeout" ? "Timed out" : "Error in " + r.stage;
+          statusEl.className = "run-status fail";
+          var hint = "";
+          if (r.where && r.where.file === "tests.py") {
+            var line = p.tests.split("\n")[r.where.line - 1] || "";
+            hint = "\n\nFailing check (tests.py line " + r.where.line + "):\n  " + line.trim();
+          }
+          resultEl.firstChild.textContent = out + hint;
+        }
+      }, function (err) {
+        statusEl.textContent = String(err.message || err);
+        statusEl.className = "run-status fail";
+      })
+      .then(function () { runBtn.disabled = false; });
+  }
+  runBtn.onclick = runTests;
+
+  /* ---------- hidden solutions ---------- */
+  var sol = document.getElementById("solutions");
+  var always = document.getElementById("always-show");
+  always.onchange = function () { window.progress.setPref("showSolutions", always.checked); };
+  if (inMock) {
+    sol.addEventListener("toggle", function () {
+      if (sol.open && !confirm("Reveal the solutions? This ends the mock interview.")) {
+        sol.open = false;
+      } else if (sol.open) {
+        finishMock(false);
+      }
+    });
+  }
+
+  /* ---------- mock interview clock ---------- */
+  var clockTimer = null;
+  function finishMock(passed) {
+    var m = window.progress.mock();
+    if (!m) return;
+    var used = Math.round((Date.now() - m.start) / 1000);
+    window.progress.setMock(null);
+    clearInterval(clockTimer);
+    var bar = document.getElementById("mock-bar");
+    if (bar) {
+      bar.innerHTML = "<span>" + (passed ? "Solved in " : "Ended after ") +
+        Math.floor(used / 60) + " min " + (used % 60) + " s</span>" +
+        '<a class="btn btn-sm" href="prep.html#mock">New interview</a>';
+      bar.classList.add(passed ? "done" : "ended");
+    }
+  }
+  if (inMock) {
+    var clock = document.getElementById("mock-clock");
+    var tick = function () {
+      var left = Math.round((mock.start + mock.minutes * 60000 - Date.now()) / 1000);
+      var neg = left < 0, a = Math.abs(left);
+      clock.textContent = (neg ? "-" : "") + String(Math.floor(a / 60)).padStart(2, "0") + ":" +
+        String(a % 60).padStart(2, "0");
+      clock.className = neg ? "over" : left < 300 ? "low" : "";
+    };
+    tick();
+    clockTimer = setInterval(tick, 1000);
+    document.getElementById("mock-end").onclick = function () {
+      if (confirm("End this mock interview?")) finishMock(false);
+    };
+  }
 })();

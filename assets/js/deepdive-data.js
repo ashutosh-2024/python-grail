@@ -6,6 +6,9 @@ window.GRAIL_DEEP = [
   {
     "id": "gil",
     "title": "The Global Interpreter Lock",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "The GIL is the single most-cited reason Python &ldquo;can&rsquo;t do threads&rdquo;, and most of what people say about it is half right. It does not stop you using threads, it does not make your code thread-safe, and it does not slow down I/O-bound programs. What it does is stop two threads from executing Python bytecode <em>at the same instant</em> inside one interpreter &mdash; which is exactly the thing a CPU-bound program needs.",
@@ -252,7 +255,7 @@ window.GRAIL_DEEP = [
             "type": "code",
             "src": "import threading, time\n\nstock = {\"widget\": 1}\nsold = []\n\ndef buy(who):\n    if stock[\"widget\"] > 0:      # both threads see 1 ...\n        time.sleep(0.01)         # ... pretend to charge the card\n        stock[\"widget\"] -= 1\n        sold.append(who)\n\nts = [threading.Thread(target=buy, args=(n,)) for n in (\"ann\", \"bob\")]\nfor t in ts: t.start()\nfor t in ts: t.join()\nprint(sold, stock)",
             "label": null,
-            "output": "['bob', 'ann'] {'widget': -1}",
+            "output": "['ann', 'bob'] {'widget': -1}",
             "isError": false
           },
           {
@@ -383,6 +386,9 @@ window.GRAIL_DEEP = [
   {
     "id": "memory",
     "title": "Memory Management",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "Python frees you from <code>malloc</code> and <code>free</code>, but not from memory. CPython uses two mechanisms together: <strong>reference counting</strong>, which frees almost everything the instant it becomes unreachable, and a <strong>cycle collector</strong>, which cleans up the objects reference counting cannot. Underneath both sits a specialised allocator for small objects.",
@@ -822,6 +828,9 @@ window.GRAIL_DEEP = [
   {
     "id": "bytecode",
     "title": "CPython Bytecode",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "Python is compiled. Not to machine code, but to <strong>bytecode</strong>: a compact instruction set for a stack-based virtual machine. Every function you write becomes a code object holding those instructions, and a big loop in C &mdash; the evaluation loop &mdash; executes them one at a time.",
@@ -1234,6 +1243,9 @@ window.GRAIL_DEEP = [
   {
     "id": "object-model",
     "title": "The Python Object Model",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "&ldquo;Everything is an object&rdquo; is usually said and not explained. It means something precise: integers, strings, functions, classes, modules, even <code>type</code> itself are all values of the same basic C structure, each with an identity, a type, and a value. They can all be assigned to names, stored in containers, passed around and inspected.",
@@ -1581,6 +1593,9 @@ window.GRAIL_DEEP = [
   {
     "id": "dunder-methods",
     "title": "Magic (Dunder) Methods",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "Methods whose names start and end with a double underscore &mdash; <code>__init__</code>, <code>__len__</code>, <code>__add__</code> &mdash; are called <em>special</em>, <em>magic</em> or <em>dunder</em> methods. You rarely call them yourself. Python calls them for you when you use syntax or a built-in: <code>a + b</code>, <code>len(x)</code>, <code>x[i]</code>, <code>for v in x</code>, <code>with x:</code>, <code>f\"{x}\"</code>.",
@@ -2249,6 +2264,9 @@ window.GRAIL_DEEP = [
   {
     "id": "descriptors",
     "title": "Descriptors",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "A descriptor is any object whose class defines <code>__get__</code>, <code>__set__</code> or <code>__delete__</code>, stored as a <em>class</em> attribute. When you access that attribute through an instance, Python calls those methods instead of returning the object itself.",
@@ -2638,6 +2656,9 @@ window.GRAIL_DEEP = [
   {
     "id": "metaclasses",
     "title": "Metaclasses",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "An object is created by calling its class. A class is also an object, so it too is created by calling <em>its</em> class &mdash; and the class of a class is called a <strong>metaclass</strong>. By default that is <code>type</code>. Write your own and you control what happens when a class statement runs: you can inspect, change, register or reject the class before anyone uses it.",
@@ -3012,6 +3033,9 @@ window.GRAIL_DEEP = [
   {
     "id": "mro",
     "title": "Method Resolution Order",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "When you call <code>obj.method()</code> and several classes in the hierarchy define <code>method</code>, Python needs one unambiguous answer to &ldquo;which one?&rdquo;. It gets it by flattening the inheritance graph into a single ordered list &mdash; the <strong>method resolution order</strong> &mdash; and taking the first class in that list that defines the name.",
@@ -3331,8 +3355,471 @@ window.GRAIL_DEEP = [
     ]
   },
   {
+    "id": "slots-dataclasses-typing",
+    "title": "__slots__, Dataclasses and Typing",
+    "group": null,
+    "tags": [],
+    "level": null,
+    "summary": "",
+    "intro": [
+      "Three features that change how you write classes. <code>__slots__</code> trades the per-instance <code>__dict__</code> for fixed storage: less memory, faster attribute access, no accidental attributes. <code>dataclasses</code> generate <code>__init__</code>, <code>__repr__</code>, <code>__eq__</code> and more from type-annotated fields. And type hints document and check all of it &mdash; without Python enforcing any of it at run time.",
+      "Each is simple on its own. The interview questions live in the interactions: slots with inheritance, mutable defaults in dataclasses, frozen dataclasses and hashing, and what annotations really are at run time."
+    ],
+    "sections": [
+      {
+        "title": "__slots__: no per-instance dict",
+        "body": [
+          {
+            "type": "p",
+            "html": "Normally every instance carries a <code>__dict__</code>, a hash table for its attributes. Declaring <code>__slots__</code> tells the class to reserve a fixed array of slots instead. Each slot becomes a descriptor on the class that reads and writes a fixed offset in the object."
+          },
+          {
+            "type": "code",
+            "src": "import sys, tracemalloc\n\nclass PointDict:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n\nclass PointSlots:\n    __slots__ = (\"x\", \"y\")\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n\ndef measure(cls, n=100_000):\n    tracemalloc.start()\n    objs = [cls(i, i) for i in range(n)]\n    size = tracemalloc.get_traced_memory()[0]\n    tracemalloc.stop()\n    return size // n\n\nprint(\"bytes per instance, dict :\", measure(PointDict))\nprint(\"bytes per instance, slots:\", measure(PointSlots))\nprint(hasattr(PointSlots(1, 2), \"__dict__\"), type(PointSlots.__dict__[\"x\"]).__name__)",
+            "label": null,
+            "output": "bytes per instance, dict : 127\nbytes per instance, slots: 87\nFalse member_descriptor",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Slots also make the attribute set closed, which turns typos into errors instead of silently creating new attributes:"
+          },
+          {
+            "type": "code",
+            "src": "class Account:\n    __slots__ = (\"owner\", \"balance\")\n    def __init__(self, owner):\n        self.owner, self.balance = owner, 0\n\na = Account(\"ann\")\ntry:\n    a.balanse = 100                   # typo\nexcept AttributeError as e:\n    print(\"AttributeError:\", e)",
+            "label": null,
+            "output": "AttributeError: 'Account' object has no attribute 'balanse' and no __dict__ for setting new attributes",
+            "isError": false
+          },
+          {
+            "type": "caveat",
+            "text": "Since CPython 3.11 a plain instance stores its attributes in a compact inline array and only creates a real <code>__dict__</code> when needed, so the saving from <code>__slots__</code> is smaller than older articles claim. It is still real, as the measurement shows, and it matters when you hold millions of small objects."
+          }
+        ]
+      },
+      {
+        "title": "Slots and inheritance",
+        "body": [
+          {
+            "type": "p",
+            "html": "Slots only take effect if <em>every</em> class in the hierarchy uses them. A subclass that does not declare <code>__slots__</code> gets a <code>__dict__</code> again, and you lose both the memory saving and the closed attribute set. Each subclass should declare only its <em>new</em> slots; repeating a parent's slot wastes space and shadows it."
+          },
+          {
+            "type": "code",
+            "src": "class Base:\n    __slots__ = (\"id\",)\n\nclass Leaky(Base):                   # forgot __slots__\n    pass\n\nclass Tight(Base):\n    __slots__ = (\"name\",)            # only the new attribute\n\nl, t = Leaky(), Tight()\nl.anything = 1                       # works: Leaky has a __dict__ again\nprint(hasattr(l, \"__dict__\"), hasattr(t, \"__dict__\"))\ntry:\n    t.anything = 1\nexcept AttributeError as e:\n    print(\"AttributeError:\", e)",
+            "label": null,
+            "output": "True False\nAttributeError: 'Tight' object has no attribute 'anything' and no __dict__ for setting new attributes",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Other consequences to know: instances cannot be weakly referenced unless <code>\"__weakref__\"</code> is a slot; slots and a class attribute with the same name conflict (so slot defaults must be set in <code>__init__</code>); and multiple inheritance from two classes that both have non-empty slots fails with a layout conflict."
+          },
+          {
+            "type": "code",
+            "src": "import weakref\n\nclass A:\n    __slots__ = (\"x\",)\nclass B:\n    __slots__ = (\"y\",)\n\ntry:\n    weakref.ref(A())\nexcept TypeError as e:\n    print(\"TypeError:\", e)\n\ntry:\n    class AB(A, B): pass\nexcept TypeError as e:\n    print(\"TypeError:\", e)\n\ntry:\n    class Defaults:\n        __slots__ = (\"x\",)\n        x = 0                        # class attribute clashes with the slot\nexcept ValueError as e:\n    print(\"ValueError:\", e)",
+            "label": null,
+            "output": "TypeError: cannot create weak reference to 'A' object\nTypeError: multiple bases have instance lay-out conflict\nValueError: 'x' in __slots__ conflicts with class variable",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Dataclasses: what gets generated",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>@dataclass</code> reads the class's annotated fields and writes the boilerplate methods for you. It is an ordinary class afterwards &mdash; no base class, no metaclass, no run-time cost per instance beyond what you would have written by hand."
+          },
+          {
+            "type": "code",
+            "src": "from dataclasses import dataclass, field, fields, asdict, replace\n\n@dataclass\nclass Item:\n    name: str\n    price: float\n    qty: int = 1\n    tags: list[str] = field(default_factory=list)\n\na = Item(\"pen\", 1.5)\nb = Item(\"pen\", 1.5)\nprint(a)                                # __repr__\nprint(a == b, a is b)                   # __eq__ compares fields as a tuple\nprint([f.name for f in fields(Item)])\nprint(asdict(replace(a, qty=3)))        # copy with changes, then to dict\nprint(Item.__hash__)                    # eq=True and not frozen -> unhashable",
+            "label": null,
+            "output": "Item(name='pen', price=1.5, qty=1, tags=[])\nTrue False\n['name', 'price', 'qty', 'tags']\n{'name': 'pen', 'price': 1.5, 'qty': 3, 'tags': []}\nNone",
+            "isError": false
+          },
+          {
+            "type": "table",
+            "head": [
+              "Option",
+              "Generates / does",
+              "Default"
+            ],
+            "rows": [
+              [
+                "<code>init</code>",
+                "<code>__init__</code> from the fields",
+                "True"
+              ],
+              [
+                "<code>repr</code>",
+                "<code>__repr__</code>",
+                "True"
+              ],
+              [
+                "<code>eq</code>",
+                "<code>__eq__</code> (fields compared as a tuple, same class only)",
+                "True"
+              ],
+              [
+                "<code>order</code>",
+                "<code>__lt__</code>, <code>__le__</code>, <code>__gt__</code>, <code>__ge__</code>",
+                "False"
+              ],
+              [
+                "<code>frozen</code>",
+                "Assignment raises <code>FrozenInstanceError</code>; with <code>eq</code>, also <code>__hash__</code>",
+                "False"
+              ],
+              [
+                "<code>slots</code>",
+                "Builds a new class with <code>__slots__</code> (3.10+)",
+                "False"
+              ],
+              [
+                "<code>kw_only</code>",
+                "All fields keyword-only in <code>__init__</code> (3.10+)",
+                "False"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Mutable defaults and field()",
+        "body": [
+          {
+            "type": "p",
+            "html": "A default value is evaluated once, when the class body runs, and shared by every instance &mdash; the same trap as a mutable default argument. Dataclasses refuse the obvious cases (<code>list</code>, <code>dict</code>, <code>set</code>) outright. Use <code>field(default_factory=...)</code> so each instance gets its own."
+          },
+          {
+            "type": "code",
+            "src": "from dataclasses import dataclass, field\n\ntry:\n    @dataclass\n    class Cart:\n        items: list = []\nexcept ValueError as e:\n    print(\"ValueError:\", e)\n\n@dataclass\nclass Cart:\n    items: list = field(default_factory=list)\n    id: int = field(default=0, repr=False, compare=False)\n\nc1, c2 = Cart(), Cart()\nc1.items.append(\"apple\")\nprint(c1, c2, c1.items is c2.items)\nprint(Cart([\"x\"], id=1) == Cart([\"x\"], id=2))   # id excluded from __eq__",
+            "label": null,
+            "output": "ValueError: mutable default <class 'list'> for field items is not allowed: use default_factory\nCart(items=['apple']) Cart(items=[]) False\nTrue",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "The check only knows about unhashable built-ins. A mutable default of your own class, or a <code>tuple</code> containing a list, is not caught, so do not rely on it."
+          }
+        ]
+      },
+      {
+        "title": "__post_init__, InitVar and frozen dataclasses",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>__post_init__</code> runs at the end of the generated <code>__init__</code>, for validation and derived fields. <code>InitVar</code> declares an <code>__init__</code> parameter that is passed to <code>__post_init__</code> but not stored. <code>field(init=False)</code> is a stored field that <code>__init__</code> does not take."
+          },
+          {
+            "type": "code",
+            "src": "from dataclasses import dataclass, field, InitVar\n\n@dataclass\nclass User:\n    email: str\n    password: InitVar[str]               # used once, never stored\n    password_hash: str = field(init=False, repr=False)\n    domain: str = field(init=False)\n\n    def __post_init__(self, password):\n        if \"@\" not in self.email:\n            raise ValueError(f\"bad email {self.email!r}\")\n        self.password_hash = f\"hash({len(password)} chars)\"\n        self.domain = self.email.split(\"@\")[1]\n\nu = User(\"ann@example.com\", \"s3cret\")\nprint(u, \"|\", u.password_hash, \"|\", hasattr(u, \"password\"))\ntry:\n    User(\"nope\", \"x\")\nexcept ValueError as e:\n    print(\"ValueError:\", e)",
+            "label": null,
+            "output": "User(email='ann@example.com', domain='example.com') | hash(6 chars) | False\nValueError: bad email 'nope'",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<code>frozen=True</code> makes assignment raise, and together with <code>eq=True</code> generates a <code>__hash__</code> from the fields, so instances work as dict keys and set members. Inside <code>__post_init__</code> of a frozen class you need <code>object.__setattr__</code> to set derived fields."
+          },
+          {
+            "type": "code",
+            "src": "from dataclasses import dataclass, field, FrozenInstanceError\n\n@dataclass(frozen=True, order=True)\nclass Version:\n    major: int\n    minor: int\n    label: str = field(default=\"\", compare=False)\n    key: str = field(init=False, compare=False, repr=False)\n\n    def __post_init__(self):\n        object.__setattr__(self, \"key\", f\"{self.major}.{self.minor}\")\n\nv = Version(1, 2, \"beta\")\nprint(sorted({Version(2, 0), v, Version(1, 2)}), v.key)   # label is not compared, so v == Version(1, 2)\ntry:\n    v.major = 9\nexcept FrozenInstanceError as e:\n    print(\"FrozenInstanceError:\", e)",
+            "label": null,
+            "output": "[Version(major=1, minor=2, label='beta'), Version(major=2, minor=0, label='')] 1.2\nFrozenInstanceError: cannot assign to field 'major'",
+            "isError": false
+          },
+          {
+            "type": "note",
+            "text": "Frozen means the fields cannot be rebound, not that the objects they point at are immutable. A frozen dataclass holding a <code>list</code> can still have that list mutated &mdash; and then hashing it fails because lists are unhashable."
+          }
+        ]
+      },
+      {
+        "title": "Choosing a record type",
+        "body": [
+          {
+            "type": "p",
+            "html": "Python has several ways to declare a bundle of named fields. They differ in mutability, memory, and whether they are a class or just a type hint over a dict."
+          },
+          {
+            "type": "code",
+            "src": "from collections import namedtuple\nfrom dataclasses import dataclass\nfrom typing import NamedTuple, TypedDict\n\nclass P1(NamedTuple):\n    x: int\n    y: int\n\n@dataclass\nclass P2:\n    x: int\n    y: int\n\n@dataclass(slots=True, frozen=True)\nclass P3:\n    x: int\n    y: int\n\nclass P4(TypedDict):\n    x: int\n    y: int\n\nfor obj in (P1(1, 2), P2(1, 2), P3(1, 2), P4(x=1, y=2)):\n    print(f\"{type(obj).__name__:5} has __dict__={hasattr(obj, '__dict__')!s:5} repr={obj!r}\")\n\nx, y = P1(1, 2)                        # NamedTuple unpacks like a tuple\nprint(P1(1, 2) == (1, 2), P2(1, 2) == (1, 2))",
+            "label": null,
+            "output": "P1    has __dict__=False repr=P1(x=1, y=2)\nP2    has __dict__=True  repr=P2(x=1, y=2)\nP3    has __dict__=False repr=P3(x=1, y=2)\ndict  has __dict__=False repr={'x': 1, 'y': 2}\nTrue False",
+            "isError": false
+          },
+          {
+            "type": "table",
+            "head": [
+              "",
+              "NamedTuple",
+              "@dataclass",
+              "@dataclass(slots, frozen)",
+              "TypedDict"
+            ],
+            "rows": [
+              [
+                "Mutable",
+                "No",
+                "Yes",
+                "No",
+                "Yes (it is a dict)"
+              ],
+              [
+                "Is a tuple / indexable",
+                "Yes",
+                "No",
+                "No",
+                "No"
+              ],
+              [
+                "Equal to a plain tuple",
+                "Yes",
+                "No",
+                "No",
+                "Equal to a plain dict"
+              ],
+              [
+                "Hashable",
+                "Yes",
+                "No (default)",
+                "Yes",
+                "No"
+              ],
+              [
+                "Methods, validation",
+                "Methods only",
+                "Yes, <code>__post_init__</code>",
+                "Yes",
+                "No"
+              ],
+              [
+                "Best for",
+                "Small immutable records, tuple APIs",
+                "General data classes",
+                "Many small value objects",
+                "Typing JSON-shaped dicts"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Type hints are not enforced",
+        "body": [
+          {
+            "type": "p",
+            "html": "Annotations are metadata. The interpreter stores them and otherwise ignores them: a function annotated <code>-&gt; int</code> may return a string, and a dataclass field annotated <code>int</code> accepts anything. Checking happens in a separate tool (mypy, pyright) before the code runs, or in libraries that choose to read the annotations at run time (pydantic, FastAPI, dataclasses for field discovery)."
+          },
+          {
+            "type": "code",
+            "src": "from dataclasses import dataclass\n\ndef add(a: int, b: int) -> int:\n    return a + b\n\n@dataclass\nclass Box:\n    size: int\n\nprint(add(\"not \", \"checked\"))\nprint(Box(size=\"large\"))\nprint(add.__annotations__)",
+            "label": null,
+            "output": "not checked\nBox(size='large')\n{'a': <class 'int'>, 'b': <class 'int'>, 'return': <class 'int'>}",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Python 3.14 evaluates annotations <em>lazily</em> (PEP 649): they are compiled into a function that runs only when someone asks for <code>__annotations__</code>. Forward references to classes defined later no longer need quotes, and an annotation that names something undefined only fails when it is actually inspected."
+          },
+          {
+            "type": "code",
+            "src": "import annotationlib\n\nclass Node:\n    def link(self, other: Node) -> Tree:     # Tree does not exist yet\n        return other\n\nprint(\"class created fine\")\nann = annotationlib.get_annotations(Node.link, format=annotationlib.Format.FORWARDREF)\nprint(ann)\n\nclass Tree: pass\nprint(Node.link.__annotations__)              # evaluated now that Tree exists",
+            "label": null,
+            "output": "class created fine\n{'other': <class '__main__.Node'>, 'return': ForwardRef('Tree', owner=<function Node.link at 0x...>)}\n{'other': <class '__main__.Node'>, 'return': <class '__main__.Tree'>}",
+            "isError": false
+          },
+          {
+            "type": "caveat",
+            "text": "Before 3.14, annotations were evaluated when the <code>def</code> or <code>class</code> ran, so <code>other: Node</code> inside <code>Node</code> was a <code>NameError</code>; code wrote <code>\"Node\"</code> in quotes or used <code>from __future__ import annotations</code>, which turns every annotation into a string."
+          }
+        ]
+      },
+      {
+        "title": "Generics, Protocols and the typing toolbox",
+        "body": [
+          {
+            "type": "p",
+            "html": "Generics let a hint say what a container holds. Python 3.12 added a compact syntax for type parameters: <code>def first[T](xs: list[T]) -&gt; T</code> declares <code>T</code> right on the function, replacing <code>T = TypeVar(\"T\")</code>."
+          },
+          {
+            "type": "code",
+            "src": "from collections.abc import Callable, Iterable\n\ndef first[T](items: Iterable[T], default: T) -> T:\n    for x in items:\n        return x\n    return default\n\nclass Stack[T]:\n    def __init__(self) -> None:\n        self._items: list[T] = []\n    def push(self, item: T) -> None:\n        self._items.append(item)\n    def pop(self) -> T:\n        return self._items.pop()\n\ntype Handler = Callable[[str], None]          # 3.12 type alias statement\n\ns = Stack[int]()\ns.push(3)\nprint(first([], 0), first(\"abc\", \"?\"), s.pop())\nprint(Stack.__type_params__, Handler.__value__)",
+            "label": null,
+            "output": "0 a 3\n(T,) collections.abc.Callable[[str], None]",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<strong>Protocols</strong> give static <em>duck typing</em>: any class with the right methods matches, with no inheritance. <code>@runtime_checkable</code> also lets <code>isinstance</code> check them &mdash; but only for the presence of the methods, not their signatures."
+          },
+          {
+            "type": "code",
+            "src": "from typing import Protocol, runtime_checkable\n\n@runtime_checkable\nclass SupportsClose(Protocol):\n    def close(self) -> None: ...\n\nclass File:\n    def close(self) -> None:\n        print(\"  file closed\")\n\nclass Socket:\n    def close(self, how):               # different signature!\n        print(\"  socket closed\", how)\n\ndef shutdown(resources: list[SupportsClose]) -> None:\n    for r in resources:\n        r.close()\n\nshutdown([File()])\nprint(isinstance(File(), SupportsClose), isinstance(Socket(), SupportsClose),\n      isinstance(\"text\", SupportsClose))",
+            "label": null,
+            "output": "  file closed\nTrue True False",
+            "isError": false
+          },
+          {
+            "type": "table",
+            "head": [
+              "Hint",
+              "Means"
+            ],
+            "rows": [
+              [
+                "<code>X | None</code> (was <code>Optional[X]</code>)",
+                "X or None"
+              ],
+              [
+                "<code>A | B</code> (was <code>Union[A, B]</code>)",
+                "either type"
+              ],
+              [
+                "<code>Literal[\"r\", \"w\"]</code>",
+                "only these exact values"
+              ],
+              [
+                "<code>Final</code>",
+                "must not be reassigned"
+              ],
+              [
+                "<code>Callable[[int, str], bool]</code>",
+                "a function taking int, str and returning bool"
+              ],
+              [
+                "<code>Self</code>",
+                "the type of the current class (for fluent methods)"
+              ],
+              [
+                "<code>Any</code> vs <code>object</code>",
+                "<code>Any</code> turns checking off; <code>object</code> accepts anything but allows almost nothing"
+              ],
+              [
+                "<code>TYPE_CHECKING</code>",
+                "True only for the type checker: imports used just for hints"
+              ]
+            ]
+          }
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "q": "When would you use <code>__slots__</code>, and what do you give up?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "Use it for classes with many instances and a fixed set of attributes &mdash; nodes, points, records parsed from a large file &mdash; where the per-instance memory and slightly faster attribute access matter, or where you want misspelled attributes to raise. You give up dynamic attributes, the <code>__dict__</code> (so <code>vars(obj)</code> fails), weak references unless you add <code>__weakref__</code>, class-level defaults for slot names, and easy multiple inheritance. Every class in the hierarchy must declare slots or the benefit disappears."
+          },
+          {
+            "type": "p",
+            "html": "<code>@dataclass(slots=True)</code> is the low-effort way to get them: it builds the slotted class for you from the fields."
+          }
+        ]
+      },
+      {
+        "q": "Why does this dataclass raise an error, and what would happen with a plain class?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "code",
+            "src": "from dataclasses import dataclass\n\nclass Plain:\n    def __init__(self, tags=[]):\n        self.tags = tags\n\na, b = Plain(), Plain()\na.tags.append(\"shared!\")\nprint(b.tags)\n\ntry:\n    @dataclass\n    class D:\n        tags: list = []\nexcept ValueError as e:\n    print(\"ValueError:\", e)",
+            "label": null,
+            "output": "['shared!']\nValueError: mutable default <class 'list'> for field tags is not allowed: use default_factory",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Defaults are evaluated once, when the <code>def</code> or <code>class</code> runs, and that one object is shared by every call or instance. The plain class silently shares the list. <code>dataclass</code> detects a <code>list</code>, <code>dict</code> or <code>set</code> default and refuses, pointing you to <code>field(default_factory=list)</code>, which calls the factory once per instance."
+          }
+        ]
+      },
+      {
+        "q": "A frozen dataclass is used as a dict key. A teammate removes <code>frozen=True</code> to allow updates and keys stop working. Why?",
+        "level": "hard",
+        "answer": [
+          {
+            "type": "p",
+            "html": "With <code>eq=True</code> (the default), dataclass sets <code>__hash__ = None</code> unless the class is frozen, because a mutable object whose fields can change must not be hashable &mdash; its hash would change while it sat in a dict. Removing <code>frozen</code> therefore makes instances unhashable, and every dict or set that used them fails."
+          },
+          {
+            "type": "code",
+            "src": "from dataclasses import dataclass\n\n@dataclass(frozen=True)\nclass Key:\n    a: int\n\n@dataclass\nclass MutableKey:\n    a: int\n\nprint(hash(Key(1)) == hash(Key(1)), MutableKey.__hash__)\ntry:\n    {MutableKey(1): \"x\"}\nexcept TypeError as e:\n    print(\"TypeError:\", e)",
+            "label": null,
+            "output": "True None\nTypeError: cannot use 'MutableKey' as a dict key (unhashable type: 'MutableKey')",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "If updates are needed, keep the key frozen and build new values with <code>dataclasses.replace(key, a=2)</code>. Forcing <code>unsafe_hash=True</code> on a mutable class brings back the lost-in-the-wrong-bucket bug."
+          }
+        ]
+      },
+      {
+        "q": "Python ignores type hints at run time. So how do FastAPI and pydantic validate request data from them?",
+        "level": "hard",
+        "answer": [
+          {
+            "type": "p",
+            "html": "Annotations are stored as data on the function or class (<code>__annotations__</code>), and any code can read them. Those libraries call <code>typing.get_type_hints</code> (or <code>annotationlib</code> on 3.14), walk the resulting types, and build validators and converters &mdash; the interpreter itself still checks nothing."
+          },
+          {
+            "type": "code",
+            "src": "import typing\n\ndef validate(func, **kwargs):\n    hints = typing.get_type_hints(func)\n    for name, value in kwargs.items():\n        expected = hints[name]\n        if not isinstance(value, expected):\n            try:\n                kwargs[name] = expected(value)        # coerce, like pydantic\n            except (TypeError, ValueError):\n                raise TypeError(f\"{name}: expected {expected.__name__}, got {value!r}\")\n    return func(**kwargs)\n\ndef create_user(name: str, age: int) -> str:\n    return f\"{name} ({age})\"\n\nprint(validate(create_user, name=\"ann\", age=\"34\"))\ntry:\n    validate(create_user, name=\"bob\", age=\"old\")\nexcept TypeError as e:\n    print(\"TypeError:\", e)",
+            "label": null,
+            "output": "ann (34)\nTypeError: age: expected int, got 'old'",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "q": "What is the difference between a <code>Protocol</code> and an abstract base class?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "An ABC is <em>nominal</em>: a class matches only if it inherits from the ABC (or is registered). A Protocol is <em>structural</em>: any class with matching methods matches, without knowing the Protocol exists. That makes Protocols the right tool for describing what a function needs from third-party objects you cannot change. ABCs can also provide shared method implementations and refuse to instantiate subclasses that miss abstract methods; Protocols are mainly for the type checker, and their <code>isinstance</code> support (with <code>@runtime_checkable</code>) checks only that the method names exist."
+          }
+        ]
+      }
+    ],
+    "refs": [
+      {
+        "label": "Python docs: __slots__",
+        "url": "https://docs.python.org/3/reference/datamodel.html#slots"
+      },
+      {
+        "label": "Python docs: dataclasses",
+        "url": "https://docs.python.org/3/library/dataclasses.html"
+      },
+      {
+        "label": "Python docs: typing",
+        "url": "https://docs.python.org/3/library/typing.html"
+      },
+      {
+        "label": "PEP 649: Deferred evaluation of annotations",
+        "url": "https://peps.python.org/pep-0649/"
+      },
+      {
+        "label": "PEP 695: Type parameter syntax",
+        "url": "https://peps.python.org/pep-0695/"
+      },
+      {
+        "label": "PEP 544: Protocols",
+        "url": "https://peps.python.org/pep-0544/"
+      }
+    ]
+  },
+  {
     "id": "decorators",
     "title": "Decorators",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "<code>@decorator</code> above a <code>def</code> is one line of syntax sugar: <code>func = decorator(func)</code>. That is all the language does. What makes decorators powerful is everything that single call can do &mdash; wrap the function, replace it, register it, attach data to it, or turn it into a completely different kind of object such as a <code>property</code>.",
@@ -3706,8 +4193,467 @@ window.GRAIL_DEEP = [
     ]
   },
   {
+    "id": "generators",
+    "title": "Generators and Iterators",
+    "group": null,
+    "tags": [],
+    "level": null,
+    "summary": "",
+    "intro": [
+      "Every <code>for</code> loop in Python runs on two small methods: <code>__iter__</code> and <code>__next__</code>. Lists, dicts, files, ranges, database cursors and <code>zip</code> objects all speak this one protocol, and that is why they all work in the same loops, comprehensions and built-ins.",
+      "A <strong>generator</strong> is the easiest way to implement the protocol: a function that can pause at <code>yield</code> and resume later with its local variables intact. That single feature gives you lazy pipelines that use constant memory, infinite sequences, two-way coroutines and, historically, the whole foundation <code>async</code>/<code>await</code> was built on."
+    ],
+    "sections": [
+      {
+        "title": "The iterator protocol",
+        "body": [
+          {
+            "type": "p",
+            "html": "An <strong>iterable</strong> is anything with <code>__iter__</code> that returns an iterator. An <strong>iterator</strong> has <code>__next__</code>, which returns the next value or raises <code>StopIteration</code> when there are none left. A <code>for</code> loop is just those two calls plus a <code>try</code>:"
+          },
+          {
+            "type": "code",
+            "src": "nums = [10, 20, 30]\n\n# what `for x in nums: print(x)` actually does\nit = iter(nums)                 # nums.__iter__()\nwhile True:\n    try:\n        x = next(it)            # it.__next__()\n    except StopIteration:\n        break\n    print(x)\n\nprint(type(nums).__name__, \"->\", type(it).__name__)\nprint(iter(it) is it)           # an iterator is its own iterator",
+            "label": null,
+            "output": "10\n20\n30\nlist -> list_iterator\nTrue",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "The same protocol is behind unpacking, <code>in</code>, <code>sum</code>, <code>sorted</code>, <code>list()</code>, <code>dict()</code>, <code>zip</code>, <code>enumerate</code>, <code>str.join</code> and <code>yield from</code>. Implement it once and your object works with all of them."
+          },
+          {
+            "type": "table",
+            "head": [
+              "",
+              "Iterable",
+              "Iterator"
+            ],
+            "rows": [
+              [
+                "Has",
+                "<code>__iter__</code> returning a <em>new</em> iterator",
+                "<code>__next__</code>, and <code>__iter__</code> returning <code>self</code>"
+              ],
+              [
+                "Examples",
+                "<code>list</code>, <code>dict</code>, <code>str</code>, <code>range</code>",
+                "<code>iter([...])</code>, files, generators, <code>map</code>, <code>zip</code>"
+              ],
+              [
+                "Loop twice?",
+                "Yes, each loop gets a fresh iterator",
+                "No, the second loop sees nothing"
+              ],
+              [
+                "Supports <code>len()</code> / indexing?",
+                "Often",
+                "Almost never"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Iterators are single use",
+        "body": [
+          {
+            "type": "p",
+            "html": "Because an iterator is its own iterator, a second loop over it continues where the first one stopped &mdash; usually at the end. This bites when a function receives a <code>map</code>, <code>zip</code>, file or generator and iterates it twice."
+          },
+          {
+            "type": "code",
+            "src": "squares = map(lambda x: x * x, [1, 2, 3, 4])\nprint(sum(squares))      # consumes everything\nprint(sum(squares))      # nothing left\nprint(list(squares))\n\ndef mean(values):\n    return sum(values) / len(list(values))\n\ntry:\n    print(mean(x for x in [2, 4, 6]))\nexcept ZeroDivisionError as e:\n    print(\"ZeroDivisionError:\", e)   # len saw an exhausted generator",
+            "label": null,
+            "output": "30\n0\n[]\nZeroDivisionError: division by zero",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "The second <code>list(values)</code> inside <code>mean</code> found nothing, so the length was 0. Two fixes: materialise once (<code>values = list(values)</code>), or write the function to make a single pass."
+          },
+          {
+            "type": "code",
+            "src": "def mean(values):\n    total = count = 0\n    for v in values:             # one pass, works for any iterable\n        total += v\n        count += 1\n    return total / count\n\nprint(mean(x for x in [2, 4, 6]), mean([1, 2]), mean(range(101)))",
+            "label": null,
+            "output": "4.0 1.5 50.0",
+            "isError": false
+          },
+          {
+            "type": "note",
+            "text": "If a function needs two passes, either accept a <code>Sequence</code> and say so, or call <code>list()</code> on the argument first. Never assume an iterable can be replayed."
+          }
+        ]
+      },
+      {
+        "title": "Generator functions: pause and resume",
+        "body": [
+          {
+            "type": "p",
+            "html": "Any function containing <code>yield</code> is a generator function. Calling it runs <em>none</em> of its body: it returns a generator object. Each <code>next()</code> runs the body until the next <code>yield</code>, hands that value out, and freezes the frame &mdash; locals, the instruction pointer, any open <code>try</code> blocks &mdash; until the next call."
+          },
+          {
+            "type": "code",
+            "src": "import inspect\n\ndef countdown(n):\n    print(\"  started\")\n    while n > 0:\n        print(f\"  yielding {n}\")\n        yield n\n        n -= 1\n    print(\"  finished\")\n\ngen = countdown(2)\nprint(\"created:\", inspect.getgeneratorstate(gen))\nprint(\"got\", next(gen))\nprint(\"state:\", inspect.getgeneratorstate(gen))\nprint(\"got\", next(gen))\ntry:\n    next(gen)\nexcept StopIteration:\n    print(\"StopIteration\")\nprint(\"state:\", inspect.getgeneratorstate(gen))",
+            "label": null,
+            "output": "created: GEN_CREATED\n  started\n  yielding 2\ngot 2\nstate: GEN_SUSPENDED\n  yielding 1\ngot 1\n  finished\nStopIteration\nstate: GEN_CLOSED",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Nothing was printed until the first <code>next()</code>. That laziness is the point: work happens only when a value is asked for, and only as much as is asked for."
+          },
+          {
+            "type": "p",
+            "html": "A <code>return value</code> inside a generator ends it, and the value travels on the <code>StopIteration</code> exception as <code>.value</code>. Loops ignore it; <code>yield from</code> (below) picks it up."
+          }
+        ]
+      },
+      {
+        "title": "Laziness: constant memory and infinite sequences",
+        "body": [
+          {
+            "type": "p",
+            "html": "A list comprehension builds every element up front. A generator expression &mdash; same syntax in parentheses &mdash; produces them one at a time. The memory difference is the whole list versus one frame:"
+          },
+          {
+            "type": "code",
+            "src": "import sys\n\nas_list = [x * x for x in range(1_000_000)]\nas_gen = (x * x for x in range(1_000_000))\n\nprint(f\"list: {sys.getsizeof(as_list):>10,} bytes (just the pointer array)\")\nprint(f\"gen:  {sys.getsizeof(as_gen):>10,} bytes\")\nprint(sum(as_gen) == sum(as_list))",
+            "label": null,
+            "output": "list:  8,448,728 bytes (just the pointer array)\ngen:         208 bytes\nTrue",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Because nothing is computed ahead of time, a generator can be infinite. You take what you need with <code>itertools.islice</code> or stop on a condition:"
+          },
+          {
+            "type": "code",
+            "src": "from itertools import islice, count, takewhile\n\ndef fibonacci():\n    a, b = 0, 1\n    while True:                 # never ends: fine, it is lazy\n        yield a\n        a, b = b, a + b\n\nprint(list(islice(fibonacci(), 10)))\nprint(list(takewhile(lambda x: x < 100, fibonacci())))\nprint(next(n for n in count(1) if n * n > 500))",
+            "label": null,
+            "output": "[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]\n[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]\n23",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Chaining generators gives a <strong>pipeline</strong>: each stage pulls one item from the previous stage, so only one item is in flight at a time no matter how big the input is. This is how you process a 50 GB log file in a few kilobytes of memory."
+          },
+          {
+            "type": "code",
+            "src": "lines = [\n    \"INFO start\", \"ERROR disk full\", \"INFO retry\",\n    \"ERROR disk full\", \"ERROR timeout\", \"INFO done\",\n]\n\ndef read(source):\n    for line in source:\n        print(f\"  read  {line!r}\")\n        yield line\n\nerrors = (l for l in read(lines) if l.startswith(\"ERROR\"))\nmessages = (l.split(\" \", 1)[1] for l in errors)\n\nfirst_two = [next(messages), next(messages)]\nprint(first_two)               # stopped reading after the 4th line",
+            "label": null,
+            "output": "  read  'INFO start'\n  read  'ERROR disk full'\n  read  'INFO retry'\n  read  'ERROR disk full'\n['disk full', 'disk full']",
+            "isError": false
+          },
+          {
+            "type": "caveat",
+            "text": "<code>sys.getsizeof</code> on a list counts only its array of pointers, not the int objects it points at. The real difference here is larger than the number shown."
+          }
+        ]
+      },
+      {
+        "title": "Two-way generators: send, throw, close",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>yield</code> is an expression. <code>gen.send(value)</code> resumes the generator and makes the paused <code>yield</code> evaluate to <code>value</code>. The first resume must be <code>next(gen)</code> (or <code>send(None)</code>) to run up to the first <code>yield</code> &mdash; this is called <em>priming</em>."
+          },
+          {
+            "type": "code",
+            "src": "def running_average():\n    total = count = 0\n    average = None\n    while True:\n        value = yield average      # hand out average, receive value\n        total += value\n        count += 1\n        average = total / count\n\navg = running_average()\nnext(avg)                          # prime: run to the first yield\nfor v in (10, 20, 60):\n    print(f\"sent {v:>2} -> average {avg.send(v)}\")",
+            "label": null,
+            "output": "sent 10 -> average 10.0\nsent 20 -> average 15.0\nsent 60 -> average 30.0",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<code>gen.throw(exc)</code> raises an exception <em>at the paused yield</em>, so the generator can handle it. <code>gen.close()</code> throws <code>GeneratorExit</code>, which runs <code>finally</code> blocks &mdash; generators clean up after themselves."
+          },
+          {
+            "type": "code",
+            "src": "def worker():\n    try:\n        while True:\n            try:\n                job = yield\n                print(f\"  processing {job}\")\n            except ValueError as e:\n                print(f\"  recovered from: {e}\")\n    finally:\n        print(\"  cleanup ran\")\n\nw = worker(); next(w)\nw.send(\"job-1\")\nw.throw(ValueError(\"bad input\"))   # handled inside, generator lives on\nw.send(\"job-2\")\nw.close()                          # GeneratorExit -> finally\nprint(\"closed:\", w.gi_frame is None)",
+            "label": null,
+            "output": "  processing job-1\n  recovered from: bad input\n  processing job-2\n  cleanup ran\nclosed: True",
+            "isError": false
+          },
+          {
+            "type": "note",
+            "text": "This is how coroutines worked before <code>async def</code>: a scheduler sent results into paused generators. <code>await</code> is built on the same machinery &mdash; see the async internals topic."
+          }
+        ]
+      },
+      {
+        "title": "yield from: delegating to a sub-generator",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>yield from sub</code> passes every value of <code>sub</code> straight through, forwards <code>send</code>/<code>throw</code> to it, and evaluates to the sub-generator's <code>return</code> value. It is what lets you split a generator into helper generators."
+          },
+          {
+            "type": "code",
+            "src": "def flatten(items):\n    for x in items:\n        if isinstance(x, list):\n            yield from flatten(x)     # recurse, values pass straight up\n        else:\n            yield x\n\nprint(list(flatten([1, [2, [3, 4], 5], [[6]], 7])))\n\ndef read_block(lines):\n    count = 0\n    for line in lines:\n        if line == \"END\":\n            return count              # becomes the value of yield from\n        count += 1\n        yield line.upper()\n\ndef read_all(lines):\n    it = iter(lines)\n    n1 = yield from read_block(it)\n    n2 = yield from read_block(it)\n    yield f\"blocks had {n1} and {n2} lines\"\n\nprint(list(read_all([\"a\", \"b\", \"END\", \"c\", \"END\"])))",
+            "label": null,
+            "output": "[1, 2, 3, 4, 5, 6, 7]\n['A', 'B', 'C', 'blocks had 2 and 1 lines']",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "The itertools toolkit",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>itertools</code> is a library of lazy building blocks written in C. Knowing a dozen of them replaces most hand-written index loops:"
+          },
+          {
+            "type": "code",
+            "src": "from itertools import (accumulate, batched, chain, groupby, islice,\n                       pairwise, product, starmap, tee, zip_longest)\n\nprint(list(chain([1, 2], (3, 4), \"ab\")))\nprint(list(accumulate([3, 1, 4, 1, 5])))            # running sums\nprint(list(accumulate([3, 1, 4, 1, 5], max)))       # running max\nprint(list(pairwise(\"abcd\")))\nprint(list(batched(range(7), 3)))                   # Python 3.12+\nprint(list(zip_longest(\"ab\", \"wxyz\", fillvalue=\"-\")))\nprint(list(starmap(pow, [(2, 3), (10, 2)])))\nprint(list(islice(product(\"ab\", repeat=2), 3)))\n\na, b = tee(iter([1, 2, 3]))                        # two independent copies\nprint(list(a), list(b))",
+            "label": null,
+            "output": "[1, 2, 3, 4, 'a', 'b']\n[3, 4, 8, 9, 14]\n[3, 3, 4, 4, 5]\n[('a', 'b'), ('b', 'c'), ('c', 'd')]\n[(0, 1, 2), (3, 4, 5), (6,)]\n[('a', 'w'), ('b', 'x'), ('-', 'y'), ('-', 'z')]\n[8, 100]\n[('a', 'a'), ('a', 'b'), ('b', 'a')]\n[1, 2, 3] [1, 2, 3]",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<code>groupby</code> deserves a warning of its own: it groups <em>consecutive</em> equal keys, like Unix <code>uniq</code>, not all equal keys. Sort by the same key first."
+          },
+          {
+            "type": "code",
+            "src": "from itertools import groupby\n\nwords = [\"apple\", \"bob\", \"avocado\", \"banana\", \"cherry\", \"blue\"]\nfirst = lambda w: w[0]\n\nprint([(k, list(g)) for k, g in groupby(words, key=first)])\nprint([(k, list(g)) for k, g in groupby(sorted(words, key=first), key=first)])",
+            "label": null,
+            "output": "[('a', ['apple']), ('b', ['bob']), ('a', ['avocado']), ('b', ['banana']), ('c', ['cherry']), ('b', ['blue'])]\n[('a', ['apple', 'avocado']), ('b', ['bob', 'banana', 'blue']), ('c', ['cherry'])]",
+            "isError": false
+          },
+          {
+            "type": "table",
+            "head": [
+              "Need",
+              "Reach for"
+            ],
+            "rows": [
+              [
+                "First n items / a slice of an iterator",
+                "<code>islice(it, n)</code>, <code>islice(it, start, stop, step)</code>"
+              ],
+              [
+                "Concatenate iterables",
+                "<code>chain(a, b)</code>, <code>chain.from_iterable(nested)</code>"
+              ],
+              [
+                "Running total / max",
+                "<code>accumulate</code>"
+              ],
+              [
+                "Neighbouring pairs",
+                "<code>pairwise</code>"
+              ],
+              [
+                "Fixed-size chunks",
+                "<code>batched</code> (3.12+)"
+              ],
+              [
+                "Group runs of equal keys",
+                "<code>groupby</code> (sort first)"
+              ],
+              [
+                "Cartesian product, permutations, combinations",
+                "<code>product</code>, <code>permutations</code>, <code>combinations</code>"
+              ],
+              [
+                "Infinite counters and cycles",
+                "<code>count</code>, <code>cycle</code>, <code>repeat</code>"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Pitfalls",
+        "body": [
+          {
+            "type": "p",
+            "html": "<strong>A generator expression evaluates its first <code>for</code> immediately, and everything else lazily.</strong> The outermost iterable is captured when the expression is created; conditions and other names are looked up when items are pulled."
+          },
+          {
+            "type": "code",
+            "src": "data = [1, 2, 3]\nlimit = 2\ngen = (x for x in data if x >= limit)\n\ndata = [10, 20, 30]      # too late: the first `for` already took the old list\nlimit = 3                # not too late: the condition reads `limit` lazily\nprint(list(gen))",
+            "label": null,
+            "output": "[3]",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<strong>A <code>StopIteration</code> escaping inside a generator is turned into <code>RuntimeError</code></strong> (PEP 479). Before Python 3.7 it silently ended the generator, hiding bugs. A bare <code>next()</code> on an empty iterator inside a generator is the usual culprit."
+          },
+          {
+            "type": "code",
+            "src": "def first_of_each(groups):\n    for g in groups:\n        yield next(iter(g))        # raises StopIteration on an empty group\n\ntry:\n    print(list(first_of_each([[1, 2], [], [3]])))\nexcept RuntimeError as e:\n    print(\"RuntimeError:\", e)\n\ndef first_of_each_fixed(groups):\n    for g in groups:\n        first = next(iter(g), None)  # default instead of raising\n        if first is not None:\n            yield first\n\nprint(list(first_of_each_fixed([[1, 2], [], [3]])))",
+            "label": null,
+            "output": "RuntimeError: generator raised StopIteration\n[1, 3]",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<strong>Generators do not run until iterated.</strong> A function with a <code>yield</code> anywhere in it is a generator, even if that <code>yield</code> is never reached. Calling it for its side effects does nothing."
+          },
+          {
+            "type": "code",
+            "src": "def save(records, debug=False):\n    for r in records:\n        print(\"saving\", r)\n    if debug:\n        yield \"debug info\"           # this line makes save() a generator\n\nresult = save([\"a\", \"b\"])            # nothing printed\nprint(type(result).__name__)\nlist(result)                         # now it runs",
+            "label": null,
+            "output": "generator\nsaving a\nsaving b",
+            "isError": false
+          }
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "q": "What is the difference between an iterable and an iterator? Is a list an iterator?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "An iterable can produce an iterator (<code>__iter__</code>). An iterator produces values (<code>__next__</code>) and is its own iterable (<code>__iter__</code> returns <code>self</code>). A list is iterable but not an iterator: <code>next([1, 2])</code> is a <code>TypeError</code>, and every <code>for</code> loop over a list gets a fresh <code>list_iterator</code>, which is why lists can be looped over repeatedly while generators cannot."
+          },
+          {
+            "type": "code",
+            "src": "from collections.abc import Iterable, Iterator\n\nfor obj in ([1, 2], iter([1, 2]), (x for x in \"ab\"), range(3), open(__file__)):\n    print(f\"{type(obj).__name__:16} iterable={isinstance(obj, Iterable)!s:5} \"\n          f\"iterator={isinstance(obj, Iterator)}\")",
+            "label": null,
+            "output": "list             iterable=True  iterator=False\nlist_iterator    iterable=True  iterator=True\ngenerator        iterable=True  iterator=True\nrange            iterable=True  iterator=False\nTextIOWrapper    iterable=True  iterator=True",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "q": "Implement <code>range</code>-like iteration for a class two ways: as an iterator class and as a generator. Which would you choose?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "code",
+            "src": "class CountUpIterator:\n    \"\"\"Explicit iterator: state lives in attributes.\"\"\"\n    def __init__(self, stop):\n        self.i, self.stop = 0, stop\n    def __iter__(self):\n        return self\n    def __next__(self):\n        if self.i >= self.stop:\n            raise StopIteration\n        self.i += 1\n        return self.i - 1\n\nclass CountUp:\n    \"\"\"Iterable whose __iter__ is a generator: state lives in the frame.\"\"\"\n    def __init__(self, stop):\n        self.stop = stop\n    def __iter__(self):\n        i = 0\n        while i < self.stop:\n            yield i\n            i += 1\n\nit, c = CountUpIterator(3), CountUp(3)\nprint(list(it), list(it))      # iterator: single use\nprint(list(c), list(c))        # iterable: fresh generator each time",
+            "label": null,
+            "output": "[0, 1, 2] []\n[0, 1, 2] [0, 1, 2]",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Prefer the generator version: it is shorter, cannot forget to raise <code>StopIteration</code>, and making <code>__iter__</code> a generator automatically makes the object re-iterable. Write an explicit iterator class only when the iterator needs extra methods (e.g. <code>peek()</code>, <code>seek()</code>) or must be picklable."
+          }
+        ]
+      },
+      {
+        "q": "What does this print, and why?",
+        "level": "hard",
+        "answer": [
+          {
+            "type": "code",
+            "src": "def gen():\n    try:\n        yield 1\n        yield 2\n    finally:\n        print(\"finally\")\n\nfor x in gen():\n    print(x)\n    break\nprint(\"after loop\")",
+            "label": null,
+            "output": "1\nfinally\nafter loop",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<code>1</code>, then <code>finally</code>, then <code>after loop</code>. Breaking out of the loop drops the last reference to the generator. CPython frees it immediately, and a generator's finaliser calls <code>close()</code>, which raises <code>GeneratorExit</code> at the paused <code>yield</code> and runs the <code>finally</code>."
+          },
+          {
+            "type": "p",
+            "html": "That timing is a CPython reference-counting detail. On PyPy, or if something else still references the generator, the cleanup happens later. If cleanup must happen at a known point, use <code>contextlib.closing(gen())</code> or call <code>gen.close()</code> yourself."
+          }
+        ]
+      },
+      {
+        "q": "Why can't you use a generator twice, and how do you share one stream between two consumers?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "A generator is an iterator; its frame advances and never rewinds. To give two consumers the same stream, either materialise it (<code>list</code>) or use <code>itertools.tee</code>, which buffers items that one copy has seen and the other has not."
+          },
+          {
+            "type": "code",
+            "src": "from itertools import tee\n\ndef numbers():\n    for i in range(5):\n        print(f\"  produce {i}\")\n        yield i\n\nevens_src, odds_src = tee(numbers())\nevens = [x for x in evens_src if x % 2 == 0]   # pulls everything once\nodds = [x for x in odds_src if x % 2]          # served from tee's buffer\nprint(evens, odds)",
+            "label": null,
+            "output": "  produce 0\n  produce 1\n  produce 2\n  produce 3\n  produce 4\n[0, 2, 4] [1, 3]",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Each value was produced once. The cost: <code>tee</code> keeps everything that one copy has consumed and the other has not. If one consumer runs all the way ahead, that is the whole stream in memory &mdash; in which case <code>list()</code> is simpler and no worse."
+          }
+        ]
+      },
+      {
+        "q": "What does <code>yield from</code> do that a <code>for</code> loop with <code>yield</code> doesn't?",
+        "level": "hard",
+        "answer": [
+          {
+            "type": "p",
+            "html": "For plain iteration they are equivalent. The differences show up with two-way generators: <code>yield from</code> forwards <code>send()</code> and <code>throw()</code> into the sub-generator, calls its <code>close()</code> correctly, and evaluates to the sub-generator's <code>return</code> value. A <code>for</code> loop drops all of that."
+          },
+          {
+            "type": "code",
+            "src": "def inner():\n    received = yield \"ready\"\n    return f\"inner got {received}\"\n\ndef with_yield_from():\n    result = yield from inner()\n    yield result\n\ndef with_for_loop():\n    for v in inner():\n        yield v\n    yield \"return value is lost\"\n\nfor outer in (with_yield_from, with_for_loop):\n    g = outer()\n    print(next(g), \"->\", g.send(\"hello\"))",
+            "label": null,
+            "output": "ready -> inner got hello\nready -> return value is lost",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "In the <code>for</code> version, <code>send(\"hello\")</code> went to the <em>outer</em> generator's <code>yield</code>. The loop then called <code>next()</code> on <code>inner</code>, so <code>received</code> was <code>None</code>, and <code>inner</code>'s return value vanished inside the loop's <code>StopIteration</code>."
+          }
+        ]
+      },
+      {
+        "q": "You need to read a 20 GB CSV and write the rows that match a filter, transformed, to a new file. Sketch the design.",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "A pipeline of generators: a reader that yields rows from the open file (files are already lazy iterators over lines), a filter stage, a transform stage, and a writer that consumes the pipeline. Memory stays at one row plus buffers, no matter how big the file is; each stage is separately testable with a list as input."
+          },
+          {
+            "type": "code",
+            "src": "import csv, io\n\nsource = io.StringIO(\"id,amount\\n1,50\\n2,700\\n3,1200\\n4,30\\n\")\nsink = io.StringIO()\n\ndef read_rows(f):\n    yield from csv.DictReader(f)\n\ndef large(rows, threshold):\n    return (r for r in rows if int(r[\"amount\"]) >= threshold)\n\ndef with_fee(rows):\n    for r in rows:\n        yield {**r, \"fee\": round(int(r[\"amount\"]) * 0.02, 2)}\n\ndef write(rows, f):\n    w = None\n    for n, r in enumerate(rows, 1):\n        if w is None:\n            w = csv.DictWriter(f, fieldnames=list(r))\n            w.writeheader()\n        w.writerow(r)\n    return n if w else 0\n\nprint(\"rows written:\", write(with_fee(large(read_rows(source), 500)), sink))\nprint(sink.getvalue().strip())",
+            "label": null,
+            "output": "rows written: 2\nid,amount,fee\n2,700,14.0\n3,1200,24.0",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Things to mention: <code>csv</code> handles quoting so do not split on commas yourself; open files with <code>newline=\"\"</code> for <code>csv</code>; and the pipeline is single-pass, so counting rows has to happen inside a stage, as <code>write</code> does here."
+          }
+        ]
+      }
+    ],
+    "refs": [
+      {
+        "label": "Python docs: Iterator types",
+        "url": "https://docs.python.org/3/library/stdtypes.html#iterator-types"
+      },
+      {
+        "label": "Python docs: Generator expressions and yield",
+        "url": "https://docs.python.org/3/reference/expressions.html#yield-expressions"
+      },
+      {
+        "label": "Python docs: itertools",
+        "url": "https://docs.python.org/3/library/itertools.html"
+      },
+      {
+        "label": "PEP 479: Change StopIteration handling inside generators",
+        "url": "https://peps.python.org/pep-0479/"
+      },
+      {
+        "label": "PEP 380: Syntax for delegating to a subgenerator",
+        "url": "https://peps.python.org/pep-0380/"
+      }
+    ]
+  },
+  {
     "id": "context-managers",
     "title": "Context Managers",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "A <code>with</code> block guarantees that setup is paired with teardown, whether the block finishes normally, returns early, or raises. Files get closed, locks get released, transactions get committed or rolled back. The object that provides the setup and teardown is a <strong>context manager</strong>, and the protocol behind it is two methods: <code>__enter__</code> and <code>__exit__</code>.",
@@ -4137,8 +5083,359 @@ window.GRAIL_DEEP = [
     ]
   },
   {
+    "id": "import-system",
+    "title": "The Import System",
+    "group": null,
+    "tags": [],
+    "level": null,
+    "summary": "",
+    "intro": [
+      "<code>import x</code> looks like a declaration, but it is an ordinary statement that runs at run time: it finds a file, executes it top to bottom to build a module object, caches that object, and binds a name. Almost every confusing import bug &mdash; circular imports, a change that &ldquo;didn&rsquo;t take&rdquo;, a module imported twice, <code>from x import y</code> seeing a stale value &mdash; follows directly from those four steps.",
+      "This topic walks through the steps, then through packages, relative imports, circular imports, <code>__main__</code>, reloading, lazy loading and finally the hooks that let you import from anywhere."
+    ],
+    "sections": [
+      {
+        "title": "What import actually does",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>import spam</code> does this:"
+          },
+          {
+            "type": "p",
+            "html": "1. Look in <code>sys.modules</code>. If <code>\"spam\"</code> is there, use that object and stop.<br>2. Otherwise ask each <em>finder</em> on <code>sys.meta_path</code> for a <em>module spec</em> (where it is, how to load it).<br>3. Create an empty module object, <strong>put it in <code>sys.modules</code> first</strong>, then execute the module's code with that object's <code>__dict__</code> as globals.<br>4. Bind the name <code>spam</code> in the importing namespace."
+          },
+          {
+            "type": "code",
+            "src": "import sys, tempfile, pathlib\n\ntmp = pathlib.Path(tempfile.mkdtemp())\n(tmp / \"spam.py\").write_text(\n    'print(\"  executing spam.py\")\\n'\n    'value = 42\\n'\n)\nsys.path.insert(0, str(tmp))\n\nprint(\"in cache before:\", \"spam\" in sys.modules)\nimport spam\nprint(\"in cache after: \", \"spam\" in sys.modules)\nimport spam                        # cache hit: nothing printed\nimport spam as again\nprint(again is spam is sys.modules[\"spam\"], spam.value)\nprint(type(spam).__name__, spam.__name__, spam.__spec__.loader.__class__.__name__)",
+            "label": null,
+            "output": "in cache before: False\n  executing spam.py\nin cache after:  True\nTrue 42\nmodule spam SourceFileLoader",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Module code runs <strong>once per process</strong>, however many times and from however many files it is imported. That is why module-level code is the natural place for configuration and singletons, and also why expensive work at import time slows down every program that touches the module."
+          },
+          {
+            "type": "note",
+            "text": "A module is just an object whose attributes are its global variables. <code>spam.value</code> is <code>spam.__dict__[\"value\"]</code>."
+          }
+        ]
+      },
+      {
+        "title": "import x vs from x import y",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>import x</code> binds the module. <code>from x import y</code> imports the module the same way, then copies the <em>current</em> value of <code>x.y</code> into a new local name. If <code>x</code> later rebinds <code>y</code>, your copy does not change."
+          },
+          {
+            "type": "code",
+            "src": "import sys, tempfile, pathlib\ntmp = pathlib.Path(tempfile.mkdtemp()); sys.path.insert(0, str(tmp))\n\n(tmp / \"settings.py\").write_text(\n    \"debug = False\\n\"\n    \"def enable():\\n\"\n    \"    global debug\\n\"\n    \"    debug = True\\n\"\n)\n\nimport settings\nfrom settings import debug           # a copy of the binding, taken now\n\nsettings.enable()\nprint(\"settings.debug:\", settings.debug)   # reads the module's current value\nprint(\"debug:         \", debug)            # still the old object",
+            "label": null,
+            "output": "settings.debug: True\ndebug:          False",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "This is also why monkeypatching in tests has to target the module that <em>uses</em> a name. If <code>app.py</code> did <code>from time import sleep</code>, patching <code>time.sleep</code> does nothing to <code>app.sleep</code>; patch <code>app.sleep</code> instead."
+          },
+          {
+            "type": "table",
+            "head": [
+              "Form",
+              "Binds",
+              "Sees later rebinding?"
+            ],
+            "rows": [
+              [
+                "<code>import pkg.mod</code>",
+                "<code>pkg</code> (the top-level package)",
+                "Yes, via <code>pkg.mod.name</code>"
+              ],
+              [
+                "<code>import pkg.mod as m</code>",
+                "<code>m</code> = the submodule",
+                "Yes, via <code>m.name</code>"
+              ],
+              [
+                "<code>from pkg.mod import name</code>",
+                "<code>name</code> = the object right now",
+                "No"
+              ],
+              [
+                "<code>from pkg import mod</code>",
+                "<code>mod</code> = the submodule",
+                "Yes, via <code>mod.name</code>"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Where Python looks: sys.path and finders",
+        "body": [
+          {
+            "type": "p",
+            "html": "The default finders search <code>sys.path</code> in order: the script's directory (or the current directory for <code>-m</code> and the REPL), <code>PYTHONPATH</code>, the standard library, then <code>site-packages</code>. The first match wins, which is how a local file called <code>random.py</code> or <code>email.py</code> breaks the standard library module with the same name."
+          },
+          {
+            "type": "code",
+            "src": "import sys, importlib.util\n\nprint([getattr(f, \"__name__\", type(f).__name__) for f in sys.meta_path])\n\nfor name in (\"json\", \"math\", \"sys\", \"os\", \"not_a_real_module\"):\n    spec = importlib.util.find_spec(name)\n    if spec is None:\n        print(f\"{name:18} not found\")\n        continue\n    loader = getattr(spec.loader, \"__name__\", type(spec.loader).__name__)\n    kind = spec.origin if spec.origin in (\"built-in\", \"frozen\") else spec.origin.rsplit(\".\", 1)[-1]\n    print(f\"{name:18} loader={loader:22} origin={kind}\")",
+            "label": null,
+            "output": "['BuiltinImporter', 'FrozenImporter', 'PathFinder']\njson               loader=SourceFileLoader       origin=py\nmath               loader=ExtensionFileLoader    origin=so\nsys                loader=BuiltinImporter        origin=built-in\nos                 loader=FrozenImporter         origin=frozen\nnot_a_real_module  not found",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Built-in modules like <code>sys</code> are compiled into the interpreter; <code>math</code> is usually a C extension (<code>.so</code>/<code>.pyd</code>); <code>json</code> is a package of <code>.py</code> files. All three come back as the same kind of module object."
+          },
+          {
+            "type": "caveat",
+            "text": "CPython also <em>freezes</em> a few startup modules (like <code>os</code> and <code>codecs</code>) into the binary for faster start-up, so their spec says <code>frozen</code> rather than pointing at a file."
+          }
+        ]
+      },
+      {
+        "title": "Packages and relative imports",
+        "body": [
+          {
+            "type": "p",
+            "html": "A <strong>package</strong> is a module with a <code>__path__</code>: a directory that can contain submodules. Importing <code>pkg.sub</code> imports <code>pkg</code> first (running its <code>__init__.py</code>), then <code>pkg.sub</code>, and sets <code>sub</code> as an attribute on <code>pkg</code>. A directory without <code>__init__.py</code> still imports, as a <em>namespace package</em> that can be spread across several directories."
+          },
+          {
+            "type": "code",
+            "src": "import sys, tempfile, pathlib\ntmp = pathlib.Path(tempfile.mkdtemp()); sys.path.insert(0, str(tmp))\n\npkg = tmp / \"shop\"; (pkg / \"models\").mkdir(parents=True)\n(pkg / \"__init__.py\").write_text('print(\"  init shop\")\\nVERSION = \"1.0\"\\n')\n(pkg / \"models\" / \"__init__.py\").write_text('print(\"  init shop.models\")\\n')\n(pkg / \"models\" / \"order.py\").write_text(\n    \"from .. import VERSION          # up one package\\n\"\n    \"from . import line              # sibling module\\n\"\n    \"def describe():\\n\"\n    \"    return f'order v{VERSION} with {line.KIND}'\\n\"\n)\n(pkg / \"models\" / \"line.py\").write_text('KIND = \"line items\"\\n')\n\nimport shop.models.order\nprint(shop.models.order.describe())\nprint(shop.models.order.__package__, \"|\", \"shop.models.line\" in sys.modules)\nprint(hasattr(shop, \"__path__\"), hasattr(shop.models.order, \"__path__\"))",
+            "label": null,
+            "output": "  init shop\n  init shop.models\norder v1.0 with line items\nshop.models | True\nTrue False",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Relative imports resolve against the module's <code>__package__</code>, not against the file system. A file run directly as a script has <code>__name__ == \"__main__\"</code> and no package, so its relative imports fail. Run it as a module instead: <code>python -m shop.models.order</code>."
+          },
+          {
+            "type": "code",
+            "src": "import subprocess, sys, tempfile, pathlib\ntmp = pathlib.Path(tempfile.mkdtemp())\n(tmp / \"app\").mkdir()\n(tmp / \"app\" / \"__init__.py\").write_text(\"\")\n(tmp / \"app\" / \"util.py\").write_text(\"NAME = 'util'\\n\")\n(tmp / \"app\" / \"main.py\").write_text(\n    \"from .util import NAME\\nprint('ok, imported', NAME, 'as', __name__)\\n\")\n\ndef run(*args):\n    p = subprocess.run([sys.executable, *args], cwd=tmp, capture_output=True, text=True)\n    return (p.stdout or p.stderr.strip().splitlines()[-1]).strip()\n\nprint(\"python app/main.py ->\", run(\"app/main.py\"))\nprint(\"python -m app.main ->\", run(\"-m\", \"app.main\"))",
+            "label": null,
+            "output": "python app/main.py -> ImportError: attempted relative import with no known parent package\npython -m app.main -> ok, imported util as __main__",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Circular imports",
+        "body": [
+          {
+            "type": "p",
+            "html": "Step 3 above is the key to circular imports: a module is placed in <code>sys.modules</code> <em>before</em> its code runs. If <code>a</code> imports <code>b</code> and <code>b</code> imports <code>a</code>, the second import does not loop forever &mdash; it gets the half-built <code>a</code> from the cache. Anything <code>a</code> has not defined yet is missing."
+          },
+          {
+            "type": "code",
+            "src": "import sys, tempfile, pathlib\ntmp = pathlib.Path(tempfile.mkdtemp()); sys.path.insert(0, str(tmp))\n\n(tmp / \"orders.py\").write_text(\n    \"import customers\\n\"\n    \"def total(): return 100\\n\"\n)\n(tmp / \"customers.py\").write_text(\n    \"from orders import total     # orders is only half executed\\n\"\n    \"def spend(): return total()\\n\"\n)\ntry:\n    import orders\nexcept ImportError as e:\n    print(\"ImportError:\", str(e).rsplit(\" (/\", 1)[0])    # drop the temp path",
+            "label": null,
+            "output": "ImportError: cannot import name 'total' from partially initialized module 'orders' (most likely due to a circular import)",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Recent Python versions even name the cause in the message (&ldquo;most likely due to a circular import&rdquo;). There are three standard fixes, in order of preference:"
+          },
+          {
+            "type": "p",
+            "html": "1. <strong>Restructure</strong>: move what both modules need into a third module that imports neither.<br>2. <strong>Import the module, not the name</strong>: <code>import orders</code> and call <code>orders.total()</code> inside the function, so the lookup happens at call time, after both modules have finished.<br>3. <strong>Import inside the function</strong> that needs it, deferring the import until it runs."
+          },
+          {
+            "type": "code",
+            "src": "import sys, tempfile, pathlib\ntmp = pathlib.Path(tempfile.mkdtemp()); sys.path.insert(0, str(tmp))\n\n(tmp / \"orders.py\").write_text(\n    \"import customers\\n\"\n    \"def total(): return 100\\n\"\n)\n(tmp / \"customers.py\").write_text(\n    \"import orders                  # just the (half-built) module object\\n\"\n    \"def spend(): return orders.total() * 2   # looked up at call time\\n\"\n)\nimport orders, customers\nprint(customers.spend())",
+            "label": null,
+            "output": "200",
+            "isError": false
+          },
+          {
+            "type": "caveat",
+            "text": "<code>from typing import TYPE_CHECKING</code> plus <code>if TYPE_CHECKING: from orders import Order</code> is the usual way to break a cycle that exists only for type hints: the import runs for the type checker, never at run time."
+          }
+        ]
+      },
+      {
+        "title": "__name__, __main__ and the double-import trap",
+        "body": [
+          {
+            "type": "p",
+            "html": "The file you run is executed as the module <code>__main__</code>, not under its file name. If another module then imports it by name, Python finds no <code>\"script\"</code> in <code>sys.modules</code> and executes the file a <em>second</em> time as a separate module. Two copies means two sets of globals and two different classes with the same name."
+          },
+          {
+            "type": "code",
+            "src": "import subprocess, sys, tempfile, pathlib\ntmp = pathlib.Path(tempfile.mkdtemp())\n(tmp / \"registry.py\").write_text(\n    \"print(f'  running registry.py as {__name__!r}')\\n\"\n    \"items = []\\n\"\n    \"if __name__ == '__main__':\\n\"\n    \"    items.append('from main')\\n\"\n    \"    import helper\\n\"\n    \"    print('  __main__.items =', items)\\n\"\n)\n(tmp / \"helper.py\").write_text(\n    \"import registry\\n\"\n    \"print('  registry.items  =', registry.items)\\n\"\n)\nprint(subprocess.run([sys.executable, \"registry.py\"], cwd=tmp,\n                     capture_output=True, text=True).stdout.rstrip())",
+            "label": null,
+            "output": "  running registry.py as '__main__'\n  running registry.py as 'registry'\n  registry.items  = []\n  __main__.items = ['from main']",
+            "isError": false
+          },
+          {
+            "type": "note",
+            "text": "Keep scripts thin: put logic in importable modules and make the entry point a small <code>main()</code> called under <code>if __name__ == \"__main__\":</code>, or run it with <code>python -m package.module</code>."
+          }
+        ]
+      },
+      {
+        "title": "Reloading, lazy loading and module __getattr__",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>importlib.reload(mod)</code> re-executes the module's code <em>into the same module object</em>. Code that holds the module sees new values; code that copied names with <code>from mod import x</code>, and instances of the old classes, do not."
+          },
+          {
+            "type": "code",
+            "src": "import sys, tempfile, pathlib, importlib\ntmp = pathlib.Path(tempfile.mkdtemp()); sys.path.insert(0, str(tmp))\nsrc = tmp / \"shapes.py\"\n\nsrc.write_text(\"class Square:\\n    sides = 4\\nRATE = 1\\n\")\nimport shapes\nfrom shapes import RATE\nold_obj = shapes.Square()\n\nsrc.write_text(\"class Square:\\n    sides = 4\\nRATE = 2\\n\")\nimportlib.invalidate_caches()\nsame = importlib.reload(shapes)\n\nprint(same is shapes, shapes.RATE, RATE)\nprint(isinstance(old_obj, shapes.Square))   # old instance, new class object",
+            "label": null,
+            "output": "True 2 1\nFalse",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Python 3.7 added module-level <code>__getattr__</code> and <code>__dir__</code> (PEP 562). They let a module compute attributes on demand &mdash; for deprecation warnings, or to defer importing a heavy submodule until someone actually uses it."
+          },
+          {
+            "type": "code",
+            "src": "import sys, tempfile, pathlib\ntmp = pathlib.Path(tempfile.mkdtemp()); sys.path.insert(0, str(tmp))\n(tmp / \"toolkit\").mkdir()\n(tmp / \"toolkit\" / \"__init__.py\").write_text(\n    \"import importlib\\n\"\n    \"_LAZY = {'plotting'}\\n\"\n    \"def __getattr__(name):\\n\"\n    \"    if name in _LAZY:\\n\"\n    \"        mod = importlib.import_module(f'.{name}', __name__)\\n\"\n    \"        globals()[name] = mod          # cache: next access is a plain lookup\\n\"\n    \"        return mod\\n\"\n    \"    raise AttributeError(f'module {__name__!r} has no attribute {name!r}')\\n\"\n)\n(tmp / \"toolkit\" / \"plotting.py\").write_text(\"print('  (expensive plotting import)')\\ndef plot(): return 'plotted'\\n\")\n\nimport toolkit\nprint(\"plotting loaded?\", \"toolkit.plotting\" in sys.modules)\nprint(toolkit.plotting.plot())\nprint(\"plotting loaded?\", \"toolkit.plotting\" in sys.modules)",
+            "label": null,
+            "output": "plotting loaded? False\n  (expensive plotting import)\nplotted\nplotting loaded? True",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Import hooks: importing from anywhere",
+        "body": [
+          {
+            "type": "p",
+            "html": "Finders on <code>sys.meta_path</code> are ordinary objects with a <code>find_spec</code> method. Add your own and <code>import</code> can load modules from a database, a zip in memory, a URL or generated source. This is how pytest rewrites <code>assert</code> statements, and how tools like editable installs work."
+          },
+          {
+            "type": "code",
+            "src": "import sys, importlib.abc, importlib.util\n\nSOURCES = {\n    \"virtual_math\": \"def double(x):\\n    return 2 * x\\n\",\n    \"virtual_greet\": \"NAME = 'from a dict'\\n\",\n}\n\nclass DictFinder(importlib.abc.MetaPathFinder, importlib.abc.Loader):\n    def find_spec(self, name, path, target=None):\n        if name in SOURCES:\n            return importlib.util.spec_from_loader(name, self, origin=\"dict\")\n        return None                      # let the next finder try\n\n    def create_module(self, spec):\n        return None                      # default module object\n\n    def exec_module(self, module):\n        exec(SOURCES[module.__name__], module.__dict__)\n\nsys.meta_path.insert(0, DictFinder())\n\nimport virtual_math, virtual_greet\nprint(virtual_math.double(21), virtual_greet.NAME, virtual_math.__spec__.origin)",
+            "label": null,
+            "output": "42 from a dict dict",
+            "isError": false
+          }
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "q": "Why does a module's top-level code run only once, even if twenty files import it?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "The first import puts the module object in <code>sys.modules</code>; every later <code>import</code> statement checks that dict first and just binds the cached object. Deleting the entry (<code>del sys.modules[\"m\"]</code>) makes the next import execute the file again and produce a <em>new</em> module object &mdash; while everything that imported the old one keeps it."
+          },
+          {
+            "type": "code",
+            "src": "import sys, tempfile, pathlib\ntmp = pathlib.Path(tempfile.mkdtemp()); sys.path.insert(0, str(tmp))\n(tmp / \"counter.py\").write_text(\"print('  executing counter.py')\\nhits = 0\\n\")\n\nimport counter\ncounter.hits += 1\nimport counter                   # cached, still hits == 1\nfirst = counter\ndel sys.modules[\"counter\"]\nimport counter                   # executes again: a brand new module\nprint(first.hits, counter.hits, first is counter)",
+            "label": null,
+            "output": "  executing counter.py\n  executing counter.py\n1 0 False",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "q": "Explain how a circular import fails with <code>ImportError: cannot import name</code> but works with <code>import module</code>.",
+        "level": "hard",
+        "answer": [
+          {
+            "type": "p",
+            "html": "When <code>a</code> starts executing, it is already in <code>sys.modules</code> as an empty-ish module. If it imports <code>b</code>, and <code>b</code> does <code>from a import f</code>, the import system finds the partly built <code>a</code> in the cache and tries to read <code>a.f</code> immediately &mdash; but <code>a</code> has not reached <code>def f</code> yet, so the name lookup fails."
+          },
+          {
+            "type": "p",
+            "html": "<code>import a</code> in <code>b</code> only binds the module object, which already exists. The attribute lookup <code>a.f</code> is postponed to when <code>b</code>'s function actually runs, by which time <code>a</code> has finished executing. Same cycle, but no name is needed before it exists. The better fix is still to remove the cycle by moving shared code into a third module."
+          }
+        ]
+      },
+      {
+        "q": "You changed a library file but the running program still behaves the old way. List the reasons.",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "<strong>sys.modules cache</strong>: the module was imported before the edit and is never re-read. Restart, or <code>importlib.reload</code> with its caveats. <strong>Stale names</strong>: even after a reload, <code>from lib import f</code> elsewhere still holds the old <code>f</code>, and existing instances keep their old class. <strong>A different copy</strong>: <code>sys.path</code> found another <code>lib</code> earlier (an installed version shadowing your editable checkout); check <code>lib.__file__</code>. <strong>Stale bytecode</strong> is rarely the cause: CPython compares the source's modification time against the <code>.pyc</code> header and recompiles."
+          },
+          {
+            "type": "code",
+            "src": "import json, importlib.util\nprint(json.__name__, \"from\", json.__spec__.origin.rsplit(\"/\", 2)[-2] + \"/\" + json.__spec__.origin.rsplit(\"/\", 1)[-1])\nprint(\"cached at:\", importlib.util.cache_from_source(\"lib.py\"))",
+            "label": null,
+            "output": "json from json/__init__.py\ncached at: __pycache__/lib.cpython-314.pyc",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "q": "What is the difference between running <code>python pkg/tool.py</code> and <code>python -m pkg.tool</code>?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "<code>python pkg/tool.py</code> runs the file as <code>__main__</code> with no package, and puts <code>pkg/</code> (the script's directory) at the front of <code>sys.path</code>. Relative imports fail, and absolute imports of <code>pkg.something</code> only work if the project root happens to be importable."
+          },
+          {
+            "type": "p",
+            "html": "<code>python -m pkg.tool</code> imports <code>pkg</code> first (running its <code>__init__</code>), runs <code>tool</code> as <code>__main__</code> with <code>__package__ = \"pkg\"</code>, and puts the current directory on <code>sys.path</code>. Relative imports work and the module is found the same way any other code would find it. For anything inside a package, <code>-m</code> is the right way to run it."
+          }
+        ]
+      },
+      {
+        "q": "How would you make <code>import heavy_lib</code> at the top of a CLI not slow down <code>--help</code>?",
+        "level": "hard",
+        "answer": [
+          {
+            "type": "p",
+            "html": "Options, from simplest: move the import inside the function that needs it (imports after the first are a dict lookup, so the repeated cost is negligible); use a module-level <code>__getattr__</code> in your own package to import submodules on first attribute access; or use <code>importlib.util.LazyLoader</code>, which returns a module object whose code runs on first attribute access."
+          },
+          {
+            "type": "code",
+            "src": "import sys, importlib.util\n\ndef lazy_import(name):\n    spec = importlib.util.find_spec(name)\n    loader = importlib.util.LazyLoader(spec.loader)\n    spec.loader = loader\n    module = importlib.util.module_from_spec(spec)\n    sys.modules[name] = module\n    loader.exec_module(module)          # does NOT run the module yet\n    return module\n\ndecimal = lazy_import(\"decimal\")\nprint(type(decimal).__name__)           # a lazy module proxy\nprint(decimal.Decimal(\"1.10\") + decimal.Decimal(\"2.205\"))   # first use runs it\nprint(type(decimal).__name__)",
+            "label": null,
+            "output": "_LazyModule\n3.305\nmodule",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Measure first with <code>python -X importtime -c \"import yourcli\"</code>, which prints the time spent in every import, nested."
+          }
+        ]
+      }
+    ],
+    "refs": [
+      {
+        "label": "Python docs: The import system",
+        "url": "https://docs.python.org/3/reference/import.html"
+      },
+      {
+        "label": "Python docs: importlib",
+        "url": "https://docs.python.org/3/library/importlib.html"
+      },
+      {
+        "label": "Python docs: __main__",
+        "url": "https://docs.python.org/3/library/__main__.html"
+      },
+      {
+        "label": "PEP 562: Module __getattr__ and __dir__",
+        "url": "https://peps.python.org/pep-0562/"
+      },
+      {
+        "label": "PEP 420: Implicit namespace packages",
+        "url": "https://peps.python.org/pep-0420/"
+      }
+    ]
+  },
+  {
     "id": "async",
     "title": "Async Internals",
+    "group": null,
+    "tags": [],
+    "level": null,
     "summary": "",
     "intro": [
       "<code>asyncio</code> runs thousands of concurrent tasks on one thread, with no locks around your data and no thread switches. There is no magic in how: a coroutine is a function that can pause, <code>await</code> is the pause point, and the event loop is an ordinary loop that resumes whichever coroutine has something to do next.",
@@ -4541,6 +5838,314 @@ window.GRAIL_DEEP = [
       {
         "label": "Python docs: TaskGroup",
         "url": "https://docs.python.org/3/library/asyncio-task.html#task-groups"
+      }
+    ]
+  },
+  {
+    "id": "asyncio-pitfalls",
+    "title": "asyncio Pitfalls",
+    "group": null,
+    "tags": [],
+    "level": null,
+    "summary": "",
+    "intro": [
+      "The async internals topic explains how the event loop and coroutines work. This one is about how async code goes wrong in practice. Almost every bug has the same root: <strong>an event loop is one thread running one task at a time, and a task only gives up control at an <code>await</code></strong>. Forget that, and you get code that blocks every other request, loses exceptions, races on shared state, or never runs at all.",
+      "Each section shows the bug running, then the fix. The interview versions of these questions are &ldquo;why is my async server slow&rdquo; and &ldquo;where did my exception go&rdquo;."
+    ],
+    "sections": [
+      {
+        "title": "Forgetting await",
+        "body": [
+          {
+            "type": "p",
+            "html": "Calling a coroutine function does not run it. It creates a coroutine object, which does nothing until it is awaited or wrapped in a task. Forget the <code>await</code> and the work silently never happens; the only clue is a <code>RuntimeWarning</code> when the unused coroutine is garbage-collected."
+          },
+          {
+            "type": "code",
+            "src": "import asyncio, sys, warnings\nsys.stderr = sys.stdout                   # show the warning inline\nwarnings.simplefilter(\"always\")\n\nsaved = []\n\nasync def save(item):\n    await asyncio.sleep(0)\n    saved.append(item)\n\nasync def main():\n    save(\"a\")                             # BUG: creates a coroutine, never runs it\n    await save(\"b\")\n    print(\"saved:\", saved)\n\nasyncio.run(main())",
+            "label": null,
+            "output": "asyncio_pitfalls_s0_1.py:12: RuntimeWarning: coroutine 'save' was never awaited\n  save(\"a\")                             # BUG: creates a coroutine, never runs it\nRuntimeWarning: Enable tracemalloc to get the object allocation traceback\nsaved: ['b']",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Turn on debug mode (<code>PYTHONASYNCIODEBUG=1</code> or <code>asyncio.run(main(), debug=True)</code>) in development, and use a linter: both catch this and several of the problems below. Type checkers flag an unused coroutine result too."
+          }
+        ]
+      },
+      {
+        "title": "Blocking the event loop",
+        "body": [
+          {
+            "type": "p",
+            "html": "While a coroutine runs code that does not <code>await</code> &mdash; <code>time.sleep</code>, <code>requests.get</code>, a big JSON parse, a CPU loop &mdash; nothing else on the loop can run. Ten concurrent requests become ten sequential ones."
+          },
+          {
+            "type": "code",
+            "src": "import asyncio, time\n\nasync def handler_blocking(i):\n    time.sleep(0.2)                       # blocks the whole loop\n    return i\n\nasync def handler_async(i):\n    await asyncio.sleep(0.2)              # yields to the loop while waiting\n    return i\n\nasync def timed(handler):\n    start = time.perf_counter()\n    await asyncio.gather(*(handler(i) for i in range(5)))\n    return round(time.perf_counter() - start, 1)\n\nprint(\"time.sleep    :\", asyncio.run(timed(handler_blocking)), \"s\")\nprint(\"asyncio.sleep :\", asyncio.run(timed(handler_async)), \"s\")",
+            "label": null,
+            "output": "time.sleep    : 1.0 s\nasyncio.sleep : 0.2 s",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "When you must call blocking code (a library with no async version, file I/O, a C extension), move it to a thread with <code>asyncio.to_thread</code>. The loop keeps running while the thread waits. For CPU-bound work, threads do not help under the GIL; use a <code>ProcessPoolExecutor</code> with <code>loop.run_in_executor</code>."
+          },
+          {
+            "type": "code",
+            "src": "import asyncio, time\n\ndef legacy_fetch(i):                      # a blocking library call\n    time.sleep(0.2)\n    return f\"result-{i}\"\n\nasync def main():\n    start = time.perf_counter()\n    results = await asyncio.gather(*(asyncio.to_thread(legacy_fetch, i) for i in range(5)))\n    print(results)\n    print(\"elapsed\", round(time.perf_counter() - start, 1), \"s\")\n\nasyncio.run(main())",
+            "label": null,
+            "output": "['result-0', 'result-1', 'result-2', 'result-3', 'result-4']\nelapsed 0.2 s",
+            "isError": false
+          },
+          {
+            "type": "table",
+            "head": [
+              "Work",
+              "Inside async code, use"
+            ],
+            "rows": [
+              [
+                "Waiting on network or timers",
+                "An async library (<code>aiohttp</code>, <code>httpx.AsyncClient</code>, <code>asyncpg</code>) and <code>await</code>"
+              ],
+              [
+                "A blocking call you cannot replace",
+                "<code>await asyncio.to_thread(fn, *args)</code>"
+              ],
+              [
+                "CPU-heavy computation",
+                "<code>await loop.run_in_executor(process_pool, fn, *args)</code>"
+              ],
+              [
+                "A tight loop over many items",
+                "<code>await asyncio.sleep(0)</code> every so often to let others run"
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Fire-and-forget tasks and lost exceptions",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>asyncio.create_task</code> schedules a coroutine and returns a <code>Task</code>. The event loop keeps only a <em>weak</em> reference to it, so a task nobody holds can be garbage-collected mid-flight. And if a task raises and nobody awaits it, the exception is not raised anywhere &mdash; it is logged as &ldquo;Task exception was never retrieved&rdquo;, if you are lucky, when the task is destroyed."
+          },
+          {
+            "type": "code",
+            "src": "import asyncio, sys\nsys.stderr = sys.stdout\n\nasync def send_email(to):\n    await asyncio.sleep(0.01)\n    raise ConnectionError(f\"SMTP down, could not mail {to}\")\n\nasync def main():\n    asyncio.create_task(send_email(\"ann\"))   # nobody keeps it, nobody awaits it\n    await asyncio.sleep(0.05)\n    print(\"request handled, user told 'email sent'\")\n\nasyncio.run(main())\nprint(\"program finished without raising\")",
+            "label": null,
+            "output": "Task exception was never retrieved\nfuture: <Task finished name='Task-2' coro=<send_email() done, defined at asyncio_pitfalls_s2_1.py:4> exception=ConnectionError('SMTP down, could not mail ann')>\nTraceback (most recent call last):\n  File \"asyncio_pitfalls_s2_1.py\", line 6, in send_email\n    raise ConnectionError(f\"SMTP down, could not mail {to}\")\nConnectionError: SMTP down, could not mail ann\nrequest handled, user told 'email sent'\nprogram finished without raising",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "The fix is to keep a strong reference and to observe the result. A set plus <code>add_done_callback</code> is the pattern the asyncio docs recommend for background tasks:"
+          },
+          {
+            "type": "code",
+            "src": "import asyncio\n\nbackground = set()\n\ndef spawn(coro):\n    task = asyncio.create_task(coro)\n    background.add(task)                      # strong reference\n    task.add_done_callback(on_done)\n    return task\n\ndef on_done(task):\n    background.discard(task)\n    if not task.cancelled() and task.exception():\n        print(f\"background task failed: {task.exception()!r}\")\n\nasync def send_email(to):\n    await asyncio.sleep(0.01)\n    raise ConnectionError(f\"SMTP down, could not mail {to}\")\n\nasync def main():\n    spawn(send_email(\"ann\"))\n    await asyncio.sleep(0.05)\n    print(\"pending tasks:\", len(background))\n\nasyncio.run(main())",
+            "label": null,
+            "output": "background task failed: ConnectionError('SMTP down, could not mail ann')\npending tasks: 0",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "gather vs TaskGroup",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>asyncio.gather(*aws)</code> runs awaitables concurrently and returns their results in order. If one raises, gather raises that exception to you immediately &mdash; but the <em>other</em> tasks keep running in the background, unsupervised. <code>asyncio.TaskGroup</code> (3.11+) is structured concurrency: if any task fails, the group cancels the rest, waits for them, and raises all failures together as an <code>ExceptionGroup</code>."
+          },
+          {
+            "type": "code",
+            "src": "import asyncio\n\nlog = []\n\nasync def job(name, delay, fail=False):\n    try:\n        await asyncio.sleep(delay)\n        if fail:\n            raise ValueError(f\"{name} failed\")\n        log.append(f\"{name} done\")\n    except asyncio.CancelledError:\n        log.append(f\"{name} cancelled\")\n        raise\n\nasync def with_gather():\n    try:\n        await asyncio.gather(job(\"a\", 0.01, fail=True), job(\"b\", 0.05))\n    except ValueError as e:\n        log.append(f\"caught {e}\")\n    await asyncio.sleep(0.1)                  # b is still running...\n\nasync def with_taskgroup():\n    try:\n        async with asyncio.TaskGroup() as tg:\n            tg.create_task(job(\"a\", 0.01, fail=True))\n            tg.create_task(job(\"b\", 0.05))\n    except* ValueError as eg:\n        log.append(f\"caught {[str(e) for e in eg.exceptions]}\")\n\nfor scenario in (with_gather, with_taskgroup):\n    log.clear()\n    asyncio.run(scenario())\n    print(f\"{scenario.__name__:15}\", log)",
+            "label": null,
+            "output": "with_gather     ['caught a failed', 'b done']\nwith_taskgroup  ['b cancelled', \"caught ['a failed']\"]",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "With gather, <code>b</code> finished after the error was already handled &mdash; in a real server, still holding a connection or writing to a closed resource. With the TaskGroup, <code>b</code> was cancelled before the <code>async with</code> exited. <code>gather(..., return_exceptions=True)</code> is the other option when you want every result, failures included, as values."
+          },
+          {
+            "type": "note",
+            "text": "Prefer <code>TaskGroup</code> for &ldquo;run these together, and they all succeed or none do&rdquo;. Use <code>gather(return_exceptions=True)</code> for &ldquo;run all of these and tell me how each one went&rdquo;."
+          }
+        ]
+      },
+      {
+        "title": "Swallowing cancellation",
+        "body": [
+          {
+            "type": "p",
+            "html": "Cancelling a task throws <code>CancelledError</code> into it at its current <code>await</code>. Since 3.8 <code>CancelledError</code> derives from <code>BaseException</code>, so <code>except Exception</code> does not catch it &mdash; but a bare <code>except:</code> or <code>except BaseException</code> does, and if the handler does not re-raise, the task carries on as if nothing happened. Timeouts and TaskGroups stop working."
+          },
+          {
+            "type": "code",
+            "src": "import asyncio\n\nasync def stubborn():\n    for i in range(3):\n        try:\n            await asyncio.sleep(0.05)\n        except BaseException:              # BUG: eats CancelledError\n            print(f\"  swallowed cancellation on step {i}\")\n    return \"finished anyway\"\n\nasync def polite():\n    try:\n        await asyncio.sleep(0.05)\n    except asyncio.CancelledError:\n        print(\"  cleaning up, then re-raising\")\n        raise\n    return \"finished\"\n\nasync def main():\n    for fn in (stubborn, polite):\n        try:\n            async with asyncio.timeout(0.01):\n                print(fn.__name__, \"->\", await fn())\n        except TimeoutError:\n            print(fn.__name__, \"-> TimeoutError (cancellation worked)\")\n\nasyncio.run(main())",
+            "label": null,
+            "output": "  swallowed cancellation on step 0\nstubborn -> finished anyway\n  cleaning up, then re-raising\npolite -> TimeoutError (cancellation worked)",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<code>stubborn</code> blew through its 10 ms timeout and ran all three steps. Rule: if you catch <code>CancelledError</code> to clean up, re-raise it. Use <code>try/finally</code> when all you need is cleanup. If a piece of work must not be interrupted, wrap it in <code>asyncio.shield</code> and accept that the caller may stop waiting for it."
+          }
+        ]
+      },
+      {
+        "title": "Race conditions across await",
+        "body": [
+          {
+            "type": "p",
+            "html": "Async code has no preemption, so a block with no <code>await</code> in it is atomic. But every <code>await</code> is a point where other tasks run, and a check-then-act sequence that spans one is a race &mdash; exactly as with threads."
+          },
+          {
+            "type": "code",
+            "src": "import asyncio\n\nclass Account:\n    def __init__(self, balance):\n        self.balance = balance\n        self.lock = asyncio.Lock()\n\n    async def withdraw_racy(self, amount):\n        if self.balance >= amount:          # check\n            await asyncio.sleep(0)          # e.g. an audit-log call\n            self.balance -= amount          # act: the check may be stale\n            return True\n        return False\n\n    async def withdraw_safe(self, amount):\n        async with self.lock:               # check and act under one lock\n            if self.balance >= amount:\n                await asyncio.sleep(0)\n                self.balance -= amount\n                return True\n            return False\n\nasync def main():\n    for method in (\"withdraw_racy\", \"withdraw_safe\"):\n        acct = Account(100)\n        ok = await asyncio.gather(*(getattr(acct, method)(80) for _ in range(3)))\n        print(f\"{method:14} approved={ok.count(True)} balance={acct.balance}\")\n\nasyncio.run(main())",
+            "label": null,
+            "output": "withdraw_racy  approved=3 balance=-140\nwithdraw_safe  approved=1 balance=20",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "All three racy withdrawals passed the check before any of them reached the subtraction. An <code>asyncio.Lock</code> is cheap; it does not block the thread, it only makes other tasks that want the same lock wait their turn."
+          },
+          {
+            "type": "caveat",
+            "text": "<code>asyncio.Lock</code> protects against other <em>tasks</em> on the same loop. It is not thread-safe. State shared with threads (from <code>to_thread</code> or executors) needs <code>threading.Lock</code> or, better, no sharing."
+          }
+        ]
+      },
+      {
+        "title": "Unbounded concurrency",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>gather</code> over 10,000 URLs starts 10,000 requests at once: sockets run out, the remote server rate-limits you, memory spikes. Bound concurrency with a <code>Semaphore</code>, or use a fixed pool of worker tasks reading from a bounded <code>asyncio.Queue</code>, which also gives backpressure: producers wait when the queue is full."
+          },
+          {
+            "type": "code",
+            "src": "import asyncio\n\nin_flight = peak = 0\n\nasync def fetch(i, limit):\n    global in_flight, peak\n    async with limit:\n        in_flight += 1\n        peak = max(peak, in_flight)\n        await asyncio.sleep(0.01)\n        in_flight -= 1\n        return i\n\nasync def main():\n    global peak\n    for size in (1000, 20):\n        peak = 0\n        limit = asyncio.Semaphore(size)\n        results = await asyncio.gather(*(fetch(i, limit) for i in range(200)))\n        print(f\"semaphore({size:4}): {len(results)} done, peak concurrency {peak}\")\n\nasyncio.run(main())",
+            "label": null,
+            "output": "semaphore(1000): 200 done, peak concurrency 200\nsemaphore(  20): 200 done, peak concurrency 20",
+            "isError": false
+          },
+          {
+            "type": "code",
+            "src": "import asyncio\n\nasync def producer(queue, n):\n    for i in range(n):\n        await queue.put(i)                 # waits while the queue is full\n    for _ in range(WORKERS):\n        await queue.put(None)              # one stop signal per worker\n\nasync def worker(name, queue, done):\n    while (item := await queue.get()) is not None:\n        await asyncio.sleep(0.001)\n        done.append(item)\n\nWORKERS = 4\n\nasync def main():\n    queue, done = asyncio.Queue(maxsize=10), []\n    async with asyncio.TaskGroup() as tg:\n        tg.create_task(producer(queue, 100))\n        for w in range(WORKERS):\n            tg.create_task(worker(w, queue, done))\n    print(len(done), sorted(done) == list(range(100)))\n\nasyncio.run(main())",
+            "label": "worker pool with a bounded queue",
+            "output": "100 True",
+            "isError": false
+          }
+        ]
+      },
+      {
+        "title": "Loops, threads and asyncio.run",
+        "body": [
+          {
+            "type": "p",
+            "html": "<code>asyncio.run</code> creates a new event loop, runs one coroutine, and closes the loop. It cannot be called from code that is already running inside a loop (a Jupyter cell, an async web handler). From async code, just <code>await</code>. From another <em>thread</em> that needs to submit work to a running loop, use <code>asyncio.run_coroutine_threadsafe</code>; nothing else on a loop is thread-safe."
+          },
+          {
+            "type": "code",
+            "src": "import asyncio, threading\n\nasync def compute(x):\n    await asyncio.sleep(0.01)\n    return x * 2\n\nasync def main():\n    coro = compute(1)\n    try:\n        asyncio.run(coro)\n    except RuntimeError as e:\n        coro.close()                      # never started: discard it quietly\n        print(\"RuntimeError:\", e)\n\n    loop = asyncio.get_running_loop()\n    results = []\n\n    def from_thread():\n        fut = asyncio.run_coroutine_threadsafe(compute(21), loop)\n        results.append(fut.result(timeout=1))   # blocks this thread, not the loop\n\n    t = threading.Thread(target=from_thread)\n    t.start()\n    await asyncio.to_thread(t.join)\n    print(\"from thread:\", results)\n\nasyncio.run(main())",
+            "label": null,
+            "output": "RuntimeError: asyncio.run() cannot be called from a running event loop\nfrom thread: [42]",
+            "isError": false
+          }
+        ]
+      }
+    ],
+    "questions": [
+      {
+        "q": "An async web service handles one request at a time even though every handler is <code>async def</code>. What do you look for?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "Something in the request path blocks the event loop. Usual suspects: a synchronous HTTP client (<code>requests</code>), a synchronous database driver, <code>time.sleep</code>, file I/O, heavy JSON or template rendering, password hashing, or any long CPU loop. <code>async def</code> only makes a function <em>able</em> to yield; it yields only at an <code>await</code> on something that actually waits asynchronously."
+          },
+          {
+            "type": "p",
+            "html": "To find it: run with <code>asyncio.run(..., debug=True)</code> (or <code>PYTHONASYNCIODEBUG=1</code>), which logs every callback that holds the loop for longer than <code>loop.slow_callback_duration</code> (100 ms by default). Fix with an async library, <code>asyncio.to_thread</code> for blocking I/O, or a process pool for CPU work."
+          }
+        ]
+      },
+      {
+        "q": "What is printed, and why is the second call so different?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "code",
+            "src": "import asyncio, time\n\nasync def work(n):\n    await asyncio.sleep(0.1)\n    return n\n\nasync def sequential():\n    return [await work(i) for i in range(5)]\n\nasync def concurrent():\n    return await asyncio.gather(*(work(i) for i in range(5)))\n\nfor fn in (sequential, concurrent):\n    t = time.perf_counter()\n    result = asyncio.run(fn())\n    print(f\"{fn.__name__:10} {result} {round(time.perf_counter() - t, 1)}s\")",
+            "label": null,
+            "output": "sequential [0, 1, 2, 3, 4] 0.5s\nconcurrent [0, 1, 2, 3, 4] 0.1s",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "Awaiting coroutines one after another runs them one after another: <code>await</code> means &ldquo;wait for this to finish before continuing&rdquo;. Concurrency only happens when several tasks exist at the same time &mdash; <code>gather</code> wraps each coroutine in a task, so all five sleeps overlap."
+          }
+        ]
+      },
+      {
+        "q": "Why can <code>asyncio.create_task(coro())</code> without keeping the result lose work?",
+        "level": "hard",
+        "answer": [
+          {
+            "type": "p",
+            "html": "The event loop holds tasks only through weak references. A task that nothing else references can be garbage-collected before it finishes &mdash; the coroutine just stops. Even if it survives, an exception in it is never re-raised anywhere; it is only logged when the task object is destroyed. Keep tasks in a collection (or a <code>TaskGroup</code>), remove them in a done-callback, and check <code>task.exception()</code> there. In 3.12+ <code>asyncio.TaskGroup</code> or a framework-provided background-task API is the cleaner choice."
+          }
+        ]
+      },
+      {
+        "q": "Write a function that runs coroutines with at most N in flight and returns results in input order.",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "code",
+            "src": "import asyncio, random\n\nasync def bounded_gather(coros, limit):\n    sem = asyncio.Semaphore(limit)\n    active = peak = 0\n\n    async def run(coro):\n        nonlocal active, peak\n        async with sem:\n            active += 1\n            peak = max(peak, active)\n            try:\n                return await coro\n            finally:\n                active -= 1\n\n    results = await asyncio.gather(*(run(c) for c in coros))\n    return results, peak\n\nasync def fetch(i):\n    await asyncio.sleep(random.random() / 100)\n    return i * i\n\nresults, peak = asyncio.run(bounded_gather([fetch(i) for i in range(30)], limit=5))\nprint(results[:8], \"... peak in flight:\", peak)",
+            "label": null,
+            "output": "[0, 1, 4, 9, 16, 25, 36, 49] ... peak in flight: 5",
+            "isError": false
+          },
+          {
+            "type": "p",
+            "html": "<code>gather</code> preserves input order regardless of completion order, and the semaphore caps how many bodies run at once. Note the coroutine objects are all created up front; that is cheap, since a coroutine does nothing until awaited. For very large or unbounded inputs, use a fixed set of workers pulling from a queue instead, so you never hold millions of pending coroutines."
+          }
+        ]
+      },
+      {
+        "q": "When should you not use asyncio at all?",
+        "level": "medium",
+        "answer": [
+          {
+            "type": "p",
+            "html": "When the work is CPU-bound (asyncio adds overhead and no parallelism &mdash; use processes), when the important libraries have no async versions (you would wrap everything in <code>to_thread</code>, which is just a thread pool with extra steps), or when concurrency is low and a few threads would be simpler. asyncio shines with many concurrent, mostly-waiting I/O operations: thousands of sockets, websockets, proxies, crawlers, chat servers. It also &ldquo;colours&rdquo; functions: async functions can call sync ones but not the reverse without a loop, so adopting it is a whole-codebase decision."
+          }
+        ]
+      }
+    ],
+    "refs": [
+      {
+        "label": "Python docs: Developing with asyncio",
+        "url": "https://docs.python.org/3/library/asyncio-dev.html"
+      },
+      {
+        "label": "Python docs: Task groups and create_task",
+        "url": "https://docs.python.org/3/library/asyncio-task.html"
+      },
+      {
+        "label": "Python docs: asyncio synchronisation primitives",
+        "url": "https://docs.python.org/3/library/asyncio-sync.html"
+      },
+      {
+        "label": "PEP 654: Exception groups and except*",
+        "url": "https://peps.python.org/pep-0654/"
       }
     ]
   }

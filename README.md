@@ -146,10 +146,11 @@ A topic may define `prelude` for helpers its solutions share (`ListNode`,
 
 ## The Python Deep Dive section
 
-[`content/deepdive/`](content/deepdive/) holds eleven long-form topics on how
+[`content/deepdive/`](content/deepdive/) holds fifteen long-form topics on how
 CPython works — the GIL, memory management, bytecode, the object model,
-magic (dunder) methods, descriptors, metaclasses, MRO, decorators, context managers and async
-internals. Each topic is theory with runnable examples, then medium/hard
+magic (dunder) methods, descriptors, metaclasses, MRO, `__slots__`/dataclasses/
+typing, decorators, generators and iterators, context managers, the import
+system, async internals and asyncio pitfalls. Each topic is theory with runnable examples, then medium/hard
 interview questions with answers.
 
 The one rule holds here too: every `code(...)` block is executed by
@@ -186,6 +187,49 @@ SQLite cannot show a behaviour (Redis structures, replication, sharding) a
 small deterministic model stands in. To measure work without timings, some
 snippets count SQLite VM instructions with the progress handler.
 
+## The System Design section
+
+[`content/systemdesign/`](content/systemdesign/) holds ten topics: the
+interview framework and estimation, load balancing, API design, rate limiting,
+unique IDs, queues and delivery guarantees, timeouts/retries/circuit breakers,
+and three walkthroughs (URL shortener, news feed, chat). Same blocks and
+`summary` field as Databases, same renderer (`systemdesign.html` points
+`deepdive.js` at `window.GRAIL_SD`). Every code block is a small, seeded Python
+simulation of the mechanism under discussion — a rate limiter, a balancer, a
+retry storm — executed by the build like everything else. Caching, sharding
+and replication live in Databases and are not repeated here.
+
+## The Low-Level Design section
+
+[`content/lld/`](content/lld/) holds six pattern guides (how to approach an LLD
+round and choose a pattern, SOLID, creational, structural, and two behavioral
+pages) followed by 35 design problems. Every problem is built with `problem()`
+from [`_lld.py`](content/lld/_lld.py), so all of them share one shape:
+requirements, a "signal in the problem → pattern → why" table, the class
+design, a complete implementation with a demo (executed by the build), how the
+design absorbs the likely follow-up change, and interview questions.
+
+Topics carry `group`, `tags` (patterns used) and `level`; `deepdive.js` uses
+them to group the index, filter problems by pattern and show difficulty. The
+"Practise each pattern" table on the approach page is generated from the
+problems' tags in `content/lld/__init__.py`.
+
+## Interview prep, search and site chrome
+
+- `prep.html` — pattern cheat sheet (every template in `content/prep.py` is
+  executed against its `check`, and its example problem ids are validated),
+  the Python complexity sheet, and a timed mock interview drawn from the DSA
+  problems.
+- `search.html` — one search box over gotchas, DSA problems, Deep Dive,
+  Databases, System Design and Prep. `build.py` writes a compact
+  `assets/js/search-index.js` from the other generated data files, so the
+  search page never loads the multi-megabyte DSA data. Press `/` on any page.
+- Light/dark theme: `assets/js/theme.js` runs in `<head>` (saved choice, else
+  the OS preference) and `app.js` adds the toggle to the nav. Colours are CSS
+  tokens; the light palette overrides them under `[data-theme="light"]`.
+- `app.js` also adds a Copy button to every source code block, including ones
+  rendered later, via a `MutationObserver`.
+
 ## Layout
 
 ```
@@ -196,6 +240,10 @@ dsa.html              DSA topic index, or one topic via ?topic=
 problem.html          single DSA problem via ?id=
 deepdive.html         Deep Dive topic boxes, or one topic via ?topic=
 databases.html        Databases topics, same renderer as the Deep Dive
+systemdesign.html     System Design topics, same renderer
+lld.html              Low-Level Design: pattern guides + 35 design problems
+prep.html             patterns, complexity sheet, mock interview
+search.html           site-wide search over search-index.js
 build.py              runs every snippet AND every DSA solution; fails loudly
 fetch_leetcode.py     caches problem statements into content/leetcode.json
 content/entries.py    the 103 gotcha entries
@@ -204,6 +252,11 @@ content/trees_*.py    more Binary Trees sections (paths, views, LCA, DP, AVL...)
 content/bst_*.py      the BST sections of Binary Trees
 content/deepdive/     Python Deep Dive topics, one module each
 content/databases/    Databases topics, one module each
+content/systemdesign/ System Design topics, one module each
+content/lld/          LLD pattern guides and design problems
+content/prep.py       pattern cheat sheet + complexity tables
+content/range_query.py   DSA topic: segment trees and Fenwick trees
+content/string_algos.py  DSA topic: KMP, Rabin-Karp, Z-function
 content/heap.py       DSA topic: heaps and priority queues
 content/dp.py         DSA topic: dynamic programming, seven patterns
 content/leetcode.json GENERATED by fetch_leetcode.py
