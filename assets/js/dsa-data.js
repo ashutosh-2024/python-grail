@@ -18049,6 +18049,15 @@ window.GRAIL_DSA = [
             "ref": {
               "label": "Read on GeeksforGeeks",
               "url": "https://www.geeksforgeeks.org/dsa/program-for-nth-fibonacci-number/"
+            },
+            "viz": {
+              "src": "assets/viz/nth-fibonacci.json?v=3b94ea87",
+              "chapters": [
+                "Plain recursion repeats work",
+                "Bottom-up table",
+                "Keep two numbers"
+              ],
+              "frames": 42
             }
           },
           {
@@ -18159,7 +18168,17 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "foundations",
             "sectionTitle": "Recursion, memo, table",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/climbing-stairs.json?v=8ba2c6fb",
+              "chapters": [
+                "The question",
+                "Plain recursion repeats work",
+                "Bottom-up table",
+                "Keep two numbers"
+              ],
+              "frames": 34
+            }
           }
         ]
       },
@@ -18281,7 +18300,17 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "linear",
             "sectionTitle": "1-D linear DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/house-robber.json?v=23ebd9bd",
+              "chapters": [
+                "The question",
+                "Plain recursion repeats work",
+                "Fill the table",
+                "Two variables"
+              ],
+              "frames": 38
+            }
           },
           {
             "id": "house-robber-ii",
@@ -18396,7 +18425,17 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "linear",
             "sectionTitle": "1-D linear DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/house-robber-ii.json?v=5b396e99",
+              "chapters": [
+                "The question",
+                "Without the last house",
+                "Without the first house",
+                "Take the better one"
+              ],
+              "frames": 15
+            }
           },
           {
             "id": "maximum-subarray",
@@ -18509,7 +18548,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "linear",
             "sectionTitle": "1-D linear DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/maximum-subarray.json?v=47e2e82f",
+              "chapters": [
+                "Kadane's scan"
+              ],
+              "frames": 11
+            }
           },
           {
             "id": "decode-ways",
@@ -18632,7 +18678,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "linear",
             "sectionTitle": "1-D linear DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/decode-ways.json?v=ab4140ff",
+              "chapters": [
+                "The question",
+                "Fill the table"
+              ],
+              "frames": 9
+            }
           },
           {
             "id": "delete-and-earn",
@@ -18753,7 +18807,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "linear",
             "sectionTitle": "1-D linear DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/delete-and-earn.json?v=58c3d546",
+              "chapters": [
+                "Turn it into House Robber",
+                "Rob the values"
+              ],
+              "frames": 13
+            }
           }
         ]
       },
@@ -18895,6 +18957,14 @@ window.GRAIL_DSA = [
             "ref": {
               "label": "Read on GeeksforGeeks",
               "url": "https://www.geeksforgeeks.org/dsa/0-1-knapsack-problem-dp-10/"
+            },
+            "viz": {
+              "src": "assets/viz/knapsack-01.json?v=0e5dfdea",
+              "chapters": [
+                "Fill the table",
+                "One row, right to left"
+              ],
+              "frames": 58
             }
           },
           {
@@ -19031,7 +19101,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "knapsack",
             "sectionTitle": "Knapsack: 0/1 and unbounded",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/partition-equal-subset-sum.json?v=90cdb7c8",
+              "chapters": [
+                "The question",
+                "Reachable sums"
+              ],
+              "frames": 7
+            }
           },
           {
             "id": "target-sum",
@@ -19159,7 +19237,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "knapsack",
             "sectionTitle": "Knapsack: 0/1 and unbounded",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/target-sum.json?v=ba410d1a",
+              "chapters": [
+                "Count the sign choices"
+              ],
+              "frames": 7
+            }
           },
           {
             "id": "last-stone-weight-ii",
@@ -19282,7 +19367,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "knapsack",
             "sectionTitle": "Knapsack: 0/1 and unbounded",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/last-stone-weight-ii.json?v=f348e5db",
+              "chapters": [
+                "The question",
+                "Reachable sums"
+              ],
+              "frames": 10
+            }
           },
           {
             "id": "ones-and-zeroes",
@@ -19406,7 +19499,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "knapsack",
             "sectionTitle": "Knapsack: 0/1 and unbounded",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/ones-and-zeroes.json?v=911d7926",
+              "chapters": [
+                "A two-capacity knapsack"
+              ],
+              "frames": 7
+            }
           },
           {
             "id": "coin-change",
@@ -19549,7 +19649,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "knapsack",
             "sectionTitle": "Knapsack: 0/1 and unbounded",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/coin-change.json?v=ff08fa04",
+              "chapters": [
+                "Plain recursion repeats work",
+                "Fill the table"
+              ],
+              "frames": 47
+            }
           },
           {
             "id": "coin-change-ii",
@@ -19676,7 +19784,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "knapsack",
             "sectionTitle": "Knapsack: 0/1 and unbounded",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/coin-change-ii.json?v=5fa2fac4",
+              "chapters": [
+                "Count combinations, coin by coin"
+              ],
+              "frames": 20
+            }
           },
           {
             "id": "perfect-squares",
@@ -19787,7 +19902,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "knapsack",
             "sectionTitle": "Knapsack: 0/1 and unbounded",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/perfect-squares.json?v=2c0a0f5b",
+              "chapters": [
+                "Fill the table"
+              ],
+              "frames": 14
+            }
           }
         ]
       },
@@ -19933,7 +20055,17 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "grid",
             "sectionTitle": "Grid DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/unique-paths.json?v=b00efecf",
+              "chapters": [
+                "The question",
+                "Why plain recursion is slow",
+                "Fill the table",
+                "Shrink to one row"
+              ],
+              "frames": 55
+            }
           },
           {
             "id": "unique-paths-ii",
@@ -20053,7 +20185,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "grid",
             "sectionTitle": "Grid DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/unique-paths-ii.json?v=25e212ca",
+              "chapters": [
+                "The question",
+                "Fill the table"
+              ],
+              "frames": 16
+            }
           },
           {
             "id": "minimum-path-sum",
@@ -20183,7 +20323,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "grid",
             "sectionTitle": "Grid DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/minimum-path-sum.json?v=1f9b3ef1",
+              "chapters": [
+                "The question",
+                "Fill the table"
+              ],
+              "frames": 11
+            }
           },
           {
             "id": "triangle",
@@ -20301,7 +20449,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "grid",
             "sectionTitle": "Grid DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/triangle.json?v=c023e49b",
+              "chapters": [
+                "The question",
+                "Bottom-up"
+              ],
+              "frames": 9
+            }
           },
           {
             "id": "dungeon-game",
@@ -20428,7 +20584,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "grid",
             "sectionTitle": "Grid DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/dungeon-game.json?v=0a82271d",
+              "chapters": [
+                "The question",
+                "Fill backwards"
+              ],
+              "frames": 12
+            }
           },
           {
             "id": "minimum-falling-path-sum",
@@ -20522,7 +20686,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "grid",
             "sectionTitle": "Grid DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/minimum-falling-path-sum.json?v=e29847dd",
+              "chapters": [
+                "The question",
+                "Fill row by row"
+              ],
+              "frames": 9
+            }
           },
           {
             "id": "maximal-square",
@@ -20618,7 +20790,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "grid",
             "sectionTitle": "Grid DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/maximal-square.json?v=bb3f5115",
+              "chapters": [
+                "The question",
+                "Fill the table"
+              ],
+              "frames": 22
+            }
           },
           {
             "id": "count-square-submatrices",
@@ -20698,7 +20878,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "grid",
             "sectionTitle": "Grid DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/count-square-submatrices.json?v=65182fdf",
+              "chapters": [
+                "The question",
+                "Fill the table"
+              ],
+              "frames": 14
+            }
           },
           {
             "id": "longest-increasing-path-in-a-matrix",
@@ -20804,7 +20992,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "grid",
             "sectionTitle": "Grid DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/longest-increasing-path-in-a-matrix.json?v=26d9ced3",
+              "chapters": [
+                "The question",
+                "Memoised DFS"
+              ],
+              "frames": 12
+            }
           }
         ]
       },
@@ -20969,7 +21165,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "lis",
             "sectionTitle": "LIS family",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/longest-increasing-subsequence.json?v=9d7128d4",
+              "chapters": [
+                "O(n²) table",
+                "O(n log n): patience sorting"
+              ],
+              "frames": 19
+            }
           },
           {
             "id": "russian-doll-envelopes",
@@ -21103,7 +21307,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "lis",
             "sectionTitle": "LIS family",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/russian-doll-envelopes.json?v=b3e8a4e3",
+              "chapters": [
+                "Sort, then LIS",
+                "LIS on heights"
+              ],
+              "frames": 7
+            }
           },
           {
             "id": "maximum-length-of-pair-chain",
@@ -21240,7 +21452,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "lis",
             "sectionTitle": "LIS family",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/maximum-length-of-pair-chain.json?v=3941da71",
+              "chapters": [
+                "Greedy by earliest end"
+              ],
+              "frames": 9
+            }
           }
         ]
       },
@@ -21381,7 +21600,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "two-strings",
             "sectionTitle": "LCS family and two-string DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/longest-common-subsequence.json?v=5c6acf5c",
+              "chapters": [
+                "Fill the table"
+              ],
+              "frames": 17
+            }
           },
           {
             "id": "edit-distance",
@@ -21499,7 +21725,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "two-strings",
             "sectionTitle": "LCS family and two-string DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/edit-distance.json?v=3eaa003f",
+              "chapters": [
+                "Fill the table"
+              ],
+              "frames": 17
+            }
           },
           {
             "id": "distinct-subsequences",
@@ -21617,7 +21850,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "two-strings",
             "sectionTitle": "LCS family and two-string DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/distinct-subsequences.json?v=795a8bb7",
+              "chapters": [
+                "Fill the table"
+              ],
+              "frames": 23
+            }
           },
           {
             "id": "longest-palindromic-subsequence",
@@ -21751,7 +21991,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "two-strings",
             "sectionTitle": "LCS family and two-string DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/longest-palindromic-subsequence.json?v=6e21b36f",
+              "chapters": [
+                "Fill by interval length"
+              ],
+              "frames": 12
+            }
           },
           {
             "id": "interleaving-string",
@@ -21877,7 +22124,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "two-strings",
             "sectionTitle": "LCS family and two-string DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/interleaving-string.json?v=72f53d09",
+              "chapters": [
+                "Fill the table"
+              ],
+              "frames": 17
+            }
           }
         ]
       },
@@ -22024,7 +22278,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "interval",
             "sectionTitle": "Interval (range) DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/palindromic-substrings.json?v=7d3dd840",
+              "chapters": [
+                "Fill by length",
+                "Expand around centres"
+              ],
+              "frames": 15
+            }
           },
           {
             "id": "longest-palindromic-substring",
@@ -22154,7 +22416,14 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "interval",
             "sectionTitle": "Interval (range) DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/longest-palindromic-substring.json?v=d909641d",
+              "chapters": [
+                "Fill by length"
+              ],
+              "frames": 23
+            }
           },
           {
             "id": "matrix-chain-multiplication",
@@ -22260,6 +22529,14 @@ window.GRAIL_DSA = [
             "ref": {
               "label": "Read on GeeksforGeeks",
               "url": "https://www.geeksforgeeks.org/dsa/matrix-chain-multiplication-dp-8/"
+            },
+            "viz": {
+              "src": "assets/viz/matrix-chain-multiplication.json?v=8f3e612f",
+              "chapters": [
+                "The question",
+                "Fill by interval length"
+              ],
+              "frames": 9
             }
           },
           {
@@ -22357,7 +22634,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "interval",
             "sectionTitle": "Interval (range) DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/burst-balloons.json?v=7e458239",
+              "chapters": [
+                "The question",
+                "Fill by interval length"
+              ],
+              "frames": 14
+            }
           },
           {
             "id": "minimum-cost-to-cut-a-stick",
@@ -22459,7 +22744,15 @@ window.GRAIL_DSA = [
             "topicTitle": "Dynamic Programming",
             "section": "interval",
             "sectionTitle": "Interval (range) DP",
-            "ref": null
+            "ref": null,
+            "viz": {
+              "src": "assets/viz/minimum-cost-to-cut-a-stick.json?v=22b4f70f",
+              "chapters": [
+                "The question",
+                "Fill by interval length"
+              ],
+              "frames": 13
+            }
           }
         ]
       }
@@ -22594,6 +22887,15 @@ window.GRAIL_DSA = [
         "ref": {
           "label": "Read on GeeksforGeeks",
           "url": "https://www.geeksforgeeks.org/dsa/program-for-nth-fibonacci-number/"
+        },
+        "viz": {
+          "src": "assets/viz/nth-fibonacci.json?v=3b94ea87",
+          "chapters": [
+            "Plain recursion repeats work",
+            "Bottom-up table",
+            "Keep two numbers"
+          ],
+          "frames": 42
         }
       },
       {
@@ -22704,7 +23006,17 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "foundations",
         "sectionTitle": "Recursion, memo, table",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/climbing-stairs.json?v=8ba2c6fb",
+          "chapters": [
+            "The question",
+            "Plain recursion repeats work",
+            "Bottom-up table",
+            "Keep two numbers"
+          ],
+          "frames": 34
+        }
       },
       {
         "id": "house-robber",
@@ -22814,7 +23126,17 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "linear",
         "sectionTitle": "1-D linear DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/house-robber.json?v=23ebd9bd",
+          "chapters": [
+            "The question",
+            "Plain recursion repeats work",
+            "Fill the table",
+            "Two variables"
+          ],
+          "frames": 38
+        }
       },
       {
         "id": "house-robber-ii",
@@ -22929,7 +23251,17 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "linear",
         "sectionTitle": "1-D linear DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/house-robber-ii.json?v=5b396e99",
+          "chapters": [
+            "The question",
+            "Without the last house",
+            "Without the first house",
+            "Take the better one"
+          ],
+          "frames": 15
+        }
       },
       {
         "id": "maximum-subarray",
@@ -23042,7 +23374,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "linear",
         "sectionTitle": "1-D linear DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/maximum-subarray.json?v=47e2e82f",
+          "chapters": [
+            "Kadane's scan"
+          ],
+          "frames": 11
+        }
       },
       {
         "id": "decode-ways",
@@ -23165,7 +23504,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "linear",
         "sectionTitle": "1-D linear DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/decode-ways.json?v=ab4140ff",
+          "chapters": [
+            "The question",
+            "Fill the table"
+          ],
+          "frames": 9
+        }
       },
       {
         "id": "delete-and-earn",
@@ -23286,7 +23633,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "linear",
         "sectionTitle": "1-D linear DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/delete-and-earn.json?v=58c3d546",
+          "chapters": [
+            "Turn it into House Robber",
+            "Rob the values"
+          ],
+          "frames": 13
+        }
       },
       {
         "id": "knapsack-01",
@@ -23415,6 +23770,14 @@ window.GRAIL_DSA = [
         "ref": {
           "label": "Read on GeeksforGeeks",
           "url": "https://www.geeksforgeeks.org/dsa/0-1-knapsack-problem-dp-10/"
+        },
+        "viz": {
+          "src": "assets/viz/knapsack-01.json?v=0e5dfdea",
+          "chapters": [
+            "Fill the table",
+            "One row, right to left"
+          ],
+          "frames": 58
         }
       },
       {
@@ -23551,7 +23914,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "knapsack",
         "sectionTitle": "Knapsack: 0/1 and unbounded",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/partition-equal-subset-sum.json?v=90cdb7c8",
+          "chapters": [
+            "The question",
+            "Reachable sums"
+          ],
+          "frames": 7
+        }
       },
       {
         "id": "target-sum",
@@ -23679,7 +24050,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "knapsack",
         "sectionTitle": "Knapsack: 0/1 and unbounded",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/target-sum.json?v=ba410d1a",
+          "chapters": [
+            "Count the sign choices"
+          ],
+          "frames": 7
+        }
       },
       {
         "id": "last-stone-weight-ii",
@@ -23802,7 +24180,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "knapsack",
         "sectionTitle": "Knapsack: 0/1 and unbounded",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/last-stone-weight-ii.json?v=f348e5db",
+          "chapters": [
+            "The question",
+            "Reachable sums"
+          ],
+          "frames": 10
+        }
       },
       {
         "id": "ones-and-zeroes",
@@ -23926,7 +24312,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "knapsack",
         "sectionTitle": "Knapsack: 0/1 and unbounded",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/ones-and-zeroes.json?v=911d7926",
+          "chapters": [
+            "A two-capacity knapsack"
+          ],
+          "frames": 7
+        }
       },
       {
         "id": "coin-change",
@@ -24069,7 +24462,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "knapsack",
         "sectionTitle": "Knapsack: 0/1 and unbounded",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/coin-change.json?v=ff08fa04",
+          "chapters": [
+            "Plain recursion repeats work",
+            "Fill the table"
+          ],
+          "frames": 47
+        }
       },
       {
         "id": "coin-change-ii",
@@ -24196,7 +24597,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "knapsack",
         "sectionTitle": "Knapsack: 0/1 and unbounded",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/coin-change-ii.json?v=5fa2fac4",
+          "chapters": [
+            "Count combinations, coin by coin"
+          ],
+          "frames": 20
+        }
       },
       {
         "id": "perfect-squares",
@@ -24307,7 +24715,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "knapsack",
         "sectionTitle": "Knapsack: 0/1 and unbounded",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/perfect-squares.json?v=2c0a0f5b",
+          "chapters": [
+            "Fill the table"
+          ],
+          "frames": 14
+        }
       },
       {
         "id": "unique-paths",
@@ -24439,7 +24854,17 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "grid",
         "sectionTitle": "Grid DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/unique-paths.json?v=b00efecf",
+          "chapters": [
+            "The question",
+            "Why plain recursion is slow",
+            "Fill the table",
+            "Shrink to one row"
+          ],
+          "frames": 55
+        }
       },
       {
         "id": "unique-paths-ii",
@@ -24559,7 +24984,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "grid",
         "sectionTitle": "Grid DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/unique-paths-ii.json?v=25e212ca",
+          "chapters": [
+            "The question",
+            "Fill the table"
+          ],
+          "frames": 16
+        }
       },
       {
         "id": "minimum-path-sum",
@@ -24689,7 +25122,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "grid",
         "sectionTitle": "Grid DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/minimum-path-sum.json?v=1f9b3ef1",
+          "chapters": [
+            "The question",
+            "Fill the table"
+          ],
+          "frames": 11
+        }
       },
       {
         "id": "triangle",
@@ -24807,7 +25248,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "grid",
         "sectionTitle": "Grid DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/triangle.json?v=c023e49b",
+          "chapters": [
+            "The question",
+            "Bottom-up"
+          ],
+          "frames": 9
+        }
       },
       {
         "id": "dungeon-game",
@@ -24934,7 +25383,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "grid",
         "sectionTitle": "Grid DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/dungeon-game.json?v=0a82271d",
+          "chapters": [
+            "The question",
+            "Fill backwards"
+          ],
+          "frames": 12
+        }
       },
       {
         "id": "minimum-falling-path-sum",
@@ -25028,7 +25485,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "grid",
         "sectionTitle": "Grid DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/minimum-falling-path-sum.json?v=e29847dd",
+          "chapters": [
+            "The question",
+            "Fill row by row"
+          ],
+          "frames": 9
+        }
       },
       {
         "id": "maximal-square",
@@ -25124,7 +25589,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "grid",
         "sectionTitle": "Grid DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/maximal-square.json?v=bb3f5115",
+          "chapters": [
+            "The question",
+            "Fill the table"
+          ],
+          "frames": 22
+        }
       },
       {
         "id": "count-square-submatrices",
@@ -25204,7 +25677,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "grid",
         "sectionTitle": "Grid DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/count-square-submatrices.json?v=65182fdf",
+          "chapters": [
+            "The question",
+            "Fill the table"
+          ],
+          "frames": 14
+        }
       },
       {
         "id": "longest-increasing-path-in-a-matrix",
@@ -25310,7 +25791,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "grid",
         "sectionTitle": "Grid DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/longest-increasing-path-in-a-matrix.json?v=26d9ced3",
+          "chapters": [
+            "The question",
+            "Memoised DFS"
+          ],
+          "frames": 12
+        }
       },
       {
         "id": "longest-increasing-subsequence",
@@ -25462,7 +25951,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "lis",
         "sectionTitle": "LIS family",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/longest-increasing-subsequence.json?v=9d7128d4",
+          "chapters": [
+            "O(n²) table",
+            "O(n log n): patience sorting"
+          ],
+          "frames": 19
+        }
       },
       {
         "id": "russian-doll-envelopes",
@@ -25596,7 +26093,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "lis",
         "sectionTitle": "LIS family",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/russian-doll-envelopes.json?v=b3e8a4e3",
+          "chapters": [
+            "Sort, then LIS",
+            "LIS on heights"
+          ],
+          "frames": 7
+        }
       },
       {
         "id": "maximum-length-of-pair-chain",
@@ -25733,7 +26238,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "lis",
         "sectionTitle": "LIS family",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/maximum-length-of-pair-chain.json?v=3941da71",
+          "chapters": [
+            "Greedy by earliest end"
+          ],
+          "frames": 9
+        }
       },
       {
         "id": "longest-common-subsequence",
@@ -25862,7 +26374,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "two-strings",
         "sectionTitle": "LCS family and two-string DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/longest-common-subsequence.json?v=5c6acf5c",
+          "chapters": [
+            "Fill the table"
+          ],
+          "frames": 17
+        }
       },
       {
         "id": "edit-distance",
@@ -25980,7 +26499,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "two-strings",
         "sectionTitle": "LCS family and two-string DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/edit-distance.json?v=3eaa003f",
+          "chapters": [
+            "Fill the table"
+          ],
+          "frames": 17
+        }
       },
       {
         "id": "distinct-subsequences",
@@ -26098,7 +26624,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "two-strings",
         "sectionTitle": "LCS family and two-string DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/distinct-subsequences.json?v=795a8bb7",
+          "chapters": [
+            "Fill the table"
+          ],
+          "frames": 23
+        }
       },
       {
         "id": "longest-palindromic-subsequence",
@@ -26232,7 +26765,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "two-strings",
         "sectionTitle": "LCS family and two-string DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/longest-palindromic-subsequence.json?v=6e21b36f",
+          "chapters": [
+            "Fill by interval length"
+          ],
+          "frames": 12
+        }
       },
       {
         "id": "interleaving-string",
@@ -26358,7 +26898,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "two-strings",
         "sectionTitle": "LCS family and two-string DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/interleaving-string.json?v=72f53d09",
+          "chapters": [
+            "Fill the table"
+          ],
+          "frames": 17
+        }
       },
       {
         "id": "palindromic-substrings",
@@ -26492,7 +27039,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "interval",
         "sectionTitle": "Interval (range) DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/palindromic-substrings.json?v=7d3dd840",
+          "chapters": [
+            "Fill by length",
+            "Expand around centres"
+          ],
+          "frames": 15
+        }
       },
       {
         "id": "longest-palindromic-substring",
@@ -26622,7 +27177,14 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "interval",
         "sectionTitle": "Interval (range) DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/longest-palindromic-substring.json?v=d909641d",
+          "chapters": [
+            "Fill by length"
+          ],
+          "frames": 23
+        }
       },
       {
         "id": "matrix-chain-multiplication",
@@ -26728,6 +27290,14 @@ window.GRAIL_DSA = [
         "ref": {
           "label": "Read on GeeksforGeeks",
           "url": "https://www.geeksforgeeks.org/dsa/matrix-chain-multiplication-dp-8/"
+        },
+        "viz": {
+          "src": "assets/viz/matrix-chain-multiplication.json?v=8f3e612f",
+          "chapters": [
+            "The question",
+            "Fill by interval length"
+          ],
+          "frames": 9
         }
       },
       {
@@ -26825,7 +27395,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "interval",
         "sectionTitle": "Interval (range) DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/burst-balloons.json?v=7e458239",
+          "chapters": [
+            "The question",
+            "Fill by interval length"
+          ],
+          "frames": 14
+        }
       },
       {
         "id": "minimum-cost-to-cut-a-stick",
@@ -26927,7 +27505,15 @@ window.GRAIL_DSA = [
         "topicTitle": "Dynamic Programming",
         "section": "interval",
         "sectionTitle": "Interval (range) DP",
-        "ref": null
+        "ref": null,
+        "viz": {
+          "src": "assets/viz/minimum-cost-to-cut-a-stick.json?v=22b4f70f",
+          "chapters": [
+            "The question",
+            "Fill by interval length"
+          ],
+          "frames": 13
+        }
       }
     ],
     "count": 37

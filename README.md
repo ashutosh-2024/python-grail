@@ -121,6 +121,17 @@ from the cache, or a URL that does not match its slug.
 > That is their content; if you would rather not republish it, replace the
 > `statement` field per problem and the fetch becomes metadata-only.
 
+### Step-by-step animations
+
+Every Dynamic Programming problem has an animation ("Watch the algorithm run"
+on the problem page). Generators live in [`content/viz/`](content/viz/), one
+function per problem, registered in `content/viz/__init__.py`. They build
+frames by **running** the algorithm (with `_kit.py`'s `Board`, `Story` and
+`CallTrace` helpers) - no numbers are typed by hand - and `build.py` validates
+each animation, writes it to `assets/viz/<id>.json` (fetched only when a reader
+opens the section) and fails if any problem in a topic listed in
+`REQUIRED_TOPICS` lacks one. The player is `assets/js/viz.js`.
+
 ### Adding a problem
 
 Append to the relevant topic's `sections[...]["problems"]`:

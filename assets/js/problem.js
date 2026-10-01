@@ -114,6 +114,16 @@
     html += '<div class="pitfall"><strong>Common mistake.</strong> ' + p.pitfall + "</div>";
   }
 
+  /* ---------- step-by-step animation (content/viz/) ---------- */
+  if (p.viz) {
+    var nCh = p.viz.chapters.length;
+    html += '<details class="reveal viz-reveal" id="viz-reveal">' +
+      "<summary>Watch the algorithm run &mdash; " + nCh + " chapter" + (nCh === 1 ? "" : "s") + ", " +
+        p.viz.frames + " steps <span class=\"viz-spoiler\">(shows the solution)</span></summary>" +
+      '<div class="reveal-inner"><div id="viz"><p class="viz-loading">Loading animation&hellip;</p></div></div>' +
+    "</details>";
+  }
+
   /* ---------- try it: write and run your own solution ---------- */
   var mockParam = new URLSearchParams(location.search).get("mock") === "1";
   var mock = window.progress.mock();
@@ -243,6 +253,24 @@
       '<button type="button" class="btn btn-sm" id="mock-end">End</button></div>' + html;
   }
   root.innerHTML = html;
+  /* animations live in their own file and load the first time the section is opened */
+  if (p.viz && window.renderViz) {
+    var vizReveal = document.getElementById("viz-reveal"), vizLoaded = false;
+    vizReveal.addEventListener("toggle", function () {
+      if (!vizReveal.open || vizLoaded) return;
+      vizLoaded = true;
+      fetch(p.viz.src).then(function (r) {
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      }).then(function (data) {
+        window.renderViz(document.getElementById("viz"), data);
+      }).catch(function () {
+        vizLoaded = false;
+        document.getElementById("viz").innerHTML =
+          '<p class="viz-loading">Could not load the animation. Serve the site over HTTP (e.g. <code>python3 -m http.server</code>) and try again.</p>';
+      });
+    });
+  }
 
   /* ---------- solved / starred ---------- */
   var solvedBtn = document.getElementById("btn-solved");

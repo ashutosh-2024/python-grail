@@ -149,9 +149,64 @@ def make_starter(code: str, tests: str = "") -> str:
     return "\n\n\n".join(parts) + "\n"
 
 
+def check_viz(pid: str, v: dict, classes: set) -> dict:
+    """Validate an animation produced by content/viz/ before shipping it."""
+    def fail(msg):
+        raise SystemExit(f"viz {pid}: {msg}")
+    if not v.get("chapters"):
+        fail("no chapters")
+    for ci, ch in enumerate(v["chapters"]):
+        if not ch.get("title") or not ch.get("frames"):
+            fail(f"chapter {ci} needs a title and frames")
+        for fi, fr in enumerate(ch["frames"]):
+            where = f"chapter {ci} frame {fi}"
+            if not fr.get("caption"):
+                fail(f"{where}: no caption")
+            for tag in re.findall(r"</?(\w+)", fr["caption"]):
+                if tag not in ALLOWED_TAGS:
+                    fail(f"{where}: unexpected <{tag}> in caption")
+            g = fr.get("grid")
+            if g:
+                rows, cols = len(g["v"]), len(g["v"][0])
+                if any(len(r) != cols for r in g["v"]) or len(g["cls"]) != rows \
+                        or any(len(r) != cols for r in g["cls"]):
+                    fail(f"{where}: ragged grid")
+                bad = {c for r in g["cls"] for c in r} - classes
+                if bad:
+                    fail(f"{where}: unknown cell classes {bad}")
+                for r1, c1, r2, c2 in fr.get("arrows", []):
+                    if not (0 <= r1 < rows and 0 <= r2 < rows and 0 <= c1 < cols and 0 <= c2 < cols):
+                        fail(f"{where}: arrow off the grid")
+            a = fr.get("array")
+            if a and (len(a["v"]) != len(a["cls"]) or set(a["cls"]) - classes):
+                fail(f"{where}: bad array")
+            if not g and not a:
+                fail(f"{where}: nothing to draw")
+    return v
+
+
+VIZ_DIR = ROOT / "assets" / "viz"
+
+
+def write_viz(pid: str, v: dict) -> dict:
+    """Write one animation to assets/viz/<id>.json (fetched only when a reader opens
+    it) and return the small stub stored on the problem."""
+    VIZ_DIR.mkdir(exist_ok=True)
+    body = json.dumps(v, ensure_ascii=False, separators=(",", ":"))
+    (VIZ_DIR / f"{pid}.json").write_text(body, encoding="utf-8")
+    digest = hashlib.sha256(body.encode()).hexdigest()[:8]
+    return {
+        "src": f"assets/viz/{pid}.json?v={digest}",
+        "chapters": [c["title"] for c in v["chapters"]],
+        "frames": sum(len(c["frames"]) for c in v["chapters"]),
+    }
+
+
 def build_dsa() -> int:
     """Execute every DSA solution against its tests and emit dsa-data.js."""
     import dsa as content
+    import viz
+    viz_count = 0
 
     cache_path = ROOT / "content" / "leetcode.json"
     cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {}
@@ -257,6 +312,9 @@ def build_dsa() -> int:
                     raise SystemExit(
                         f"{prob['id']}: no statement. Premium or non-LeetCode "
                         f"problems must supply their own `statement=[...]`.")
+                if prob["id"] in viz.REGISTRY:
+                    built["viz"] = write_viz(prob["id"], check_viz(prob["id"], viz.REGISTRY[prob["id"]](), viz.CELL_CLASSES))
+                    viz_count += 1
                 problems.append(built)
                 flat.append(built)
             sections.append({
@@ -286,8 +344,13 @@ def build_dsa() -> int:
         f"window.GRAIL_PRELUDE = {json.dumps(content.PRELUDE.rstrip(), ensure_ascii=False)};\n"
         f"window.GRAIL_DSA = {body};\n",
         encoding="utf-8")
+    for t in topics:
+        if t["id"] in viz.REQUIRED_TOPICS:
+            missing = [p["id"] for p in t["problems"] if "viz" not in p]
+            if missing:
+                raise SystemExit(f"{t['id']}: problems without an animation in content/viz/: {missing}")
     print(f"built {len(topics)} DSA topics, {total} problems, "
-          f"{checked} solutions executed -> {OUT_DSA.relative_to(ROOT)}")
+          f"{checked} solutions executed, {viz_count} animated -> {OUT_DSA.relative_to(ROOT)}")
     return total
 
 
