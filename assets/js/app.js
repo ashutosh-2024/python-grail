@@ -123,9 +123,9 @@ window.GRAIL_FEATURED = [
       var tag = (e.target.tagName || "").toLowerCase();
       if (e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey &&
           tag !== "input" && tag !== "textarea" && tag !== "select" && !e.target.isContentEditable) {
-        var box = document.getElementById("site-search");
+        var box = document.getElementById("q");
         e.preventDefault();
-        if (box) box.focus(); else location.href = "search.html";
+        if (box) box.focus(); else location.href = "browse.html";
       }
     });
   });
