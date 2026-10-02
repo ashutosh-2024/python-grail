@@ -1,10 +1,10 @@
 # python-grail
 
-> Read the code. Guess the output. Get it wrong.
+> Small programs. Unexpected results. The rule behind each one.
 
-**103 short Python programs that do not behave the way the code reads.** Each
-entry gives you a snippet, hides the answer behind a click, then explains which
-rule of the language you tripped over.
+**103 bite-sized Python puzzles where the obvious answer is wrong.** Predict
+what each one prints, reveal the real result, then learn the language rule that
+explains it and how to write the code you actually meant.
 
 Inspired from [cpp-grail](https://bashar-ahmed.github.io/cpp-grail/) by [Bashar](https://github.com/bashar-ahmed/)
 
