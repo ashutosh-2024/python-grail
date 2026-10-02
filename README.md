@@ -6,7 +6,7 @@
 entry gives you a snippet, hides the answer behind a click, then explains which
 rule of the language you tripped over.
 
-Inspired by [cpp-grail](https://bashar-ahmed.github.io/cpp-grail/).
+Inspired from [cpp-grail](https://bashar-ahmed.github.io/cpp-grail/) by [Bashar](https://github.com/bashar-ahmed/)
 
 Live at <https://ashutosh-2024.github.io/python-grail/>.
 
